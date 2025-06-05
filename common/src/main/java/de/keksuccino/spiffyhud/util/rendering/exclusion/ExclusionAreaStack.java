@@ -5,6 +5,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 public class ExclusionAreaStack {
+
     private final Deque<ScreenRectangle> stack = new ArrayDeque<>();
     
     public void push(ScreenRectangle area) {
@@ -54,4 +55,5 @@ public class ExclusionAreaStack {
         }
         return false;
     }
+    
 }

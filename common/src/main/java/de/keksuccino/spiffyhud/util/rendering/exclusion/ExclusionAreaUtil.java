@@ -48,7 +48,7 @@ public class ExclusionAreaUtil {
     /**
      * Create an auto-closeable exclusion area context.
      * Use with try-with-resources to automatically pop the exclusion area.
-     * 
+     * <p>
      * Example:
      * <pre>
      * try (var exclusion = ExclusionAreaUtil.withExclusionArea(graphics, 10, 10, 100, 100)) {
@@ -76,4 +76,5 @@ public class ExclusionAreaUtil {
             popExclusionArea(graphics);
         }
     }
+
 }
