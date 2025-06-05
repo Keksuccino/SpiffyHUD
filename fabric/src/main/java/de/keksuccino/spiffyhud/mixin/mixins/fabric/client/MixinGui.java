@@ -45,9 +45,14 @@ public class MixinGui {
 
     @Unique private static final Logger LOGGER_SPIFFY = LogManager.getLogger();
     @Unique private SpiffyGui spiffyGui = null;
+    @Unique private int aggressionLevelNormalCount_Spiffy = 0;
+    @Unique private int aggressionLevelAggressiveCount_Spiffy = 0;
 
-    @Inject(method = "render", at = @At("HEAD"))
+    @Inject(method = "render", at = @At("HEAD"), order = -1000)
     private void before_render_Spiffy(GuiGraphics graphics, DeltaTracker deltaTracker, CallbackInfo info) {
+
+        this.aggressionLevelNormalCount_Spiffy = 0;
+        this.aggressionLevelAggressiveCount_Spiffy = 0;
 
         if (this.spiffyGui == null) this.spiffyGui = SpiffyGui.INSTANCE;
 
@@ -56,7 +61,14 @@ public class MixinGui {
             ScreenCustomizationLayer layer = ScreenCustomizationLayerHandler.getLayerOfScreen(SpiffyUtils.DUMMY_SPIFFY_OVERLAY_SCREEN);
             if (layer != null) {
                 layer.allElements.forEach(abstractElement -> {
-                    if ((abstractElement instanceof EraserElement eraser) && eraser.shouldRender()) {
+                    if ((abstractElement instanceof EraserElement eraser) && eraser.shouldRender() && (eraser.aggressionLevel == EraserElement.AggressionLevel.AGGRESSIVE)) {
+                        this.aggressionLevelAggressiveCount_Spiffy++;
+                        ExclusionAreaUtil.pushExclusionArea(graphics, eraser.getAbsoluteX(), eraser.getAbsoluteY(), eraser.getAbsoluteX() + eraser.getAbsoluteWidth(), eraser.getAbsoluteY() + eraser.getAbsoluteHeight());
+                    }
+                });
+                layer.allElements.forEach(abstractElement -> {
+                    if ((abstractElement instanceof EraserElement eraser) && eraser.shouldRender() && (eraser.aggressionLevel == EraserElement.AggressionLevel.NORMAL)) {
+                        this.aggressionLevelNormalCount_Spiffy++;
                         ExclusionAreaUtil.pushExclusionArea(graphics, eraser.getAbsoluteX(), eraser.getAbsoluteY(), eraser.getAbsoluteX() + eraser.getAbsoluteWidth(), eraser.getAbsoluteY() + eraser.getAbsoluteHeight());
                     }
                 });
@@ -67,15 +79,27 @@ public class MixinGui {
 
     }
 
-    @Inject(method = "renderTitle", at = @At("RETURN"))
-    private void after_renderTitle_Spiffy(GuiGraphics graphics, DeltaTracker deltaTracker, CallbackInfo info) {
+    @Inject(method = "renderChat", at = @At("HEAD"))
+    private void before_renderChat_Spiffy(GuiGraphics graphics, DeltaTracker deltaTracker, CallbackInfo info) {
 
-        // Pop all areas after Vanilla and before Spiffy
-        ExclusionAreaUtil.popAllExclusionAreas(graphics);
+        while (this.aggressionLevelNormalCount_Spiffy > 0) {
+            ExclusionAreaUtil.popExclusionArea(graphics);
+            this.aggressionLevelNormalCount_Spiffy--;
+        }
 
         // This will render Spiffy's overlay AFTER all Vanilla (and hopefully mod) elements
         if (!Minecraft.getInstance().options.hideGui) {
             spiffyGui.render(graphics, -10000000, -10000000, deltaTracker.getGameTimeDeltaTicks());
+        }
+
+    }
+
+    @Inject(method = "render", at = @At("TAIL"), order = 20000)
+    private void after_render_Spiffy(GuiGraphics graphics, DeltaTracker deltaTracker, CallbackInfo info) {
+
+        while (this.aggressionLevelAggressiveCount_Spiffy > 0) {
+            ExclusionAreaUtil.popExclusionArea(graphics);
+            this.aggressionLevelAggressiveCount_Spiffy--;
         }
 
     }

@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.awt.*;
+import java.util.Objects;
 
 public class EraserElementBuilder extends ElementBuilder<EraserElement, EraserEditorElement> {
 
@@ -36,12 +37,19 @@ public class EraserElementBuilder extends ElementBuilder<EraserElement, EraserEd
 
         EraserElement element = this.buildDefaultInstance();
 
+        String aggressionLevel = serialized.getValue("aggression_level");
+        if (aggressionLevel != null) {
+            element.aggressionLevel = Objects.requireNonNullElse(EraserElement.AggressionLevel.getByName(aggressionLevel), EraserElement.AggressionLevel.NORMAL);
+        }
+
         return element;
 
     }
 
     @Override
     protected SerializedElement serializeElement(@NotNull EraserElement element, @NotNull SerializedElement serializeTo) {
+
+        serializeTo.putProperty("aggression_level", element.aggressionLevel.getName());
 
         return serializeTo;
 
