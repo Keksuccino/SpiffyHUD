@@ -46,6 +46,17 @@ public class ExclusionAreaUtil {
     }
     
     /**
+     * Pop all exclusion areas from the GuiGraphics stack at once.
+     * Returns the number of areas that were popped.
+     */
+    public static int popAllExclusionAreas(GuiGraphics graphics) {
+        if (graphics instanceof IGuiGraphicsExclusionArea exclusion) {
+            return exclusion.spiffyHud$popAllExclusionAreas();
+        }
+        return 0;
+    }
+    
+    /**
      * Create an auto-closeable exclusion area context.
      * Use with try-with-resources to automatically pop the exclusion area.
      * <p>

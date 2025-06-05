@@ -35,4 +35,12 @@ public interface IGuiGraphicsExclusionArea {
      * @return true if there are active exclusion areas
      */
     boolean spiffyHud$hasExclusionAreas();
+    
+    /**
+     * Pop all exclusion areas from the stack at once.
+     * Returns the number of areas that were popped.
+     * 
+     * @return the number of exclusion areas that were removed
+     */
+    int spiffyHud$popAllExclusionAreas();
 }

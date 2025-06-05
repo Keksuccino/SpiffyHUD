@@ -52,6 +52,13 @@ public abstract class MixinGuiGraphics implements IGuiGraphicsExclusionArea {
         return !spiffyHud$exclusionAreaStack.isEmpty();
     }
     
+    @Override
+    public int spiffyHud$popAllExclusionAreas() {
+        int count = spiffyHud$exclusionAreaStack.size();
+        spiffyHud$exclusionAreaStack.clear();
+        return count;
+    }
+    
     // ===== FILL METHODS =====
     
     @Inject(method = "fill(IIIII)V", at = @At("HEAD"), cancellable = true)

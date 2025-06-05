@@ -106,5 +106,25 @@ public class ExclusionAreaExample {
             }
         }
     }
+    
+    /**
+     * Example 6: Using popAll to clear all exclusion areas at once
+     */
+    public static void renderWithPopAll(GuiGraphics graphics, Font font) {
+        // Push multiple exclusion areas
+        ExclusionAreaUtil.pushExclusionArea(graphics, 50, 50, 150, 150);
+        ExclusionAreaUtil.pushExclusionArea(graphics, 200, 50, 300, 150);
+        ExclusionAreaUtil.pushExclusionArea(graphics, 350, 50, 450, 150);
+        
+        // Render something
+        graphics.fill(0, 0, 500, 200, 0xFF0000FF);
+        
+        // Pop all exclusion areas at once
+        int popped = ExclusionAreaUtil.popAllExclusionAreas(graphics);
+        graphics.drawString(font, "Popped " + popped + " exclusion areas", 10, 210, 0xFFFFFF);
+        
+        // This will render without any exclusions
+        graphics.fill(0, 220, 500, 300, 0xFF00FF00);
+    }
 
 }

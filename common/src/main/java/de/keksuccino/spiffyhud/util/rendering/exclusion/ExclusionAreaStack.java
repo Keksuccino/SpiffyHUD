@@ -27,6 +27,10 @@ public class ExclusionAreaStack {
         stack.clear();
     }
     
+    public int size() {
+        return stack.size();
+    }
+    
     public boolean isPointExcluded(float x, float y) {
         for (ScreenRectangle area : stack) {
             if (area.containsPoint((int)x, (int)y)) {
