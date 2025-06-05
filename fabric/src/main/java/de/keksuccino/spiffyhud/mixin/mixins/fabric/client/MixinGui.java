@@ -3,14 +3,11 @@ package de.keksuccino.spiffyhud.mixin.mixins.fabric.client;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import de.keksuccino.fancymenu.customization.element.elements.button.vanillawidget.VanillaWidgetElement;
 import de.keksuccino.fancymenu.customization.layer.ScreenCustomizationLayer;
 import de.keksuccino.fancymenu.customization.layer.ScreenCustomizationLayerHandler;
 import de.keksuccino.spiffyhud.SpiffyUtils;
 import de.keksuccino.spiffyhud.customization.SpiffyGui;
-import de.keksuccino.spiffyhud.customization.SpiffyOverlayScreen;
 import de.keksuccino.spiffyhud.customization.VanillaHudElements;
 import de.keksuccino.spiffyhud.customization.elements.eraser.EraserElement;
 import de.keksuccino.spiffyhud.customization.elements.overlayremover.OverlayRemoverElement;
@@ -23,7 +20,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.PlayerRideableJumping;
@@ -43,21 +39,19 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Gui.class)
 public class MixinGui {
 
-    @Shadow
-    private Component title;
+    @Shadow private Component title;
     @Shadow private Component subtitle;
-
-    @Unique
-    private static final Logger LOGGER_SPIFFY = LogManager.getLogger();
-
-    @Unique
-    private SpiffyGui spiffyGui = null;
-
     @Shadow @Final private static ResourceLocation POWDER_SNOW_OUTLINE_LOCATION;
+
+    @Unique private static final Logger LOGGER_SPIFFY = LogManager.getLogger();
+    @Unique private SpiffyGui spiffyGui = null;
 
     @Inject(method = "render", at = @At("HEAD"))
     private void before_render_Spiffy(GuiGraphics graphics, DeltaTracker deltaTracker, CallbackInfo info) {
 
+        if (this.spiffyGui == null) this.spiffyGui = SpiffyGui.INSTANCE;
+
+        // Applies all Eraser element areas to the GUI before rendering of Vanilla elements starts
         try {
             ScreenCustomizationLayer layer = ScreenCustomizationLayerHandler.getLayerOfScreen(SpiffyUtils.DUMMY_SPIFFY_OVERLAY_SCREEN);
             if (layer != null) {
@@ -73,27 +67,25 @@ public class MixinGui {
 
     }
 
-    @Inject(method = "render", at = @At("RETURN"))
-    private void after_render_Spiffy(GuiGraphics graphics, DeltaTracker deltaTracker, CallbackInfo info) {
+    @Inject(method = "renderTitle", at = @At("RETURN"))
+    private void after_renderTitle_Spiffy(GuiGraphics graphics, DeltaTracker deltaTracker, CallbackInfo info) {
 
+        // Pop all areas after Vanilla and before Spiffy
         ExclusionAreaUtil.popAllExclusionAreas(graphics);
 
-    }
-
-    /**
-     * @reason Hide the hotbar when hidden by Spiffy HUD and renders Spiffy's overlay.
-     */
-    @Inject(method = "renderHotbarAndDecorations", at = @At(value = "HEAD"), cancellable = true)
-    private void before_renderHotbarAndDecorations_Spiffy(GuiGraphics graphics, DeltaTracker deltaTracker, CallbackInfo info) {
-
-        if (this.spiffyGui == null) this.spiffyGui = SpiffyGui.INSTANCE;
-
+        // This will render Spiffy's overlay AFTER all Vanilla (and hopefully mod) elements
         if (!Minecraft.getInstance().options.hideGui) {
             spiffyGui.render(graphics, -10000000, -10000000, deltaTracker.getGameTimeDeltaTicks());
         }
 
-        if (VanillaHudElements.isHidden(VanillaHudElements.HOTBAR_IDENTIFIER)) info.cancel();
+    }
 
+    /**
+     * @reason Hide the hotbar when hidden by Spiffy HUD.
+     */
+    @Inject(method = "renderHotbarAndDecorations", at = @At(value = "HEAD"), cancellable = true)
+    private void before_renderHotbarAndDecorations_Spiffy(GuiGraphics graphics, DeltaTracker deltaTracker, CallbackInfo info) {
+        if (VanillaHudElements.isHidden(VanillaHudElements.HOTBAR_IDENTIFIER)) info.cancel();
     }
 
     /**
