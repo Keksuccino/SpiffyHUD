@@ -15,6 +15,9 @@ public class ExclusionAreaVertexConsumer implements VertexConsumer {
     private final int verticesPerPrimitive;
     private int currentVertexIndex = 0;
     
+    // Track if we're in the middle of a primitive that should be excluded
+    private boolean currentPrimitiveExcluded = false;
+    
     public ExclusionAreaVertexConsumer(VertexConsumer delegate, ExclusionAreaStack exclusionStack, VertexFormat.Mode mode) {
         this.delegate = delegate;
         this.exclusionStack = exclusionStack;
@@ -22,7 +25,7 @@ public class ExclusionAreaVertexConsumer implements VertexConsumer {
         this.verticesPerPrimitive = getVerticesPerPrimitive(mode);
         
         // Pre-allocate vertex data
-        for (int i = 0; i < verticesPerPrimitive; i++) {
+        for (int i = 0; i < Math.max(verticesPerPrimitive, 4); i++) {
             currentPrimitive.add(new VertexData());
         }
     }
@@ -39,71 +42,49 @@ public class ExclusionAreaVertexConsumer implements VertexConsumer {
     
     @Override
     public VertexConsumer addVertex(float x, float y, float z) {
-        if (currentVertexIndex >= currentPrimitive.size()) {
-            currentPrimitive.add(new VertexData());
-        }
-        
-        VertexData vertex = currentPrimitive.get(currentVertexIndex);
-        vertex.x = x;
-        vertex.y = y;
-        vertex.z = z;
-        vertex.hasPosition = true;
-        
-        currentVertexIndex++;
-        
-        // Check if we've completed a primitive
-        if (shouldFlushPrimitive()) {
-            flushPrimitive();
-            prepareForNextPrimitive();
+        // For safety, always pass through vertices if we're at risk of incomplete primitives
+        if (mode == VertexFormat.Mode.QUADS || mode == VertexFormat.Mode.TRIANGLES || mode == VertexFormat.Mode.LINES) {
+            if (currentVertexIndex >= currentPrimitive.size()) {
+                currentPrimitive.add(new VertexData());
+            }
+            
+            VertexData vertex = currentPrimitive.get(currentVertexIndex);
+            vertex.x = x;
+            vertex.y = y;
+            vertex.z = z;
+            vertex.hasPosition = true;
+            
+            currentVertexIndex++;
+            
+            // Check if we've completed a primitive
+            if (currentVertexIndex >= verticesPerPrimitive) {
+                // Check exclusion for the complete primitive
+                if (shouldExcludePrimitive()) {
+                    // Don't forward the vertices
+                    currentVertexIndex = 0;
+                } else {
+                    // Forward all vertices of this primitive
+                    for (int i = 0; i < verticesPerPrimitive; i++) {
+                        forwardVertex(currentPrimitive.get(i));
+                    }
+                    currentVertexIndex = 0;
+                }
+            }
+        } else {
+            // For strips, fans, and other modes, always forward immediately
+            // to avoid incomplete primitive issues
+            delegate.addVertex(x, y, z);
         }
         
         return this;
     }
     
-    private boolean shouldFlushPrimitive() {
-        if (mode == VertexFormat.Mode.LINE_STRIP || 
-            mode == VertexFormat.Mode.TRIANGLE_STRIP || 
-            mode == VertexFormat.Mode.TRIANGLE_FAN) {
-            return currentVertexIndex >= 3; // Flush after we have enough for a primitive
-        }
-        return currentVertexIndex >= verticesPerPrimitive;
-    }
-    
-    private void prepareForNextPrimitive() {
-        if (mode == VertexFormat.Mode.LINE_STRIP) {
-            // Keep last vertex for line strip
-            VertexData last = currentPrimitive.get(currentVertexIndex - 1).copy();
-            currentVertexIndex = 1;
-            currentPrimitive.set(0, last);
-        } else if (mode == VertexFormat.Mode.TRIANGLE_STRIP) {
-            // Keep last 2 vertices for triangle strip
-            VertexData secondLast = currentPrimitive.get(currentVertexIndex - 2).copy();
-            VertexData last = currentPrimitive.get(currentVertexIndex - 1).copy();
-            currentVertexIndex = 2;
-            currentPrimitive.set(0, secondLast);
-            currentPrimitive.set(1, last);
-        } else if (mode == VertexFormat.Mode.TRIANGLE_FAN) {
-            // Keep first and last vertex for triangle fan
-            VertexData first = currentPrimitive.get(0).copy();
-            VertexData last = currentPrimitive.get(currentVertexIndex - 1).copy();
-            currentVertexIndex = 2;
-            currentPrimitive.set(0, first);
-            currentPrimitive.set(1, last);
-        } else {
-            // Reset for other modes
-            currentVertexIndex = 0;
-        }
-    }
-    
-    private void flushPrimitive() {
-        if (currentVertexIndex == 0) return;
-        
+    private boolean shouldExcludePrimitive() {
         // Calculate primitive bounds
         float minX = Float.MAX_VALUE, minY = Float.MAX_VALUE;
         float maxX = Float.MIN_VALUE, maxY = Float.MIN_VALUE;
         
-        int verticesToCheck = getPrimitiveVertexCount();
-        for (int i = 0; i < verticesToCheck; i++) {
+        for (int i = 0; i < verticesPerPrimitive; i++) {
             VertexData v = currentPrimitive.get(i);
             if (v.hasPosition) {
                 minX = Math.min(minX, v.x);
@@ -113,52 +94,48 @@ public class ExclusionAreaVertexConsumer implements VertexConsumer {
             }
         }
         
-        // Check if primitive should be rendered
-        if (!exclusionStack.doesRectangleIntersectExclusion(minX, minY, maxX, maxY)) {
-            // Forward all vertices to the delegate
-            for (int i = 0; i < verticesToCheck; i++) {
-                VertexData v = currentPrimitive.get(i);
-                if (v.hasPosition) {
-                    delegate.addVertex(v.x, v.y, v.z);
-                    if (v.hasColor) delegate.setColor(v.colorR, v.colorG, v.colorB, v.colorA);
-                    if (v.hasUv) delegate.setUv(v.u, v.v);
-                    if (v.hasOverlay) delegate.setOverlay(v.overlay);
-                    if (v.hasLight) delegate.setLight(v.light);
-                    if (v.hasNormal) delegate.setNormal(v.nx, v.ny, v.nz);
-                }
-            }
-        }
+        return exclusionStack.doesRectangleIntersectExclusion(minX, minY, maxX, maxY);
     }
     
-    private int getPrimitiveVertexCount() {
-        return switch (mode) {
-            case LINES -> 2;
-            case TRIANGLES, TRIANGLE_STRIP, TRIANGLE_FAN -> 3;
-            case QUADS -> 4;
-            default -> currentVertexIndex;
-        };
+    private void forwardVertex(VertexData v) {
+        if (v.hasPosition) {
+            delegate.addVertex(v.x, v.y, v.z);
+            if (v.hasColor) delegate.setColor(v.colorR, v.colorG, v.colorB, v.colorA);
+            if (v.hasUv) delegate.setUv(v.u, v.v);
+            if (v.hasOverlay) delegate.setOverlay(v.overlay);
+            if (v.hasLight) delegate.setLight(v.light);
+            if (v.hasNormal) delegate.setNormal(v.nx, v.ny, v.nz);
+        }
     }
     
     @Override
     public VertexConsumer setColor(int r, int g, int b, int a) {
-        if (currentVertexIndex > 0 && currentVertexIndex <= currentPrimitive.size()) {
-            VertexData vertex = currentPrimitive.get(currentVertexIndex - 1);
-            vertex.colorR = r;
-            vertex.colorG = g;
-            vertex.colorB = b;
-            vertex.colorA = a;
-            vertex.hasColor = true;
+        if (mode == VertexFormat.Mode.QUADS || mode == VertexFormat.Mode.TRIANGLES || mode == VertexFormat.Mode.LINES) {
+            if (currentVertexIndex > 0 && currentVertexIndex <= currentPrimitive.size()) {
+                VertexData vertex = currentPrimitive.get(currentVertexIndex - 1);
+                vertex.colorR = r;
+                vertex.colorG = g;
+                vertex.colorB = b;
+                vertex.colorA = a;
+                vertex.hasColor = true;
+            }
+        } else {
+            delegate.setColor(r, g, b, a);
         }
         return this;
     }
     
     @Override
     public VertexConsumer setUv(float u, float v) {
-        if (currentVertexIndex > 0 && currentVertexIndex <= currentPrimitive.size()) {
-            VertexData vertex = currentPrimitive.get(currentVertexIndex - 1);
-            vertex.u = u;
-            vertex.v = v;
-            vertex.hasUv = true;
+        if (mode == VertexFormat.Mode.QUADS || mode == VertexFormat.Mode.TRIANGLES || mode == VertexFormat.Mode.LINES) {
+            if (currentVertexIndex > 0 && currentVertexIndex <= currentPrimitive.size()) {
+                VertexData vertex = currentPrimitive.get(currentVertexIndex - 1);
+                vertex.u = u;
+                vertex.v = v;
+                vertex.hasUv = true;
+            }
+        } else {
+            delegate.setUv(u, v);
         }
         return this;
     }
@@ -175,32 +152,44 @@ public class ExclusionAreaVertexConsumer implements VertexConsumer {
     
     @Override
     public VertexConsumer setOverlay(int overlay) {
-        if (currentVertexIndex > 0 && currentVertexIndex <= currentPrimitive.size()) {
-            VertexData vertex = currentPrimitive.get(currentVertexIndex - 1);
-            vertex.overlay = overlay;
-            vertex.hasOverlay = true;
+        if (mode == VertexFormat.Mode.QUADS || mode == VertexFormat.Mode.TRIANGLES || mode == VertexFormat.Mode.LINES) {
+            if (currentVertexIndex > 0 && currentVertexIndex <= currentPrimitive.size()) {
+                VertexData vertex = currentPrimitive.get(currentVertexIndex - 1);
+                vertex.overlay = overlay;
+                vertex.hasOverlay = true;
+            }
+        } else {
+            delegate.setOverlay(overlay);
         }
         return this;
     }
     
     @Override
     public VertexConsumer setLight(int light) {
-        if (currentVertexIndex > 0 && currentVertexIndex <= currentPrimitive.size()) {
-            VertexData vertex = currentPrimitive.get(currentVertexIndex - 1);
-            vertex.light = light;
-            vertex.hasLight = true;
+        if (mode == VertexFormat.Mode.QUADS || mode == VertexFormat.Mode.TRIANGLES || mode == VertexFormat.Mode.LINES) {
+            if (currentVertexIndex > 0 && currentVertexIndex <= currentPrimitive.size()) {
+                VertexData vertex = currentPrimitive.get(currentVertexIndex - 1);
+                vertex.light = light;
+                vertex.hasLight = true;
+            }
+        } else {
+            delegate.setLight(light);
         }
         return this;
     }
     
     @Override
     public VertexConsumer setNormal(float x, float y, float z) {
-        if (currentVertexIndex > 0 && currentVertexIndex <= currentPrimitive.size()) {
-            VertexData vertex = currentPrimitive.get(currentVertexIndex - 1);
-            vertex.nx = x;
-            vertex.ny = y;
-            vertex.nz = z;
-            vertex.hasNormal = true;
+        if (mode == VertexFormat.Mode.QUADS || mode == VertexFormat.Mode.TRIANGLES || mode == VertexFormat.Mode.LINES) {
+            if (currentVertexIndex > 0 && currentVertexIndex <= currentPrimitive.size()) {
+                VertexData vertex = currentPrimitive.get(currentVertexIndex - 1);
+                vertex.nx = x;
+                vertex.ny = y;
+                vertex.nz = z;
+                vertex.hasNormal = true;
+            }
+        } else {
+            delegate.setNormal(x, y, z);
         }
         return this;
     }
