@@ -6,8 +6,8 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.vertex.PoseStack;
 import de.keksuccino.fancymenu.customization.layer.ScreenCustomizationLayer;
 import de.keksuccino.fancymenu.customization.layer.ScreenCustomizationLayerHandler;
-import de.keksuccino.spiffyhud.SpiffyUtils;
 import de.keksuccino.spiffyhud.customization.SpiffyGui;
+import de.keksuccino.spiffyhud.customization.SpiffyOverlayScreen;
 import de.keksuccino.spiffyhud.customization.VanillaHudElements;
 import de.keksuccino.spiffyhud.customization.elements.eraser.EraserElement;
 import de.keksuccino.spiffyhud.customization.elements.overlayremover.OverlayRemoverElement;
@@ -58,23 +58,36 @@ public class MixinGui {
 
         // Applies all Eraser element areas to the GUI before rendering of Vanilla elements starts
         try {
-            ScreenCustomizationLayer layer = ScreenCustomizationLayerHandler.getLayerOfScreen(SpiffyUtils.DUMMY_SPIFFY_OVERLAY_SCREEN);
+            ScreenCustomizationLayer layer = this.spiffyGui.getLayer();
+            if (layer == null) layer = ScreenCustomizationLayerHandler.getLayerOfScreen(SpiffyOverlayScreen.DUMMY_INSTANCE);
             if (layer != null) {
-                layer.allElements.forEach(abstractElement -> {
-                    if ((abstractElement instanceof EraserElement eraser) && eraser.shouldRender() && (eraser.aggressionLevel == EraserElement.AggressionLevel.AGGRESSIVE)) {
-                        this.aggressionLevelAggressiveCount_Spiffy++;
-                        ExclusionAreaUtil.pushExclusionArea(graphics, eraser.getAbsoluteX(), eraser.getAbsoluteY(), eraser.getAbsoluteX() + eraser.getAbsoluteWidth(), eraser.getAbsoluteY() + eraser.getAbsoluteHeight());
+                ScreenCustomizationLayer finalLayer = layer;
+                Runnable task = () -> {
+                    try {
+                        finalLayer.allElements.forEach(abstractElement -> {
+                            if ((abstractElement instanceof EraserElement eraser) && eraser.shouldRender() && (eraser.aggressionLevel == EraserElement.AggressionLevel.AGGRESSIVE)) {
+                                this.aggressionLevelAggressiveCount_Spiffy++;
+                                ExclusionAreaUtil.pushExclusionArea(graphics, eraser.getAbsoluteX(), eraser.getAbsoluteY(), eraser.getAbsoluteX() + eraser.getAbsoluteWidth(), eraser.getAbsoluteY() + eraser.getAbsoluteHeight());
+                            }
+                        });
+                        finalLayer.allElements.forEach(abstractElement -> {
+                            if ((abstractElement instanceof EraserElement eraser) && eraser.shouldRender() && (eraser.aggressionLevel == EraserElement.AggressionLevel.NORMAL)) {
+                                this.aggressionLevelNormalCount_Spiffy++;
+                                ExclusionAreaUtil.pushExclusionArea(graphics, eraser.getAbsoluteX(), eraser.getAbsoluteY(), eraser.getAbsoluteX() + eraser.getAbsoluteWidth(), eraser.getAbsoluteY() + eraser.getAbsoluteHeight());
+                            }
+                        });
+                    } catch(Exception ex) {
+                        LOGGER_SPIFFY.error("[SPIFFY HUD] Failed to apply Eraser element areas to Gui! (IN TASK RUNNABLE)", ex);
                     }
-                });
-                layer.allElements.forEach(abstractElement -> {
-                    if ((abstractElement instanceof EraserElement eraser) && eraser.shouldRender() && (eraser.aggressionLevel == EraserElement.AggressionLevel.NORMAL)) {
-                        this.aggressionLevelNormalCount_Spiffy++;
-                        ExclusionAreaUtil.pushExclusionArea(graphics, eraser.getAbsoluteX(), eraser.getAbsoluteY(), eraser.getAbsoluteX() + eraser.getAbsoluteWidth(), eraser.getAbsoluteY() + eraser.getAbsoluteHeight());
-                    }
-                });
+                };
+                if (Minecraft.getInstance().screen instanceof SpiffyOverlayScreen) {
+                    task.run();
+                } else {
+                    this.spiffyGui.runLayerTask(task);
+                }
             }
         } catch (Exception ex) {
-            LOGGER_SPIFFY.error("[SPIFFY HUD] Failed to apply Eraser element areas to Gui!", ex);
+            LOGGER_SPIFFY.error("[SPIFFY HUD] Failed to apply Eraser element areas to Gui! (OUTSIDE TASK RUNNABLE)", ex);
         }
 
     }
@@ -87,7 +100,7 @@ public class MixinGui {
             this.aggressionLevelNormalCount_Spiffy--;
         }
 
-        // This will render Spiffy's overlay AFTER all Vanilla (and hopefully mod) elements
+        // This will render Spiffy's overlay AFTER all Vanilla elements
         if (!Minecraft.getInstance().options.hideGui) {
             spiffyGui.render(graphics, -10000000, -10000000, deltaTracker.getGameTimeDeltaTicks());
         }
