@@ -1,7 +1,10 @@
 CHANGELOG | SPIFFYHUD v3.1.0
 
-- The "Player NBT Data" placeholder now has a refresh cooldown value to control how often the placeholder should update the NBT data
-  - Setting higher cooldowns means better performance, but the returned NBT data is not as "realtime" as with lower cooldowns (cooldown of 100ms normally is best for most NBT data)
-  - You need to add a new placeholder of that type to see the new cooldown value (existing placeholders still work, but have a cooldown of 0ms by default)
-  - NOTE: You can use this placeholder to get data of OTHER MODS, since many mods add their custom player stuff to the player's NBT, so it should be possible to get some HUD stuff from other mods with it)
+- Added "Eraser" element that allows you to hide/erase elements from the HUD without actually hiding the HUD element
+  - This is useful to hide HUD elements from other mods that are not customizable with SpiffyHUD
+  - The eraser works only when fully covering the area of the HUD element with it (the eraser needs to 100% cover the area where the HUD element gets rendered in)
+  - Since you can't see mod elements in the editor, you basically need to guess where the element will be in the actual HUD
+  - The eraser has two aggression modes (Normal & Aggressive)
+    - Normal mode will try to only hide non-Spiffy elements
+    - Aggressive mode will try to erase EVERYTHING, including Spiffy elements, which should get used in cases where Normal is not enough to hide the target element
 - 
