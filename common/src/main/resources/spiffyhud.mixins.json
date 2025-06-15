@@ -18,6 +18,7 @@
     "client.MixinLivingEntityRenderer",
     "client.MixinMinecraft",
     "client.MixinModelBlockRenderer",
+    "client.MixinMouseHandler",
     "client.MixinScreenCustomization",
     "client.MixinSpectatorGui",
     "client.MixinVanillaWidgetEditorElement"

@@ -17,6 +17,7 @@ public class Placeholders {
     public static final SlotItemDisplayNamePlaceholder SLOT_ITEM_DISPLAY_NAME = new SlotItemDisplayNamePlaceholder();
     public static final ActionBarMessageTimePlaceholder ACTION_BAR_MESSAGE_TIME = new ActionBarMessageTimePlaceholder();
     public static final HighlightedItemTimePlaceholder HIGHLIGHTED_ITEM_TIME = new HighlightedItemTimePlaceholder();
+    public static final ClicksPerSecondPlaceholder CLICKS_PER_SECOND = new ClicksPerSecondPlaceholder();
 
     public static void registerAll() {
 
@@ -33,6 +34,7 @@ public class Placeholders {
         PlaceholderRegistry.register(SLOT_ITEM_DISPLAY_NAME);
         PlaceholderRegistry.register(ACTION_BAR_MESSAGE_TIME);
         PlaceholderRegistry.register(HIGHLIGHTED_ITEM_TIME);
+        PlaceholderRegistry.register(CLICKS_PER_SECOND);
 
     }
 

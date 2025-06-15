@@ -108,6 +108,8 @@
   "spiffyhud.placeholders.action_bar_message_time.desc": "The time left in ticks that the original Vanilla\naction bar message gets displayed.",
   "spiffyhud.placeholders.highlighted_item_time": "Highlighted Item Time",
   "spiffyhud.placeholders.highlighted_item_time.desc": "The time left in ticks that the original Vanilla\nhighlighted item's name gets displayed above the hotbar.",
+  "spiffyhud.placeholders.clicks_per_second": "Clicks Per Second",
+  "spiffyhud.placeholders.clicks_per_second.desc": "Returns the number of left mouse button clicks\nperformed in the last second.\nUseful for displaying CPS (Clicks Per Second) counters.",
   "spiffyhud.requirements.is_player_in_structure": "Is Player In Structure",
   "spiffyhud.requirements.is_player_in_structure.desc": "Checks if the player is currently in a specific structure type.\n§xSpiffy needs to be installed on the server for this to work!",
   "spiffyhud.requirements.is_player_in_structure.key": "Structure key to check for:",
