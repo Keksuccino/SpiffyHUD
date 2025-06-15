@@ -12,8 +12,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.lang.ref.Reference;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
@@ -29,14 +27,42 @@ public class InventoryItemCountPlaceholder extends Placeholder {
         String itemKey = dps.values.get("item");
         
         if ((itemKey != null) && (Minecraft.getInstance().player != null)) {
+            int totalCount = 0;
+            
+            // If item key is empty, count ALL items
+            if (itemKey.isEmpty()) {
+                // Count all items in main inventory (0-35)
+                for (int i = 0; i < 36; i++) {
+                    ItemStack stack = Minecraft.getInstance().player.getInventory().getItem(i);
+                    if (!stack.isEmpty()) {
+                        totalCount += stack.getCount();
+                    }
+                }
+                
+                // Count all items in armor slots (36-39)
+                for (int i = 36; i < 40; i++) {
+                    ItemStack stack = Minecraft.getInstance().player.getInventory().getItem(i);
+                    if (!stack.isEmpty()) {
+                        totalCount += stack.getCount();
+                    }
+                }
+                
+                // Count all items in offhand slot (40)
+                ItemStack offhandStack = Minecraft.getInstance().player.getInventory().getItem(40);
+                if (!offhandStack.isEmpty()) {
+                    totalCount += offhandStack.getCount();
+                }
+                
+                return String.valueOf(totalCount);
+            }
+            
+            // Otherwise, count specific item type
             try {
                 ResourceLocation itemId = ResourceLocation.parse(itemKey);
                 Optional<Holder.Reference<Item>> optional = BuiltInRegistries.ITEM.get(itemId);
                 Item targetItem = ((optional != null) && optional.isPresent()) ? optional.get().value() : null;
                 
                 if (targetItem != null) {
-                    int totalCount = 0;
-                    
                     // Count items in main inventory (0-35)
                     for (int i = 0; i < 36; i++) {
                         ItemStack stack = Minecraft.getInstance().player.getInventory().getItem(i);

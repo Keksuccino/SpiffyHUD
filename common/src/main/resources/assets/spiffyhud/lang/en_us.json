@@ -129,5 +129,5 @@
   "spiffyhud.placeholders.slot_item_count": "Slot Item Count",
   "spiffyhud.placeholders.slot_item_count.desc": "Gets the stack size of items in a specific slot.\nReturns '0' if the slot is empty.\n\nExample outputs:\n- Full stack of blocks: '64'\n- Half stack: '32'\n- Single item: '1'",
   "spiffyhud.placeholders.inventory_item_count": "Inventory Item Count",
-  "spiffyhud.placeholders.inventory_item_count.desc": "Counts all items of a specific type in the entire inventory.\nScans main inventory, armor slots, and offhand slot.\n\nExample usage:\n- item='minecraft:diamond' returns total diamonds\n- item='minecraft:arrow' returns total arrows\n- item='minecraft:golden_apple' returns total golden apples"
+  "spiffyhud.placeholders.inventory_item_count.desc": "Counts items in the entire inventory.\nScans main inventory, armor slots, and offhand slot.\n\nLeave 'item' empty to count ALL items in inventory.\n\nExample usage:\n- item='' returns total count of all items\n- item='minecraft:diamond' returns total diamonds\n- item='minecraft:arrow' returns total arrows\n- item='minecraft:golden_apple' returns total golden apples"
 }
