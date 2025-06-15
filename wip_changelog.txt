@@ -7,4 +7,6 @@ CHANGELOG | SPIFFYHUD v3.1.0
   - The eraser has two aggression modes (Normal & Aggressive)
     - Normal mode will try to only hide non-Spiffy elements
     - Aggressive mode will try to erase EVERYTHING, including Spiffy elements, which should get used in cases where Normal is not enough to hide the target element
+- Added "Slot Item Durability" placeholder to get durability information from items in specific inventory slots with multiple format options (current, max, damage, current_max, percentage)
+- Added "Clicks Per Second" placeholder that returns the user's left-clicks per second
 - 
