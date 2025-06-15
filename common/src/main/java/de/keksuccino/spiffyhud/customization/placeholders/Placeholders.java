@@ -15,6 +15,7 @@ public class Placeholders {
     public static final PlayerNbtDataPlaceholder PLAYER_NBT_DATA = new PlayerNbtDataPlaceholder();
     public static final ActionBarMessagePlaceholder ACTION_BAR_MESSAGE = new ActionBarMessagePlaceholder();
     public static final SlotItemDisplayNamePlaceholder SLOT_ITEM_DISPLAY_NAME = new SlotItemDisplayNamePlaceholder();
+    public static final SlotItemDurabilityPlaceholder SLOT_ITEM_DURABILITY = new SlotItemDurabilityPlaceholder();
     public static final ActionBarMessageTimePlaceholder ACTION_BAR_MESSAGE_TIME = new ActionBarMessageTimePlaceholder();
     public static final HighlightedItemTimePlaceholder HIGHLIGHTED_ITEM_TIME = new HighlightedItemTimePlaceholder();
     public static final ClicksPerSecondPlaceholder CLICKS_PER_SECOND = new ClicksPerSecondPlaceholder();
@@ -32,6 +33,7 @@ public class Placeholders {
         PlaceholderRegistry.register(PLAYER_NBT_DATA);
         PlaceholderRegistry.register(ACTION_BAR_MESSAGE);
         PlaceholderRegistry.register(SLOT_ITEM_DISPLAY_NAME);
+        PlaceholderRegistry.register(SLOT_ITEM_DURABILITY);
         PlaceholderRegistry.register(ACTION_BAR_MESSAGE_TIME);
         PlaceholderRegistry.register(HIGHLIGHTED_ITEM_TIME);
         PlaceholderRegistry.register(CLICKS_PER_SECOND);
