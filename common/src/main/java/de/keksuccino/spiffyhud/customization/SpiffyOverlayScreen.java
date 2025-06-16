@@ -316,7 +316,7 @@ public class SpiffyOverlayScreen extends Screen {
         return new SpiffyRendererWidget(textX - 2, textY - 2, messageWidth + 4, font.lineHeight + 4, (graphics, mX, mY, partial, gx, gy, gwidth, gheight, widget) -> {
             RenderSystem.enableBlend();
             // Use a dummy animated color calculation
-            int animatedTextColor = Mth.hsvToRgb((60 - partial) / 50.0f, 0.7f, 0.6f) & 0xFFFFFF;
+            int animatedTextColor = Mth.hsvToRgb(Mth.clamp((60 - partial) / 50.0f, 0.0f, 1.0f), 0.7f, 0.6f) & 0xFFFFFF;
             graphics.drawString(Minecraft.getInstance().font, message, textX, textY, animatedTextColor);
             RenderingUtils.resetShaderColor(graphics);
         }).setWidgetIdentifierFancyMenu(VanillaHudElements.OVERLAY_MESSAGE_IDENTIFIER);
