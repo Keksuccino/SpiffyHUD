@@ -3,28 +3,23 @@ package de.keksuccino.spiffyhud.mixin.mixins.neoforge.client;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import de.keksuccino.spiffyhud.customization.SpiffyGui;
+import de.keksuccino.spiffyhud.customization.SpiffyRenderer;
 import de.keksuccino.spiffyhud.customization.VanillaHudElements;
 import de.keksuccino.spiffyhud.customization.elements.overlayremover.OverlayRemoverElement;
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.PlayerRideableJumping;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.scores.Objective;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -35,9 +30,6 @@ public class MixinGui {
     @Shadow
     private Component title;
     @Shadow private Component subtitle;
-
-    @Unique
-    private SpiffyGui spiffyGui = null;
 
     @Shadow @Final
     private static ResourceLocation PUMPKIN_BLUR_LOCATION;
@@ -50,16 +42,17 @@ public class MixinGui {
     @Inject(method = "renderHotbar", at = @At(value = "HEAD"), cancellable = true)
     private void before_renderHotbar_Spiffy(GuiGraphics graphics, DeltaTracker deltaTracker, CallbackInfo info) {
 
-        if (this.spiffyGui == null) this.spiffyGui = SpiffyGui.INSTANCE;
+        SpiffyRenderer.render(graphics, deltaTracker);
 
-        if (!Minecraft.getInstance().options.hideGui) {
-            spiffyGui.render(graphics, -10000000, -10000000, deltaTracker.getGameTimeDeltaTicks());
-            RenderSystem.enableBlend();
-            RenderSystem.enableDepthTest();
-        }
+        SpiffyRenderer.startStencil(graphics);
 
         if (VanillaHudElements.isHidden(VanillaHudElements.HOTBAR_IDENTIFIER)) info.cancel();
 
+    }
+
+    @Inject(method = "render", at = @At("RETURN"))
+    private void after_render_Spiffy(GuiGraphics graphics, DeltaTracker deltaTracker, CallbackInfo info) {
+        SpiffyRenderer.finishStencil(graphics);
     }
 
     /**

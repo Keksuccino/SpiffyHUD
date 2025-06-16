@@ -6,6 +6,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import de.keksuccino.spiffyhud.customization.SpiffyGui;
+import de.keksuccino.spiffyhud.customization.SpiffyRenderer;
 import de.keksuccino.spiffyhud.customization.VanillaHudElements;
 import de.keksuccino.spiffyhud.customization.elements.overlayremover.OverlayRemoverElement;
 import net.minecraft.client.DeltaTracker;
@@ -36,9 +37,6 @@ public class MixinGui {
     private Component title;
     @Shadow private Component subtitle;
 
-    @Unique
-    private SpiffyGui spiffyGui = null;
-
     @Shadow @Final
     private static ResourceLocation PUMPKIN_BLUR_LOCATION;
 
@@ -50,16 +48,17 @@ public class MixinGui {
     @Inject(method = "renderHotbarAndDecorations", at = @At(value = "HEAD"), cancellable = true)
     private void before_renderHotbarAndDecorations_Spiffy(GuiGraphics graphics, DeltaTracker deltaTracker, CallbackInfo info) {
 
-        if (this.spiffyGui == null) this.spiffyGui = SpiffyGui.INSTANCE;
+        SpiffyRenderer.render(graphics, deltaTracker);
 
-        if (!Minecraft.getInstance().options.hideGui) {
-            spiffyGui.render(graphics, -10000000, -10000000, deltaTracker.getGameTimeDeltaTicks());
-            RenderSystem.enableBlend();
-            RenderSystem.enableDepthTest();
-        }
+        SpiffyRenderer.startStencil(graphics);
 
         if (VanillaHudElements.isHidden(VanillaHudElements.HOTBAR_IDENTIFIER)) info.cancel();
 
+    }
+
+    @Inject(method = "render", at = @At("RETURN"))
+    private void after_render_Spiffy(GuiGraphics graphics, DeltaTracker deltaTracker, CallbackInfo info) {
+        SpiffyRenderer.finishStencil(graphics);
     }
 
     /**

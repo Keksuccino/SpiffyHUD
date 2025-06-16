@@ -2,6 +2,7 @@ package de.keksuccino.spiffyhud.customization.elements;
 
 import de.keksuccino.fancymenu.customization.element.ElementRegistry;
 import de.keksuccino.spiffyhud.customization.elements.chatcustomizer.ChatCustomizerElementBuilder;
+import de.keksuccino.spiffyhud.customization.elements.huderaser.HudEraserElementBuilder;
 import de.keksuccino.spiffyhud.customization.elements.overlayremover.OverlayRemoverElementBuilder;
 import de.keksuccino.spiffyhud.customization.elements.player.PlayerElementBuilder;
 import de.keksuccino.spiffyhud.customization.elements.playernbthelper.PlayerNbtHelperElementBuilder;
@@ -41,6 +42,7 @@ public class Elements {
     public static final ChatCustomizerElementBuilder CHAT_CUSTOMIZER = new ChatCustomizerElementBuilder();
     public static final PlayerNbtHelperElementBuilder PLAYER_NBT_HELPER = new PlayerNbtHelperElementBuilder();
     public static final SingleLineTextElementBuilder SINGLE_LINE_TEXT = new SingleLineTextElementBuilder();
+    public static final HudEraserElementBuilder HUD_ERASER = new HudEraserElementBuilder();
 
     public static void registerAll() {
 
@@ -63,6 +65,7 @@ public class Elements {
         ElementRegistry.register(CHAT_CUSTOMIZER);
         ElementRegistry.register(PLAYER_NBT_HELPER);
         ElementRegistry.register(SINGLE_LINE_TEXT);
+        ElementRegistry.register(HUD_ERASER);
 
     }
 

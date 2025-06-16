@@ -40,6 +40,8 @@ public class SpiffyOverlayScreen extends Screen {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
+    public static final SpiffyOverlayScreen DUMMY_INSTANCE = new SpiffyOverlayScreen(true);
+
     private static final ResourceLocation CROSSHAIR_SPRITE = ResourceLocation.withDefaultNamespace("hud/crosshair");
     private static final ResourceLocation CROSSHAIR_ATTACK_INDICATOR_BACKGROUND_SPRITE = ResourceLocation.withDefaultNamespace("hud/crosshair_attack_indicator_background");
     private static final ResourceLocation CROSSHAIR_ATTACK_INDICATOR_PROGRESS_SPRITE = ResourceLocation.withDefaultNamespace("hud/crosshair_attack_indicator_progress");
@@ -324,7 +326,7 @@ public class SpiffyOverlayScreen extends Screen {
             // Update the animated tick value by incrementing it
             animatedTickHolder.set(animatedTickHolder.get() + 0.005f);
             // Use the animated tick value to create a color cycle
-            int animatedTextColor = Mth.hsvToRgb(animatedTickHolder.get() % 1.0f, 0.7f, 0.6f) | 0xFF000000;
+            int animatedTextColor = Mth.hsvToRgb(Mth.clamp(animatedTickHolder.get() % 1.0f, 0.0f, 1.0f), 0.7f, 0.6f) | 0xFF000000;
             graphics.drawString(Minecraft.getInstance().font, message, textX, textY, animatedTextColor);
             RenderingUtils.resetShaderColor(graphics);
         }).setWidgetIdentifierFancyMenu(VanillaHudElements.OVERLAY_MESSAGE_IDENTIFIER);

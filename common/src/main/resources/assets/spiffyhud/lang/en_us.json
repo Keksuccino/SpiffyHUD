@@ -96,7 +96,7 @@
   "spiffyhud.elements.player_nbt_helper.paths": "List With ALL Player NBT Data Paths",
   "spiffyhud.elements.player_nbt_helper.paths.headline": "# Player NBT Data Paths",
   "spiffyhud.placeholders.player_nbt_data": "Player NBT Data",
-  "spiffyhud.placeholders.player_nbt_data.desc": "Gets an NBT data value from the player.\nUses NBT data paths to get the value.\nTo see a list of all NBT data paths, please\nadd an \"Player NBT Helper\" element to your layout.",
+  "spiffyhud.placeholders.player_nbt_data.desc": "Gets an NBT data value from the player.\nUses NBT data paths to get the value.\nTo see a list of all NBT data paths, please\nadd an \"Player NBT Helper\" element to your layout.\n\nThe \"refresh cooldown\" is for controlling how often\nthe placeholder should update its NBT data cache.",
   "spiffyhud.elements.single_line_text": "[HUD] Single-Line Text",
   "spiffyhud.elements.single_line_text.desc": "A simple single-line text that supports\nMinecraft's JSON component text system.\nThat's the system used for the /tellraw command,\nso you can simply use a /tellraw online generator\nto generate text that should get displayed.",
   "spiffyhud.elements.single_line_text.text": "Set Text",
@@ -112,5 +112,7 @@
   "spiffyhud.requirements.is_player_in_structure.desc": "Checks if the player is currently in a specific structure type.\n§xSpiffy needs to be installed on the server for this to work!",
   "spiffyhud.requirements.is_player_in_structure.key": "Structure key to check for:",
   "spiffyhud.elements.vanillalike.attack_indicator": "[HUD] Vanilla-Like Attack Indicator",
-  "spiffyhud.elements.vanillalike.attack_indicator.is_hotbar": "Use Hotbar Indicator Type: %s"
+  "spiffyhud.elements.vanillalike.attack_indicator.is_hotbar": "Use Hotbar Indicator Type: %s",
+  "spiffyhud.elements.hud_eraser": "[HUD] Eraser",
+  "spiffyhud.elements.hud_eraser.desc": "The eraser makes it possible to erase parts of\nthe default HUD without needing to hide an HUD element.\n\nThis is especially useful if you want to remove HUD elements\nof other mods that Spiffy can't customize/hide.\n\nThe default HUD will NOT RENDER at the position/area of the eraser element.\n\nThe eraser will ignore your custom elements added with Spiffy."
 }
