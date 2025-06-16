@@ -12,5 +12,6 @@ CHANGELOG | SPIFFYHUD v3.1.0
 - Added "Player Armor Toughness" placeholder to get the player's total armor toughness value
 - Added "Slot Item Count" placeholder to get the stack size of items in specific inventory slots  
 - Added "Inventory Item Count" placeholder to count total items of a specific type across the entire inventory
-- Fixed Vanilla-like hotbar renders items twice
+- Fixed Vanilla-like hotbar renders items twice (#31)
+- Fixed crash related to Overlay Message widget's color calculation (#36)
 - 
