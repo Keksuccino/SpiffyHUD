@@ -71,7 +71,7 @@ public class SpiffyGui implements Renderable {
     }
 
     @Nullable
-    public ScreenCustomizationLayer getLayer() {
+    private ScreenCustomizationLayer getLayer() {
         if (spiffyOverlayScreen == null) return null;
         ScreenCustomizationLayer l = ScreenCustomizationLayerHandler.getLayerOfScreen(spiffyOverlayScreen);
         if (l != null) l.loadEarly = true;
@@ -128,7 +128,7 @@ public class SpiffyGui implements Renderable {
         });
     }
 
-    public void runLayerTask(@NotNull Runnable run) {
+    private void runLayerTask(@NotNull Runnable run) {
         try {
             boolean customizationEnabled = ScreenCustomization.isScreenCustomizationEnabled();
             ScreenCustomization.setScreenCustomizationEnabled(true);

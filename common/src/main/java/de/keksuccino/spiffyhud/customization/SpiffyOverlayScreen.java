@@ -321,7 +321,7 @@ public class SpiffyOverlayScreen extends Screen {
             // Update the animated tick value by incrementing it
             animatedTickHolder.set(animatedTickHolder.get() + 0.005f);
             // Use the animated tick value to create a color cycle
-            int animatedTextColor = Mth.hsvToRgb(Mth.clamp(animatedTickHolder.get() % 1.0f, 0.0f, 1.0f), 0.7f, 0.6f) | 0xFF000000;
+            int animatedTextColor = Mth.hsvToRgb(animatedTickHolder.get() % 1.0f, 0.7f, 0.6f) | 0xFF000000;
             graphics.drawString(Minecraft.getInstance().font, message, textX, textY, animatedTextColor);
         }).setWidgetIdentifierFancyMenu(VanillaHudElements.OVERLAY_MESSAGE_IDENTIFIER);
     }
