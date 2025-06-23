@@ -239,9 +239,9 @@ public class VanillaLikeScoreboardElement extends AbstractElement {
             
             // Draw backgrounds in two calls (like vanilla)
             // First: Title background
-            guiGraphics.fill(RenderType.gui(), effectiveBaseX - 2, titleTop, rightX, contentTop, opacityAdjustedTitleBackground);
+            guiGraphics.fill(effectiveBaseX - 2, titleTop, rightX, contentTop, opacityAdjustedTitleBackground);
             // Second: Content background 
-            guiGraphics.fill(RenderType.gui(), effectiveBaseX - 2, contentTop, rightX, effectiveBaseY, opacityAdjustedLineBackground);
+            guiGraphics.fill(effectiveBaseX - 2, contentTop, rightX, effectiveBaseY, opacityAdjustedLineBackground);
             
             // Draw title centered
             Font font = this.getFont();

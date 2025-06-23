@@ -11,6 +11,7 @@ import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
@@ -303,8 +304,7 @@ public class VanillaLikePlayerHealthElement extends AbstractElement {
                 
         if (shouldMirror) {
             SpiffyRenderUtils.blitSpriteMirrored(
-                graphics, 
-                RenderType::guiTextured,
+                graphics,
                 spriteLocation, 
                 x, 
                 y, 
@@ -314,7 +314,7 @@ public class VanillaLikePlayerHealthElement extends AbstractElement {
             );
         } else {
             graphics.blitSprite(
-                RenderType::guiTextured,
+                RenderPipelines.GUI_TEXTURED,
                 spriteLocation, 
                 x, 
                 y, 
@@ -347,8 +347,7 @@ public class VanillaLikePlayerHealthElement extends AbstractElement {
                 
         if (shouldMirror) {
             SpiffyRenderUtils.blitSpriteMirrored(
-                graphics, 
-                RenderType::guiTextured,
+                graphics,
                 spriteLocation, 
                 x, 
                 y, 
@@ -358,7 +357,7 @@ public class VanillaLikePlayerHealthElement extends AbstractElement {
             );
         } else {
             graphics.blitSprite(
-                RenderType::guiTextured,
+                RenderPipelines.GUI_TEXTURED,
                 spriteLocation, 
                 x, 
                 y, 

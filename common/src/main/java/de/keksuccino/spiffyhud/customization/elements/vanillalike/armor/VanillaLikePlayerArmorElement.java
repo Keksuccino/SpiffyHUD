@@ -8,6 +8,7 @@ import de.keksuccino.spiffyhud.util.SpiffyAlignment;
 import de.keksuccino.spiffyhud.util.rendering.SpiffyRenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
@@ -144,7 +145,6 @@ public class VanillaLikePlayerArmorElement extends AbstractElement {
             if (isRightAligned) {
                 SpiffyRenderUtils.blitSpriteMirrored(
                     graphics,
-                    RenderType::guiTextured,
                     armorSprite,
                     iconX,
                     iconY,
@@ -154,7 +154,7 @@ public class VanillaLikePlayerArmorElement extends AbstractElement {
                 );
             } else {
                 graphics.blitSprite(
-                    RenderType::guiTextured,
+                    RenderPipelines.GUI_TEXTURED,
                     armorSprite,
                     iconX,
                     iconY,

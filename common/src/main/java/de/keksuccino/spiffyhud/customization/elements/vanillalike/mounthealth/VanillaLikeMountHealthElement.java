@@ -8,6 +8,7 @@ import de.keksuccino.spiffyhud.util.SpiffyAlignment;
 import de.keksuccino.spiffyhud.util.rendering.SpiffyRenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
@@ -198,8 +199,7 @@ public class VanillaLikeMountHealthElement extends AbstractElement {
                     // Draw empty heart background.
                     if (mirrorHearts) {
                         SpiffyRenderUtils.blitSpriteMirrored(
-                            graphics, 
-                            RenderType::guiTextured,
+                            graphics,
                             HEART_VEHICLE_CONTAINER_SPRITE, 
                             heartX, 
                             heartY, 
@@ -209,7 +209,7 @@ public class VanillaLikeMountHealthElement extends AbstractElement {
                         );
                     } else {
                         graphics.blitSprite(
-                            RenderType::guiTextured,
+                            RenderPipelines.GUI_TEXTURED,
                             HEART_VEHICLE_CONTAINER_SPRITE, 
                             heartX, 
                             heartY, 
@@ -224,8 +224,7 @@ public class VanillaLikeMountHealthElement extends AbstractElement {
                         // Render full heart.
                         if (mirrorHearts) {
                             SpiffyRenderUtils.blitSpriteMirrored(
-                                graphics, 
-                                RenderType::guiTextured,
+                                graphics,
                                 HEART_VEHICLE_FULL_SPRITE, 
                                 heartX, 
                                 heartY, 
@@ -235,7 +234,7 @@ public class VanillaLikeMountHealthElement extends AbstractElement {
                             );
                         } else {
                             graphics.blitSprite(
-                                RenderType::guiTextured,
+                                RenderPipelines.GUI_TEXTURED,
                                 HEART_VEHICLE_FULL_SPRITE, 
                                 heartX, 
                                 heartY, 
@@ -248,8 +247,7 @@ public class VanillaLikeMountHealthElement extends AbstractElement {
                         // Render half heart.
                         if (mirrorHearts) {
                             SpiffyRenderUtils.blitSpriteMirrored(
-                                graphics, 
-                                RenderType::guiTextured,
+                                graphics,
                                 HEART_VEHICLE_HALF_SPRITE, 
                                 heartX, 
                                 heartY, 
@@ -259,7 +257,7 @@ public class VanillaLikeMountHealthElement extends AbstractElement {
                             );
                         } else {
                             graphics.blitSprite(
-                                RenderType::guiTextured,
+                                RenderPipelines.GUI_TEXTURED,
                                 HEART_VEHICLE_HALF_SPRITE, 
                                 heartX, 
                                 heartY, 

@@ -9,6 +9,7 @@ import de.keksuccino.spiffyhud.util.rendering.SpiffyRenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.LerpingBossEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -235,9 +236,9 @@ public class VanillaLikeBossOverlayElement extends AbstractElement {
      * @param color            The color to use for rendering (includes opacity).
      */
     private void drawBar(GuiGraphics graphics, int barX, int barY, BossEvent bossEvent, int progress, ResourceLocation[] barSprites, ResourceLocation[] overlaySprites, int color) {
-        SpiffyRenderUtils.blitSprite(graphics, RenderType::guiTextured, barSprites[bossEvent.getColor().ordinal()], BAR_WIDTH, BAR_HEIGHT, 0, 0, barX, barY, progress, BAR_HEIGHT, color);
+        SpiffyRenderUtils.blitSprite(graphics, barSprites[bossEvent.getColor().ordinal()], BAR_WIDTH, BAR_HEIGHT, 0, 0, barX, barY, progress, BAR_HEIGHT, color);
         if (bossEvent.getOverlay() != BossBarOverlay.PROGRESS) {
-            SpiffyRenderUtils.blitSprite(graphics, RenderType::guiTextured, overlaySprites[bossEvent.getOverlay().ordinal() - 1], BAR_WIDTH, BAR_HEIGHT, 0, 0, barX, barY, progress, BAR_HEIGHT, color);
+            SpiffyRenderUtils.blitSprite(graphics, overlaySprites[bossEvent.getOverlay().ordinal() - 1], BAR_WIDTH, BAR_HEIGHT, 0, 0, barX, barY, progress, BAR_HEIGHT, color);
         }
     }
 

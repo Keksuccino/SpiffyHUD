@@ -8,6 +8,7 @@ import de.keksuccino.spiffyhud.util.SpiffyAlignment;
 import de.keksuccino.spiffyhud.util.rendering.SpiffyRenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
@@ -140,8 +141,7 @@ public class VanillaLikePlayerFoodElement extends AbstractElement {
             if (mirrorIcons) {
                 // Draw mirrored icons using updated method signature for 1.21.5
                 SpiffyRenderUtils.blitSpriteMirrored(
-                    graphics, 
-                    RenderType::guiTextured,
+                    graphics,
                     emptySprite, 
                     iconX, 
                     iconY, 
@@ -153,8 +153,7 @@ public class VanillaLikePlayerFoodElement extends AbstractElement {
                 if (i * 2 + 1 < foodLevel) {
                     // Full food icon
                     SpiffyRenderUtils.blitSpriteMirrored(
-                        graphics, 
-                        RenderType::guiTextured,
+                        graphics,
                         fullSprite, 
                         iconX, 
                         iconY, 
@@ -165,8 +164,7 @@ public class VanillaLikePlayerFoodElement extends AbstractElement {
                 } else if (i * 2 + 1 == foodLevel) {
                     // Half food icon
                     SpiffyRenderUtils.blitSpriteMirrored(
-                        graphics, 
-                        RenderType::guiTextured,
+                        graphics,
                         halfSprite, 
                         iconX, 
                         iconY, 
@@ -178,7 +176,7 @@ public class VanillaLikePlayerFoodElement extends AbstractElement {
             } else {
                 // Normal (non-mirrored) drawing using sprites with updated method signature for 1.21.5
                 graphics.blitSprite(
-                    RenderType::guiTextured,
+                    RenderPipelines.GUI_TEXTURED,
                     emptySprite, 
                     iconX, 
                     iconY, 
@@ -190,7 +188,7 @@ public class VanillaLikePlayerFoodElement extends AbstractElement {
                 if (i * 2 + 1 < foodLevel) {
                     // Full food icon
                     graphics.blitSprite(
-                        RenderType::guiTextured,
+                        RenderPipelines.GUI_TEXTURED,
                         fullSprite, 
                         iconX, 
                         iconY, 
@@ -201,7 +199,7 @@ public class VanillaLikePlayerFoodElement extends AbstractElement {
                 } else if (i * 2 + 1 == foodLevel) {
                     // Half food icon
                     graphics.blitSprite(
-                        RenderType::guiTextured,
+                        RenderPipelines.GUI_TEXTURED,
                         halfSprite, 
                         iconX, 
                         iconY, 

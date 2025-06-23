@@ -7,6 +7,7 @@ import de.keksuccino.spiffyhud.util.rendering.BlockRenderingUtils;
 import de.keksuccino.spiffyhud.util.rendering.ItemRenderingUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
@@ -76,28 +77,28 @@ public class VanillaLikeHotbarElement extends AbstractElement {
         HumanoidArm oppositeMainArm = player.getMainArm().getOpposite();
 
         // Draw the hotbar background using the element's bounds.
-        graphics.blitSprite(RenderType::guiTextured, HOTBAR_SPRITE, elementX, elementY, elementWidth, elementHeight, color);
+        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, HOTBAR_SPRITE, elementX, elementY, elementWidth, elementHeight, color);
 
         // Draw the selection highlight around the currently selected hotbar slot.
         int selectedSlot = player.getInventory().getSelectedSlot();
         // The highlight is drawn with a 1-pixel offset relative to the hotbar background.
-        graphics.blitSprite(RenderType::guiTextured, HOTBAR_SELECTION_SPRITE, elementX - 1 + selectedSlot * 20, elementY - 1, 24, 23, color);
+        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, HOTBAR_SELECTION_SPRITE, elementX - 1 + selectedSlot * 20, elementY - 1, 24, 23, color);
 
         // Render offhand icons if applicable.
         if (!isEditor()) {
             if (!offhandItem.isEmpty()) {
                 if (oppositeMainArm == HumanoidArm.LEFT) {
                     // Render offhand icon on the left side of the hotbar.
-                    graphics.blitSprite(RenderType::guiTextured, HOTBAR_OFFHAND_LEFT_SPRITE, elementX - 29, elementY - 1, 29, 24, color);
+                    graphics.blitSprite(RenderPipelines.GUI_TEXTURED, HOTBAR_OFFHAND_LEFT_SPRITE, elementX - 29, elementY - 1, 29, 24, color);
                 } else {
                     // Render offhand icon on the right side of the hotbar.
-                    graphics.blitSprite(RenderType::guiTextured, HOTBAR_OFFHAND_RIGHT_SPRITE, elementX + elementWidth, elementY - 1, 29, 24, color);
+                    graphics.blitSprite(RenderPipelines.GUI_TEXTURED, HOTBAR_OFFHAND_RIGHT_SPRITE, elementX + elementWidth, elementY - 1, 29, 24, color);
                 }
             }
         } else {
             // In editor mode, display both offhand icons for demonstration purposes.
-            graphics.blitSprite(RenderType::guiTextured, HOTBAR_OFFHAND_LEFT_SPRITE, elementX - 29, elementY - 1, 29, 24, color);
-            graphics.blitSprite(RenderType::guiTextured, HOTBAR_OFFHAND_RIGHT_SPRITE, elementX + elementWidth, elementY - 1, 29, 24, color);
+            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, HOTBAR_OFFHAND_LEFT_SPRITE, elementX - 29, elementY - 1, 29, 24, color);
+            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, HOTBAR_OFFHAND_RIGHT_SPRITE, elementX + elementWidth, elementY - 1, 29, 24, color);
         }
 
         // Calculate starting positions for rendering the 9 hotbar slots.
@@ -144,13 +145,13 @@ public class VanillaLikeHotbarElement extends AbstractElement {
         if (popTimeRemaining > 0.0f) {
             // Calculate scaling factor based on the pop animation.
             float scaleFactor = 1.0f + popTimeRemaining / 5.0f;
-            graphics.pose().pushPose();
+            graphics.pose().pushMatrix();
             // Translate to the center of the slot.
-            graphics.pose().translate(slotX + 8, slotY + 12, 0.0f);
+            graphics.pose().translate(slotX + 8, slotY + 12);
             // Apply scaling transformation for the pop effect.
-            graphics.pose().scale(1.0f / scaleFactor, (scaleFactor + 1.0f) / 2.0f, 1.0f);
+            graphics.pose().scale(1.0f / scaleFactor, (scaleFactor + 1.0f) / 2.0f);
             // Translate back to the original position.
-            graphics.pose().translate(-(slotX + 8), -(slotY + 12), 0.0f);
+            graphics.pose().translate(-(slotX + 8), -(slotY + 12));
         }
 
         // Render the item within the slot.
@@ -162,7 +163,7 @@ public class VanillaLikeHotbarElement extends AbstractElement {
 
         // If a pop animation was applied, revert the transformation.
         if (popTimeRemaining > 0.0f) {
-            graphics.pose().popPose();
+            graphics.pose().popMatrix();
         }
 
         // Render additional item decorations such as count overlays.

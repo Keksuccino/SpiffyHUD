@@ -8,6 +8,7 @@ import de.keksuccino.spiffyhud.util.SpiffyAlignment;
 import de.keksuccino.spiffyhud.util.rendering.SpiffyRenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.FluidTags;
@@ -156,8 +157,7 @@ public class VanillaLikePlayerAirElement extends AbstractElement {
                 if (shouldMirror) {
                     // Use the mirrored sprite rendering for non-left alignments
                     SpiffyRenderUtils.blitSpriteMirrored(
-                        graphics, 
-                        RenderType::guiTextured,
+                        graphics,
                         bubbleSprite, 
                         bubbleX, 
                         bubbleY, 
@@ -168,7 +168,7 @@ public class VanillaLikePlayerAirElement extends AbstractElement {
                 } else {
                     // Use normal sprite rendering for left alignments
                     graphics.blitSprite(
-                        RenderType::guiTextured,
+                        RenderPipelines.GUI_TEXTURED,
                         bubbleSprite, 
                         bubbleX, 
                         bubbleY, 
