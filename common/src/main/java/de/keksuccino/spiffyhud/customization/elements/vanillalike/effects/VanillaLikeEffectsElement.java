@@ -9,10 +9,10 @@ import de.keksuccino.spiffyhud.util.SizeAndPositionRecorder;
 import de.keksuccino.spiffyhud.util.SpiffyAlignment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.MobEffectTextureManager;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.core.Holder;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
@@ -27,7 +27,7 @@ import java.util.Objects;
 
 public class VanillaLikeEffectsElement extends AbstractElement {
 
-    // Sprite resources for effect backgrounds in 1.21.5
+    // Sprite resources for effect backgrounds in 1.21.6
     private static final ResourceLocation EFFECT_BACKGROUND_AMBIENT_SPRITE = ResourceLocation.withDefaultNamespace("hud/effect_background_ambient");
     private static final ResourceLocation EFFECT_BACKGROUND_SPRITE = ResourceLocation.withDefaultNamespace("hud/effect_background");
 
@@ -47,6 +47,17 @@ public class VanillaLikeEffectsElement extends AbstractElement {
 
     public VanillaLikeEffectsElement(@NotNull ElementBuilder<?, ?> builder) {
         super(builder);
+    }
+
+    /**
+     * Gets the sprite ResourceLocation for a mob effect.
+     * This follows the same pattern as vanilla 1.21.6.
+     */
+    public static ResourceLocation getMobEffectSprite(Holder<MobEffect> holder) {
+        return holder.unwrapKey()
+                .map(ResourceKey::location)
+                .map(resourceLocation -> resourceLocation.withPrefix("mob_effect/"))
+                .orElseGet(MissingTextureAtlasSprite::getLocation);
     }
 
     /**
@@ -190,8 +201,6 @@ public class VanillaLikeEffectsElement extends AbstractElement {
             harmfulStartX = (elementWidth - harmfulIconCount * 25) / 2;
         }
 
-        MobEffectTextureManager effectTextureManager = this.minecraft.getMobEffectTextures();
-
         // Process beneficial effects.
         for (int i = 0; i < beneficialIconCount; i++) {
             MobEffectInstance effectInstance = beneficialEffects.get(i);
@@ -202,21 +211,22 @@ public class VanillaLikeEffectsElement extends AbstractElement {
             if (this.shouldRenderBar) {
                 // Render background for the effect icon.
                 if (effectInstance.isAmbient()) {
-                    graphics.blitSprite(RenderType::guiTextured, EFFECT_BACKGROUND_AMBIENT_SPRITE, finalIconX, beneficialRowY, 24, 24, ARGB.white(this.opacity));
+                    graphics.blitSprite(RenderPipelines.GUI_TEXTURED, EFFECT_BACKGROUND_AMBIENT_SPRITE, finalIconX, beneficialRowY, 24, 24, ARGB.white(this.opacity));
                 } else {
-                    graphics.blitSprite(RenderType::guiTextured, EFFECT_BACKGROUND_SPRITE, finalIconX, beneficialRowY, 24, 24, ARGB.white(this.opacity));
+                    graphics.blitSprite(RenderPipelines.GUI_TEXTURED, EFFECT_BACKGROUND_SPRITE, finalIconX, beneficialRowY, 24, 24, ARGB.white(this.opacity));
                     if (effectInstance.endsWithin(200)) {
                         int duration = effectInstance.getDuration();
                         int fadeFactor = 10 - duration / 20;
                         iconAlpha = Mth.clamp((float) duration / 10.0f / 5.0f * 0.5f, 0.0f, 0.5f)
                                 + Mth.cos((float) duration * (float) Math.PI / 5.0f)
                                 * Mth.clamp((float) fadeFactor / 10.0f * 0.25f, 0.0f, 0.25f);
+                        iconAlpha = Mth.clamp(iconAlpha, 0.0f, 1.0f);
                     }
                 }
             }
             
             Holder<MobEffect> effectHolder = effectInstance.getEffect();
-            TextureAtlasSprite effectSprite = effectTextureManager.get(effectHolder);
+            ResourceLocation effectSprite = getMobEffectSprite(effectHolder);
             recorder.updateX(finalIconX);
             recorder.updateY(beneficialRowY);
             
@@ -226,21 +236,15 @@ public class VanillaLikeEffectsElement extends AbstractElement {
             
             if (this.shouldRenderBar) {
                 renderTasks.add(() -> {
-                    // Calculate color with proper alpha
-                    int color = ARGB.color(
-                        Math.round(finalIconAlpha * this.opacity * 255f),
-                        255, 255, 255
-                    );
-
-                    // Render the effect icon
+                    // Render the effect icon with proper alpha
                     graphics.blitSprite(
-                        RenderType::guiTextured,
+                        RenderPipelines.GUI_TEXTURED,
                         effectSprite,
                         iconX + 3,
                         iconY + 3,
                         18,
                         18,
-                        color
+                        ARGB.white(finalIconAlpha * this.opacity)
                     );
                 });
             }
@@ -255,21 +259,22 @@ public class VanillaLikeEffectsElement extends AbstractElement {
             
             if (this.shouldRenderBar) {
                 if (effectInstance.isAmbient()) {
-                    graphics.blitSprite(RenderType::guiTextured, EFFECT_BACKGROUND_AMBIENT_SPRITE, finalIconX, harmfulRowY, 24, 24, ARGB.white(this.opacity));
+                    graphics.blitSprite(RenderPipelines.GUI_TEXTURED, EFFECT_BACKGROUND_AMBIENT_SPRITE, finalIconX, harmfulRowY, 24, 24, ARGB.white(this.opacity));
                 } else {
-                    graphics.blitSprite(RenderType::guiTextured, EFFECT_BACKGROUND_SPRITE, finalIconX, harmfulRowY, 24, 24, ARGB.white(this.opacity));
+                    graphics.blitSprite(RenderPipelines.GUI_TEXTURED, EFFECT_BACKGROUND_SPRITE, finalIconX, harmfulRowY, 24, 24, ARGB.white(this.opacity));
                     if (effectInstance.endsWithin(200)) {
                         int duration = effectInstance.getDuration();
                         int fadeFactor = 10 - duration / 20;
                         iconAlpha = Mth.clamp((float) duration / 10.0f / 5.0f * 0.5f, 0.0f, 0.5f)
                                 + Mth.cos((float) duration * (float) Math.PI / 5.0f)
                                 * Mth.clamp((float) fadeFactor / 10.0f * 0.25f, 0.0f, 0.25f);
+                        iconAlpha = Mth.clamp(iconAlpha, 0.0f, 1.0f);
                     }
                 }
             }
             
             Holder<MobEffect> effectHolder = effectInstance.getEffect();
-            TextureAtlasSprite effectSprite = effectTextureManager.get(effectHolder);
+            ResourceLocation effectSprite = getMobEffectSprite(effectHolder);
             recorder.updateX(finalIconX);
             recorder.updateY(harmfulRowY);
             
@@ -279,21 +284,15 @@ public class VanillaLikeEffectsElement extends AbstractElement {
             
             if (this.shouldRenderBar) {
                 renderTasks.add(() -> {
-                    // Calculate color with proper alpha
-                    int color = ARGB.color(
-                        Math.round(finalIconAlpha * this.opacity * 255f), 
-                        255, 255, 255
-                    );
-                    
-                    // Render the effect icon
+                    // Render the effect icon with proper alpha
                     graphics.blitSprite(
-                        RenderType::guiTextured,
+                        RenderPipelines.GUI_TEXTURED,
                         effectSprite,
                         iconX + 3,
                         iconY + 3,
                         18,
                         18,
-                        color
+                        ARGB.white(finalIconAlpha * this.opacity)
                     );
                 });
             }

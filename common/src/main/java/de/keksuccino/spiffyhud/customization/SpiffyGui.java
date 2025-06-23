@@ -106,7 +106,7 @@ public class SpiffyGui implements Renderable {
     private void initOverlayScreen(boolean resize) {
         this.runLayerTask(() -> {
             try {
-                double cachedScale = Minecraft.getInstance().getWindow().getGuiScale();
+                int cachedScale = Minecraft.getInstance().getWindow().getGuiScale();
                 if (!resize) {
                     EventHandler.INSTANCE.postEvent(new OpenScreenEvent(spiffyOverlayScreen));
                 }
