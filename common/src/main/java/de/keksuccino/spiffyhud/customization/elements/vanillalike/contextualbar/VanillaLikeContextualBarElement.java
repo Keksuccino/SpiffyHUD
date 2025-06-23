@@ -9,6 +9,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.WaypointStyle;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
@@ -52,6 +53,9 @@ public class VanillaLikeContextualBarElement extends AbstractElement {
     
     // Property to force showing locator bar
     public boolean alwaysShowLocatorBar = false;
+    
+    // Property to always show experience bar
+    public boolean alwaysShowExperienceBar = false;
 
     // Enum to track which contextual bar to show
     private enum ContextualInfo {
@@ -119,9 +123,14 @@ public class VanillaLikeContextualBarElement extends AbstractElement {
             return alwaysShowLocatorBar ? ContextualInfo.LOCATOR : ContextualInfo.EXPERIENCE;
         }
         
-        // If always show locator bar is enabled, return locator
+        // If always show locator bar is enabled, return locator (takes priority)
         if (alwaysShowLocatorBar) {
             return ContextualInfo.LOCATOR;
+        }
+        
+        // If always show experience bar is enabled, return experience
+        if (alwaysShowExperienceBar) {
+            return ContextualInfo.EXPERIENCE;
         }
 
         boolean hasWaypoints = player.connection.getWaypointManager().hasWaypoints();
@@ -174,9 +183,9 @@ public class VanillaLikeContextualBarElement extends AbstractElement {
         // Calculate the color with opacity
         int color = ARGB.color(Math.round(this.opacity * 255f), 255, 255, 255);
 
-        // Only draw the bar if the player requires XP for the next level.
+        // Only draw the bar if the player requires XP for the next level, or if always show is enabled.
         int xpNeeded = player.getXpNeededForNextLevel();
-        if ((xpNeeded > 0) || isEditor()) {
+        if ((xpNeeded > 0) || alwaysShowExperienceBar || isEditor()) {
             // Calculate the width (in pixels) of the filled portion.
             int filledBarWidth = (int) (player.experienceProgress * 183.0f);
             if (isEditor()) filledBarWidth = BAR_WIDTH / 2;
@@ -208,10 +217,12 @@ public class VanillaLikeContextualBarElement extends AbstractElement {
             }
         }
 
-        // Render the experience level number if the level is greater than zero.
-        if ((player.experienceLevel > 0) || isEditor()) {
-            String levelText = String.valueOf(player.experienceLevel);
-            if (isEditor()) levelText = "42";
+        // Render the experience level number if the level is greater than zero, or if always show is enabled.
+        if ((player.experienceLevel > 0) || alwaysShowExperienceBar || isEditor()) {
+            int level = player.experienceLevel;
+            if (isEditor()) level = 42;
+            
+            Component levelText = Component.translatable("gui.experience.level", level);
 
             // Center the level text horizontally within the element.
             int textWidth = this.getFont().width(levelText);
