@@ -19,6 +19,11 @@ public class VanillaLikeContextualBarEditorElement extends AbstractEditorElement
     public void init() {
 
         super.init();
+        
+        this.addToggleContextMenuEntryTo(this.rightClickMenu, "always_show_locator_bar", VanillaLikeContextualBarEditorElement.class,
+                editorElement -> editorElement.getElement().alwaysShowLocatorBar,
+                (editorElement, value) -> editorElement.getElement().alwaysShowLocatorBar = value,
+                "spiffyhud.elements.contextualbar.always_show_locator");
 
     }
 

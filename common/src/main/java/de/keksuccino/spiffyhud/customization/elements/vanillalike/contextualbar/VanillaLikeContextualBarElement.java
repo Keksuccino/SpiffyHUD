@@ -49,6 +49,9 @@ public class VanillaLikeContextualBarElement extends AbstractElement {
     private static final int ARROW_HEIGHT = 5;
 
     private final Minecraft minecraft = Minecraft.getInstance();
+    
+    // Property to force showing locator bar
+    public boolean alwaysShowLocatorBar = false;
 
     // Enum to track which contextual bar to show
     private enum ContextualInfo {
@@ -111,9 +114,14 @@ public class VanillaLikeContextualBarElement extends AbstractElement {
         LocalPlayer player = this.minecraft.player;
         if (player == null) return ContextualInfo.EMPTY;
 
-        // In editor mode, always show experience bar for preview
+        // In editor mode, show locator bar if always show is enabled, otherwise show experience bar
         if (isEditor()) {
-            return ContextualInfo.EXPERIENCE;
+            return alwaysShowLocatorBar ? ContextualInfo.LOCATOR : ContextualInfo.EXPERIENCE;
+        }
+        
+        // If always show locator bar is enabled, return locator
+        if (alwaysShowLocatorBar) {
+            return ContextualInfo.LOCATOR;
         }
 
         boolean hasWaypoints = player.connection.getWaypointManager().hasWaypoints();

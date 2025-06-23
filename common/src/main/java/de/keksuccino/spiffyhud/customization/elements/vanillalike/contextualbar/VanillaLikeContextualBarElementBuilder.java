@@ -27,6 +27,8 @@ public class VanillaLikeContextualBarElementBuilder extends ElementBuilder<Vanil
     public VanillaLikeContextualBarElement deserializeElement(@NotNull SerializedElement serialized) {
 
         VanillaLikeContextualBarElement element = this.buildDefaultInstance();
+        
+        element.alwaysShowLocatorBar = this.deserializeBoolean(element.alwaysShowLocatorBar, serialized.getValue("always_show_locator_bar"));
 
         return element;
 
@@ -44,6 +46,8 @@ public class VanillaLikeContextualBarElementBuilder extends ElementBuilder<Vanil
 
     @Override
     protected SerializedElement serializeElement(@NotNull VanillaLikeContextualBarElement element, @NotNull SerializedElement serializeTo) {
+
+        serializeTo.putProperty("always_show_locator_bar", String.valueOf(element.alwaysShowLocatorBar));
 
         return serializeTo;
         

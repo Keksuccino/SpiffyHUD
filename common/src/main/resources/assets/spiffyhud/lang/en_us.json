@@ -40,6 +40,7 @@
   "spiffyhud.elements.vanillalike.player_armor": "[HUD] Vanilla-Like Player Armor Bar",
   "spiffyhud.elements.vanillalike.player_air": "[HUD] Vanilla-Like Player Air Bar",
   "spiffyhud.elements.vanillalike.player_experience": "[HUD] Vanilla-Like Contextual Bar",
+  "spiffyhud.elements.contextualbar.always_show_locator": "Always Show Locator Bar: %s",
   "spiffyhud.elements.vanillalike.mount_health": "[HUD] Vanilla-Like Mount Health Bar",
   "spiffyhud.elements.vanillalike.effects": "[HUD] Vanilla-Like Effects Overlay",
   "spiffyhud.elements.vanillalike.boss_bars": "[HUD] Vanilla-Like Boss Overlay",
