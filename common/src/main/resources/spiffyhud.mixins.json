@@ -12,6 +12,7 @@
     "client.MixinChatScreen",
     "client.MixinCustomizationOverlayUI",
     "client.MixinEditorElementSettings",
+    "client.MixinGuiGraphics",
     "client.MixinLayout",
     "client.MixinLayoutEditorUI",
     "client.MixinLivingEntityRenderer",

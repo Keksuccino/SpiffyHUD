@@ -1,28 +1,23 @@
 package de.keksuccino.spiffyhud.util.rendering;
 
-import com.mojang.blaze3d.vertex.*;
-import de.keksuccino.fancymenu.mixin.mixins.common.client.IMixinGuiGraphics;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.metadata.gui.GuiSpriteScaling;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
-import org.joml.Matrix4f;
-import java.util.function.Function;
 
 public class SpiffyRenderUtils {
 
     /**
      * Draws a textured quad with the U texture coordinates swapped so that the image appears mirrored horizontally.
+     * In 1.21.6, this uses a matrix transformation approach for mirroring.
      *
      * @param graphics             The graphics context.
-     * @param renderTypeGetter     Function to get the render type for the texture.
      * @param atlasLocation        The texture atlas.
      * @param x                    The screen X coordinate.
      * @param y                    The screen Y coordinate.
-     * @param blitOffset           The z-level (blit offset).
      * @param u                    The source U coordinate (left edge) of the texture.
      * @param v                    The source V coordinate (top edge) of the texture.
      * @param width                The width of the quad.
@@ -33,11 +28,9 @@ public class SpiffyRenderUtils {
      */
     public static void blitMirrored(
             GuiGraphics graphics,
-            Function<ResourceLocation, RenderType> renderTypeGetter,
             ResourceLocation atlasLocation,
             int x,
             int y,
-            int blitOffset,
             int u,
             int v,
             int width,
@@ -46,38 +39,31 @@ public class SpiffyRenderUtils {
             int textureHeight,
             int color) {
         
-        // Calculate texture coordinates.
-        float minU = (u + width) / (float) textureWidth;
-        float maxU = u / (float) textureWidth;
-        float minV = v / (float) textureHeight;
-        float maxV = (v + height) / (float) textureHeight;
-
-        Matrix4f matrix = graphics.pose().last().pose();
-        VertexConsumer vertexConsumer = ((IMixinGuiGraphics)graphics).getBufferSource_FancyMenu().getBuffer(renderTypeGetter.apply(atlasLocation));
+        RenderSystem.assertOnRenderThread();
         
-        int red = ARGB.red(color);
-        int green = ARGB.green(color);
-        int blue = ARGB.blue(color);
-        int alpha = ARGB.alpha(color);
-
-        vertexConsumer.addVertex(matrix, (float)x, (float)y, (float)blitOffset).setUv(minU, minV).setColor(red, green, blue, alpha);
-        vertexConsumer.addVertex(matrix, (float)x, (float)(y + height), (float)blitOffset).setUv(minU, maxV).setColor(red, green, blue, alpha);
-        vertexConsumer.addVertex(matrix, (float)(x + width), (float)(y + height), (float)blitOffset).setUv(maxU, maxV).setColor(red, green, blue, alpha);
-        vertexConsumer.addVertex(matrix, (float)(x + width), (float)y, (float)blitOffset).setUv(maxU, minV).setColor(red, green, blue, alpha);
-
-        graphics.flush();
+        // Use matrix transformation for mirroring
+        graphics.pose().pushMatrix();
+        
+        // Translate to the right edge of where we want to draw, then scale X by -1
+        graphics.pose().translate(x + width, y, 0);
+        graphics.pose().scale(-1.0f, 1.0f, 1.0f);
+        
+        // Draw at origin (0,0) since we've already translated
+        graphics.blit(RenderType.guiTextured(atlasLocation), 0, 0, u, v, width, height, textureWidth, textureHeight, color);
+        
+        // Restore matrix state
+        graphics.pose().popMatrix();
     }
 
     /**
      * Draws a textured quad with the U texture coordinates swapped so that the image appears mirrored horizontally.
-     * Uses default RenderType.text and white color.
+     * Uses white color.
      */
     public static void blitMirrored(
             GuiGraphics graphics,
             ResourceLocation atlasLocation,
             int x,
             int y,
-            int blitOffset,
             int u,
             int v,
             int width,
@@ -87,11 +73,9 @@ public class SpiffyRenderUtils {
 
         blitMirrored(
             graphics,
-            RenderType::text,
             atlasLocation,
             x,
             y,
-            blitOffset,
             u,
             v,
             width,
@@ -107,7 +91,6 @@ public class SpiffyRenderUtils {
      * This method is specifically designed for sprite resources and handles sprite texture coordinates.
      *
      * @param graphics         The graphics context.
-     * @param renderTypeGetter Function to get the render type for the texture.
      * @param sprite           The sprite resource location.
      * @param x                The screen X coordinate.
      * @param y                The screen Y coordinate.
@@ -117,7 +100,6 @@ public class SpiffyRenderUtils {
      */
     public static void blitSpriteMirrored(
             GuiGraphics graphics,
-            Function<ResourceLocation, RenderType> renderTypeGetter,
             ResourceLocation sprite,
             int x,
             int y,
@@ -125,33 +107,25 @@ public class SpiffyRenderUtils {
             int height,
             int color) {
 
-        TextureAtlasSprite atlasSprite = Minecraft.getInstance().getGuiSprites().getSprite(sprite);
-
-        // For horizontal mirroring, swap U coordinates
-        float minU = atlasSprite.getU1();
-        float maxU = atlasSprite.getU0();
-        float minV = atlasSprite.getV0();
-        float maxV = atlasSprite.getV1();
-
-        Matrix4f matrix = graphics.pose().last().pose();
-        VertexConsumer vertexConsumer = ((IMixinGuiGraphics)graphics).getBufferSource_FancyMenu().getBuffer(renderTypeGetter.apply(atlasSprite.atlasLocation()));
-
-        int red = ARGB.red(color);
-        int green = ARGB.green(color);
-        int blue = ARGB.blue(color);
-        int alpha = ARGB.alpha(color);
-
-        vertexConsumer.addVertex(matrix, (float)x, (float)y, 0.0f).setUv(minU, minV).setColor(red, green, blue, alpha);
-        vertexConsumer.addVertex(matrix, (float)x, (float)(y + height), 0.0f).setUv(minU, maxV).setColor(red, green, blue, alpha);
-        vertexConsumer.addVertex(matrix, (float)(x + width), (float)(y + height), 0.0f).setUv(maxU, maxV).setColor(red, green, blue, alpha);
-        vertexConsumer.addVertex(matrix, (float)(x + width), (float)y, 0.0f).setUv(maxU, minV).setColor(red, green, blue, alpha);
-
-        graphics.flush();
+        RenderSystem.assertOnRenderThread();
+        
+        // Use matrix transformation for mirroring
+        graphics.pose().pushMatrix();
+        
+        // Translate to the right edge of where we want to draw, then scale X by -1
+        graphics.pose().translate(x + width, y, 0);
+        graphics.pose().scale(-1.0f, 1.0f, 1.0f);
+        
+        // Draw the sprite at origin (0,0) since we've already translated
+        graphics.blitSprite(RenderType.guiTextured, sprite, 0, 0, width, height, color);
+        
+        // Restore matrix state
+        graphics.pose().popMatrix();
     }
 
     /**
      * Draws a sprite horizontally mirrored (flipped along the vertical axis).
-     * Uses default RenderType.guiTextured and white color.
+     * Uses white color.
      */
     public static void blitSpriteMirrored(
             GuiGraphics graphics,
@@ -163,7 +137,6 @@ public class SpiffyRenderUtils {
 
         blitSpriteMirrored(
             graphics,
-            RenderType::guiTextured,
             sprite,
             x,
             y,
@@ -173,9 +146,12 @@ public class SpiffyRenderUtils {
         );
     }
 
+    /**
+     * Blits a sprite with specific UV coordinates.
+     * In 1.21.6, we use the built-in blitSprite method with appropriate parameters.
+     */
     public static void blitSprite(
             GuiGraphics graphics,
-            Function<ResourceLocation, RenderType> renderTypeGetter,
             ResourceLocation sprite,
             int textureWidth,
             int textureHeight,
@@ -187,15 +163,9 @@ public class SpiffyRenderUtils {
             int vHeight,
             int color
     ) {
-        TextureAtlasSprite textureAtlasSprite = ((de.keksuccino.spiffyhud.mixin.mixins.common.client.IMixinGuiGraphics)graphics).get_sprites_Spiffy().getSprite(sprite);
-        GuiSpriteScaling guiSpriteScaling = ((de.keksuccino.spiffyhud.mixin.mixins.common.client.IMixinGuiGraphics)graphics).get_sprites_Spiffy().getSpriteScaling(textureAtlasSprite);
-        if (guiSpriteScaling instanceof GuiSpriteScaling.Stretch) {
-            ((de.keksuccino.spiffyhud.mixin.mixins.common.client.IMixinGuiGraphics)graphics).invoke_private_blitSprite_Spiffy(renderTypeGetter, textureAtlasSprite, textureWidth, textureHeight, uPosition, vPosition, x, y, uWidth, vHeight, color);
-        } else {
-            graphics.enableScissor(x, y, x + uWidth, y + vHeight);
-            graphics.blitSprite(renderTypeGetter, sprite, x - uPosition, y - vPosition, textureWidth, textureHeight, color);
-            graphics.disableScissor();
-        }
+        // Use the built-in blitSprite method with UV parameters
+        graphics.blitSprite(RenderType.guiTextured, sprite, textureWidth, textureHeight, 
+                           uPosition, vPosition, x, y, uWidth, vHeight, color);
     }
 
     /**
