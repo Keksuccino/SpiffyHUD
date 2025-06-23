@@ -1,3 +1,26 @@
+
+CHANGELOG | SPIFFYHUD v3.0.2
+
+- Ported to Minecraft 1.21.6
+- Removed "Vanilla-Like Jump Bar" element
+- The "Vanilla-Like Experience Bar" element is now the "Vanilla-Like Contextual Bar" element and shows the correct contextual bar that should be visible (jump bar, exp bar, locator bar)
+  - Added option to the element to let it always show the locator bar (will never switch to experience bar or jump bar)
+  - Added option to the element to make the experience bar never vanish (so it's always visible instead of just when gaining exp points)
+- 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 CHANGELOG | SPIFFYHUD v3.1.0
 
 - Added "Eraser" element that allows you to hide/erase elements from the HUD without actually hiding the HUD element
