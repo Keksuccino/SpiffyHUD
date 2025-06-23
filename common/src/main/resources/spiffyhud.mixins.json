@@ -19,7 +19,6 @@
     "client.MixinMinecraft",
     "client.MixinModelBlockRenderer",
     "client.MixinScreenCustomization",
-    "client.MixinSpectatorGui",
     "client.MixinVanillaWidgetEditorElement"
   ],
   "mixins": [
