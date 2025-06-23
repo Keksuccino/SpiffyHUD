@@ -70,8 +70,7 @@ public abstract class MixinVanillaWidgetEditorElement extends ButtonEditorElemen
                 boolean topBlocked = (this.getY() < 22);
                 boolean rightBlocked = (this.getX() + this.getWidth()) > (this.editor.width - (totalWidth + 2));
 
-                graphics.pose().pushPose();
-                graphics.pose().translate(0.0F, 0.0F, 400.0F);
+                graphics.pose().pushMatrix();
 
                 // --- Top: render above the element ---
                 if (!topBlocked) {
@@ -193,7 +192,7 @@ public abstract class MixinVanillaWidgetEditorElement extends ButtonEditorElemen
                     }
                 }
 
-                graphics.pose().popPose();
+                graphics.pose().popMatrix();
 
             }
 

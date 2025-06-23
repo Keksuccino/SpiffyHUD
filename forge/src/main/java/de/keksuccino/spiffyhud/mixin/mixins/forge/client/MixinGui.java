@@ -3,7 +3,6 @@ package de.keksuccino.spiffyhud.mixin.mixins.forge.client;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.mojang.blaze3d.vertex.PoseStack;
 import de.keksuccino.spiffyhud.customization.SpiffyGui;
 import de.keksuccino.spiffyhud.customization.VanillaHudElements;
 import de.keksuccino.spiffyhud.customization.elements.overlayremover.OverlayRemoverElement;
@@ -12,12 +11,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.spectator.SpectatorGui;
+import net.minecraft.client.gui.contextualbar.ContextualBarRenderer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.PlayerRideableJumping;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.scores.Objective;
@@ -53,40 +53,41 @@ public class MixinGui {
             spiffyGui.render(graphics, -10000000, -10000000, deltaTracker.getGameTimeDeltaTicks());
         }
 
-        if (VanillaHudElements.isHidden(VanillaHudElements.HOTBAR_IDENTIFIER)) info.cancel();
-
     }
 
-    /**
-     * @reason Hide the jump meter when hidden by Spiffy HUD.
-     */
-    @Inject(method = "renderJumpMeter", at = @At(value = "HEAD"), cancellable = true)
-    private void before_renderJumpMeter_Spiffy(PlayerRideableJumping rideable, GuiGraphics guiGraphics, int x, CallbackInfo info) {
-        if (VanillaHudElements.isHidden(VanillaHudElements.JUMP_METER_IDENTIFIER)) info.cancel();
+    @WrapWithCondition(method = "renderHotbarAndDecorations", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;renderItemHotbar(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"))
+    private boolean wrap_renderItemHotbar_in_renderHotbarAndDecorations_Spiffy(Gui instance, GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+        return !VanillaHudElements.isHidden(VanillaHudElements.HOTBAR_IDENTIFIER);
     }
 
-    /**
-     * @reason Hide the EXP bar when hidden by Spiffy HUD.
-     */
-    @Inject(method = "renderExperienceBar", at = @At(value = "HEAD"), cancellable = true)
-    private void before_renderExperienceBar_Spiffy(GuiGraphics guiGraphics, int x, CallbackInfo info) {
-        if (VanillaHudElements.isHidden(VanillaHudElements.CONTEXTUAL_BAR_IDENTIFIER)) info.cancel();
+    @WrapWithCondition(method = "renderHotbarAndDecorations", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/spectator/SpectatorGui;renderHotbar(Lnet/minecraft/client/gui/GuiGraphics;)V"))
+    private boolean wrap_SpectatorGui_renderHotbar_in_renderHotbarAndDecorations_Spiffy(SpectatorGui instance, GuiGraphics guiGraphics) {
+        return !VanillaHudElements.isHidden(VanillaHudElements.HOTBAR_IDENTIFIER);
     }
 
-    /**
-     * @reason Hide the EXP bar when hidden by Spiffy HUD.
-     */
-    @Inject(method = "renderExperienceLevel", at = @At(value = "HEAD"), cancellable = true)
-    private void before_renderExperienceLevel_Spiffy(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo info) {
-        if (VanillaHudElements.isHidden(VanillaHudElements.CONTEXTUAL_BAR_IDENTIFIER)) info.cancel();
+    @WrapWithCondition(method = "renderHotbarAndDecorations", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/contextualbar/ContextualBarRenderer;renderExperienceLevel(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Font;I)V"))
+    private boolean wrap_renderExperienceLevel_in_renderHotbarAndDecorations_Spiffy(GuiGraphics guiGraphics, Font font, int i) {
+        return !VanillaHudElements.isHidden(VanillaHudElements.CONTEXTUAL_BAR_IDENTIFIER);
     }
 
-    /**
-     * @reason Hide the selected item name when hidden by Spiffy HUD.
-     */
-    @Inject(method = "renderSelectedItemName", at = @At(value = "HEAD"), cancellable = true)
-    private void before_renderSelectedItemName_Spiffy(GuiGraphics guiGraphics, CallbackInfo info) {
-        if (VanillaHudElements.isHidden(VanillaHudElements.SELECTED_ITEM_NAME_IDENTIFIER)) info.cancel();
+    @WrapWithCondition(method = "renderHotbarAndDecorations", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/contextualbar/ContextualBarRenderer;renderBackground(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"))
+    private boolean wrap_renderBackground_in_renderHotbarAndDecorations_Spiffy(ContextualBarRenderer instance, GuiGraphics graphics, DeltaTracker deltaTracker) {
+        return !VanillaHudElements.isHidden(VanillaHudElements.CONTEXTUAL_BAR_IDENTIFIER);
+    }
+
+    @WrapWithCondition(method = "renderHotbarAndDecorations", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/contextualbar/ContextualBarRenderer;render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"))
+    private boolean wrap_ContextualBar_render_in_renderHotbarAndDecorations_Spiffy(ContextualBarRenderer instance, GuiGraphics graphics, DeltaTracker deltaTracker) {
+        return !VanillaHudElements.isHidden(VanillaHudElements.CONTEXTUAL_BAR_IDENTIFIER);
+    }
+
+    @WrapWithCondition(method = "renderHotbarAndDecorations", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;renderSelectedItemName(Lnet/minecraft/client/gui/GuiGraphics;)V"))
+    private boolean wrap_renderSelectedItemName_in_renderHotbarAndDecorations_Spiffy(Gui instance, GuiGraphics guiGraphics) {
+        return !VanillaHudElements.isHidden(VanillaHudElements.SELECTED_ITEM_NAME_IDENTIFIER);
+    }
+
+    @WrapWithCondition(method = "renderHotbarAndDecorations", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/spectator/SpectatorGui;renderAction(Lnet/minecraft/client/gui/GuiGraphics;)V"))
+    private boolean wrap_renderAction_in_renderHotbarAndDecorations_Spiffy(SpectatorGui instance, GuiGraphics guiGraphics) {
+        return !VanillaHudElements.isHidden(VanillaHudElements.SELECTED_ITEM_NAME_IDENTIFIER);
     }
 
     /**
@@ -124,7 +125,7 @@ public class MixinGui {
     /**
      * @reason Hide the title and subtitle messages when hidden by Spiffy HUD.
      */
-    @WrapWithCondition(method = "renderTitle", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawStringWithBackdrop(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;IIII)I"))
+    @WrapWithCondition(method = "renderTitle", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawStringWithBackdrop(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;IIII)V"))
     private boolean wrap_drawStringWithBackdrop_in_renderTitle_Spiffy(GuiGraphics instance, Font font, Component component, int i1, int i2, int i3, int i4) {
         if (component != null) {
             if ((component == this.title) && VanillaHudElements.isHidden(VanillaHudElements.TITLE_IDENTIFIER)) return false;
@@ -230,14 +231,6 @@ public class MixinGui {
     @Inject(method = "renderPortalOverlay", at = @At(value = "HEAD"), cancellable = true)
     private void before_renderPortalOverlay_Spiffy(GuiGraphics guiGraphics, float alpha, CallbackInfo info) {
         if (OverlayRemoverElement.isOverlayTypeHidden(OverlayRemoverElement.OverlayType.PORTAL)) info.cancel();
-    }
-
-    /**
-     * @reason Patch out the Z -90 translate() call that seems pretty useless (could be wrong tho) and breaks Spiffy.
-     */
-    @WrapOperation(method = "renderItemHotbar", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;translate(FFF)V"))
-    private void wrap_translate_in_renderHotbar_Spiffy(PoseStack instance, float $$0, float $$1, float $$2, Operation<Void> original) {
-        original.call(instance, 0.0F, 0.0F, 0.0F);
     }
 
 }
