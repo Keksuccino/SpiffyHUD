@@ -1,15 +1,16 @@
 package de.keksuccino.spiffyhud.util.rendering;
 
-import com.mojang.blaze3d.platform.Lighting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
-import org.joml.Matrix4f;
 import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 public class GuiEntityRenderer {
 
@@ -94,37 +95,40 @@ public class GuiEntityRenderer {
         entity.yHeadRotO = newRenderedHead;
         entity.setYRot(newRenderedHead);
 
-        // ----- Transformation and Rendering -----
-        graphics.pose().pushPose();
-        // Translate to the center of the target box.
-        graphics.pose().translate(posX + boxWidth / 2.0, posY + boxHeight / 2.0, 50.0);
-        // Apply uniform scaling (note: negative on Z to mirror correctly).
-        graphics.pose().mulPose(new Matrix4f().scaling(uniformScale, uniformScale, -uniformScale));
-        // Apply a base rotation: rotate 180° about the Z-axis so the entity faces the viewer.
-        Quaternionf baseRotation = new Quaternionf().rotateZ((float) Math.PI);
-        graphics.pose().mulPose(baseRotation);
-        // Shift upward so that the entity's bounding box is vertically centered.
-        // Since the pivot is at the feet, translate upward by half of the entity's height.
-        graphics.pose().translate(0.0, -(dimensions.height() / 2.0f), 0.0);
-
-        // Setup lighting for GUI entity rendering.
-        Lighting.setupForEntityInInventory();
-        // Retrieve the entity render dispatcher and disable shadow rendering.
+        // ----- Transformation and Rendering (Updated for 1.21.6) -----
+        // Create render state for the entity
         EntityRenderDispatcher dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
-        dispatcher.setRenderShadow(false);
-        graphics.drawSpecial(multiBufferSource -> {
-            ItemRenderingUtils.setItemOpacity(opacity);
-            BlockRenderingUtils.setBlockOpacity(opacity);
-            EntityRenderingUtils.setLivingEntityOpacity(opacity);
-            dispatcher.render(entity, 0.0, 0.0, 0.0, 1.0f, graphics.pose(), multiBufferSource, 15728880);
-            BlockRenderingUtils.resetBlockOpacity();
-            EntityRenderingUtils.resetLivingEntityOpacity();
-            ItemRenderingUtils.resetItemOpacity();
-        });
-        graphics.flush();
-        dispatcher.setRenderShadow(true);
-        graphics.pose().popPose();
-        Lighting.setupFor3DItems();
+        EntityRenderer<? super LivingEntity, ?> renderer = dispatcher.getRenderer(entity);
+        EntityRenderState renderState = renderer.createRenderState(entity, 1.0f);
+        
+        // Set opacity for rendering
+        ItemRenderingUtils.setItemOpacity(opacity);
+        BlockRenderingUtils.setBlockOpacity(opacity);
+        EntityRenderingUtils.setLivingEntityOpacity(opacity);
+        
+        // Create rotation quaternion (180° about Z-axis for facing)
+        Quaternionf rotation = new Quaternionf().rotateZ((float) Math.PI);
+        
+        // Create translation vector - entity pivot is at feet, so we need to center it
+        Vector3f translation = new Vector3f(0.0f, entity.getBbHeight() / 2.0f, 0.0f);
+        
+        // Submit the entity render state using the new 1.21.6 method
+        graphics.submitEntityRenderState(
+            renderState,
+            uniformScale,
+            translation,
+            rotation,
+            null, // No override camera angle
+            posX,
+            posY,
+            posX + boxWidth,
+            posY + boxHeight
+        );
+        
+        // Reset opacity
+        BlockRenderingUtils.resetBlockOpacity();
+        EntityRenderingUtils.resetLivingEntityOpacity();
+        ItemRenderingUtils.resetItemOpacity();
 
         // Restore the entity's original rotation values.
         entity.yBodyRot = origYBodyRot;
