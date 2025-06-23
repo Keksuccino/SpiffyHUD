@@ -69,7 +69,7 @@ public class MixinGui {
      */
     @Inject(method = "renderExperienceBar", at = @At(value = "HEAD"), cancellable = true)
     private void before_renderExperienceBar_Spiffy(GuiGraphics guiGraphics, int x, CallbackInfo info) {
-        if (VanillaHudElements.isHidden(VanillaHudElements.EXPERIENCE_BAR_IDENTIFIER)) info.cancel();
+        if (VanillaHudElements.isHidden(VanillaHudElements.CONTEXTUAL_BAR_IDENTIFIER)) info.cancel();
     }
 
     /**
@@ -77,7 +77,7 @@ public class MixinGui {
      */
     @Inject(method = "renderExperienceLevel", at = @At(value = "HEAD"), cancellable = true)
     private void before_renderExperienceLevel_Spiffy(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo info) {
-        if (VanillaHudElements.isHidden(VanillaHudElements.EXPERIENCE_BAR_IDENTIFIER)) info.cancel();
+        if (VanillaHudElements.isHidden(VanillaHudElements.CONTEXTUAL_BAR_IDENTIFIER)) info.cancel();
     }
 
     /**

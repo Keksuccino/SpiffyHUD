@@ -3,6 +3,8 @@ package de.keksuccino.spiffyhud.mixin.mixins.common.client;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import de.keksuccino.spiffyhud.customization.elements.chatcustomizer.ChatCustomizerHandler;
+import org.joml.Matrix3x2f;
+import org.joml.Matrix3x2fStack;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -12,7 +14,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ChatComponent;
 import net.minecraft.client.OptionInstance;
-import com.mojang.blaze3d.vertex.PoseStack;
 
 @Mixin(ChatComponent.class)
 public abstract class MixinChatComponent {
@@ -29,7 +30,7 @@ public abstract class MixinChatComponent {
     /**
      * Capture the fade factor used in the render loop
      */
-    @WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/ChatComponent;getTimeFactor(I)D"))
+    @WrapOperation(method = "forEachLine", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/ChatComponent;getTimeFactor(I)D"))
     private double wrap_getTimeFactor_Spiffy(int t, Operation<Double> original) {
         double factor = original.call(t);
         currentFadeFactor_Spiffy.set((float) factor);
@@ -40,17 +41,18 @@ public abstract class MixinChatComponent {
      * Modify chat translation to position it correctly based on corner setting
      * This only handles LEFT vs RIGHT positioning
      */
-    @WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;translate(FFF)V", ordinal = 0))
-    private void modifyChatTranslation_Spiffy(PoseStack poseStack, float x, float y, float z, Operation<Void> original) {
+    @WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lorg/joml/Matrix3x2fStack;translate(FF)Lorg/joml/Matrix3x2f;", ordinal = 0))
+    private Matrix3x2f modifyChatTranslation_Spiffy(Matrix3x2fStack instance, float x, float y, Operation<Matrix3x2f> original) {
         if (ChatCustomizerHandler.isChatRightAligned()) {
             // For right-aligned chat, adjust x position
             float chatWidth = (float) this.getWidth() / (float) this.getScale();
             float newX = minecraft.getWindow().getGuiScaledWidth() - chatWidth - 8;
-            original.call(poseStack, newX, y, z);
+            original.call(instance, newX, y);
         } else {
             // Default position
-            original.call(poseStack, x, y, z);
+            original.call(instance, x, y);
         }
+        return null;
     }
 
     /**

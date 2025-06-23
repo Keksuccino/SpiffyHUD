@@ -13,8 +13,7 @@ public class VanillaHudElements {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static final String HOTBAR_IDENTIFIER = "spiffy_hotbar_dummy";
-    public static final String JUMP_METER_IDENTIFIER = "spiffy_jump_meter_dummy";
-    public static final String EXPERIENCE_BAR_IDENTIFIER = "spiffy_experience_bar_dummy";
+    public static final String CONTEXTUAL_BAR_IDENTIFIER = "spiffy_experience_bar_dummy";
     public static final String SELECTED_ITEM_NAME_IDENTIFIER = "spiffy_selected_item_name_dummy";
     public static final String SCOREBOARD_SIDEBAR_IDENTIFIER = "spiffy_scoreboard_sidebar_dummy";
     public static final String FOOD_BAR_IDENTIFIER = "spiffy_food_bar_dummy";

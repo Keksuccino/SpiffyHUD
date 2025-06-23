@@ -15,7 +15,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.PlayerRideableJumping;
@@ -71,7 +70,7 @@ public class MixinGui {
      */
     @Inject(method = "renderExperienceBar", at = @At(value = "HEAD"), cancellable = true)
     private void before_renderExperienceBar_Spiffy(GuiGraphics guiGraphics, int x, CallbackInfo info) {
-        if (VanillaHudElements.isHidden(VanillaHudElements.EXPERIENCE_BAR_IDENTIFIER)) info.cancel();
+        if (VanillaHudElements.isHidden(VanillaHudElements.CONTEXTUAL_BAR_IDENTIFIER)) info.cancel();
     }
 
     /**
@@ -79,7 +78,7 @@ public class MixinGui {
      */
     @Inject(method = "renderExperienceLevel", at = @At(value = "HEAD"), cancellable = true)
     private void before_renderExperienceLevel_Spiffy(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo info) {
-        if (VanillaHudElements.isHidden(VanillaHudElements.EXPERIENCE_BAR_IDENTIFIER)) info.cancel();
+        if (VanillaHudElements.isHidden(VanillaHudElements.CONTEXTUAL_BAR_IDENTIFIER)) info.cancel();
     }
 
     /**

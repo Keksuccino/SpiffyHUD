@@ -1,11 +1,9 @@
 package de.keksuccino.spiffyhud.customization;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import de.keksuccino.fancymenu.customization.ScreenCustomization;
 import de.keksuccino.fancymenu.customization.element.anchor.ElementAnchorPoints;
 import de.keksuccino.fancymenu.customization.layout.editor.LayoutEditorScreen;
 import de.keksuccino.fancymenu.util.ObjectHolder;
-import de.keksuccino.fancymenu.util.rendering.RenderingUtils;
 import de.keksuccino.fancymenu.util.rendering.ui.widget.RendererWidget;
 import de.keksuccino.spiffyhud.customization.elements.Elements;
 import de.keksuccino.spiffyhud.customization.elements.vanillalike.air.VanillaLikePlayerAirElement;
@@ -172,7 +170,7 @@ public class SpiffyOverlayScreen extends Screen {
             EXPERIENCE_ELEMENT.posOffsetX = gx;
             EXPERIENCE_ELEMENT.posOffsetY = gy;
             EXPERIENCE_ELEMENT.render(graphics, mX, mY, partial);
-        }).setWidgetIdentifierFancyMenu(VanillaHudElements.EXPERIENCE_BAR_IDENTIFIER);
+        }).setWidgetIdentifierFancyMenu(VanillaHudElements.CONTEXTUAL_BAR_IDENTIFIER);
     }
 
     protected RendererWidget buildSelectedItemNameWidget() {
