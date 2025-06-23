@@ -1,41 +1,40 @@
-package de.keksuccino.spiffyhud.customization.elements.vanillalike.jumpmeter;
+package de.keksuccino.spiffyhud.customization.elements.vanillalike.contextualbar;
 
 import de.keksuccino.fancymenu.customization.element.AbstractElement;
 import de.keksuccino.fancymenu.customization.element.ElementBuilder;
 import de.keksuccino.fancymenu.customization.element.SerializedElement;
 import de.keksuccino.fancymenu.customization.layout.editor.LayoutEditorScreen;
 import de.keksuccino.spiffyhud.customization.SpiffyOverlayScreen;
-import de.keksuccino.spiffyhud.customization.elements.vanillalike.air.VanillaLikePlayerAirElement;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class VanillaLikeJumpMeterElementBuilder extends ElementBuilder<VanillaLikeJumpMeterElement, VanillaLikeJumpMeterEditorElement> {
+public class VanillaLikeContextualBarElementBuilder extends ElementBuilder<VanillaLikeContextualBarElement, VanillaLikeContextualBarEditorElement> {
 
-    public VanillaLikeJumpMeterElementBuilder() {
-        super("spiffy_vanillalike_jump_meter");
+    public VanillaLikeContextualBarElementBuilder() {
+        super("spiffy_vanillalike_player_exp_bar");
     }
 
     @Override
-    public @NotNull VanillaLikeJumpMeterElement buildDefaultInstance() {
-        VanillaLikeJumpMeterElement e = new VanillaLikeJumpMeterElement(this);
+    public @NotNull VanillaLikeContextualBarElement buildDefaultInstance() {
+        VanillaLikeContextualBarElement e = new VanillaLikeContextualBarElement(this);
         e.stickyAnchor = true;
         e.stayOnScreen = false;
         return e;
     }
 
     @Override
-    public VanillaLikeJumpMeterElement deserializeElement(@NotNull SerializedElement serialized) {
+    public VanillaLikeContextualBarElement deserializeElement(@NotNull SerializedElement serialized) {
 
-        VanillaLikeJumpMeterElement element = this.buildDefaultInstance();
+        VanillaLikeContextualBarElement element = this.buildDefaultInstance();
 
         return element;
 
     }
 
     @Override
-    public @Nullable VanillaLikeJumpMeterElement deserializeElementInternal(@NotNull SerializedElement serialized) {
-        VanillaLikeJumpMeterElement e = super.deserializeElementInternal(serialized);
+    public @Nullable VanillaLikeContextualBarElement deserializeElementInternal(@NotNull SerializedElement serialized) {
+        VanillaLikeContextualBarElement e = super.deserializeElementInternal(serialized);
         if (e != null) {
             // Fix "Stay on Screen" resetting itself for element types that have it disabled by default
             e.stayOnScreen = this.deserializeBoolean(e.stayOnScreen, serialized.getValue("stay_on_screen"));
@@ -44,20 +43,20 @@ public class VanillaLikeJumpMeterElementBuilder extends ElementBuilder<VanillaLi
     }
 
     @Override
-    protected SerializedElement serializeElement(@NotNull VanillaLikeJumpMeterElement element, @NotNull SerializedElement serializeTo) {
+    protected SerializedElement serializeElement(@NotNull VanillaLikeContextualBarElement element, @NotNull SerializedElement serializeTo) {
 
         return serializeTo;
         
     }
 
     @Override
-    public @NotNull VanillaLikeJumpMeterEditorElement wrapIntoEditorElement(@NotNull VanillaLikeJumpMeterElement element, @NotNull LayoutEditorScreen editor) {
-        return new VanillaLikeJumpMeterEditorElement(element, editor);
+    public @NotNull VanillaLikeContextualBarEditorElement wrapIntoEditorElement(@NotNull VanillaLikeContextualBarElement element, @NotNull LayoutEditorScreen editor) {
+        return new VanillaLikeContextualBarEditorElement(element, editor);
     }
 
     @Override
     public @NotNull Component getDisplayName(@Nullable AbstractElement element) {
-        return Component.translatable("spiffyhud.elements.vanillalike.jump_meter");
+        return Component.translatable("spiffyhud.elements.vanillalike.player_experience");
     }
 
     @Override

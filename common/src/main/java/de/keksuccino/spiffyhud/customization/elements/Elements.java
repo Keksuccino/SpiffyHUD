@@ -12,10 +12,9 @@ import de.keksuccino.spiffyhud.customization.elements.vanillalike.armor.VanillaL
 import de.keksuccino.spiffyhud.customization.elements.vanillalike.attackindicator.VanillaLikeAttackIndicatorElementBuilder;
 import de.keksuccino.spiffyhud.customization.elements.vanillalike.bossbars.VanillaLikeBossOverlayElementBuilder;
 import de.keksuccino.spiffyhud.customization.elements.vanillalike.effects.VanillaLikeEffectsElementBuilder;
-import de.keksuccino.spiffyhud.customization.elements.vanillalike.experience.VanillaLikeExperienceElementBuilder;
+import de.keksuccino.spiffyhud.customization.elements.vanillalike.contextualbar.VanillaLikeContextualBarElementBuilder;
 import de.keksuccino.spiffyhud.customization.elements.vanillalike.food.VanillaLikePlayerFoodElementBuilder;
 import de.keksuccino.spiffyhud.customization.elements.vanillalike.hotbar.VanillaLikeHotbarElementBuilder;
-import de.keksuccino.spiffyhud.customization.elements.vanillalike.jumpmeter.VanillaLikeJumpMeterElementBuilder;
 import de.keksuccino.spiffyhud.customization.elements.vanillalike.mounthealth.VanillaLikeMountHealthElementBuilder;
 import de.keksuccino.spiffyhud.customization.elements.vanillalike.playerhealth.VanillaLikePlayerHealthElementBuilder;
 import de.keksuccino.spiffyhud.customization.elements.vanillalike.scoreboard.VanillaLikeScoreboardElementBuilder;
@@ -28,8 +27,7 @@ public class Elements {
     public static final VanillaLikePlayerFoodElementBuilder VANILLA_LIKE_PLAYER_FOOD = new VanillaLikePlayerFoodElementBuilder();
     public static final VanillaLikePlayerArmorElementBuilder VANILLA_LIKE_PLAYER_ARMOR = new VanillaLikePlayerArmorElementBuilder();
     public static final VanillaLikePlayerAirElementBuilder VANILLA_LIKE_PLAYER_AIR = new VanillaLikePlayerAirElementBuilder();
-    public static final VanillaLikeExperienceElementBuilder VANILLA_LIKE_EXPERIENCE = new VanillaLikeExperienceElementBuilder();
-    public static final VanillaLikeJumpMeterElementBuilder VANILLA_LIKE_JUMP_METER = new VanillaLikeJumpMeterElementBuilder();
+    public static final VanillaLikeContextualBarElementBuilder VANILLA_LIKE_CONTEXTUAL_BAR = new VanillaLikeContextualBarElementBuilder();
     public static final VanillaLikeMountHealthElementBuilder VANILLA_LIKE_MOUNT_HEALTH = new VanillaLikeMountHealthElementBuilder();
     public static final VanillaLikeEffectsElementBuilder VANILLA_LIKE_EFFECTS = new VanillaLikeEffectsElementBuilder();
     public static final VanillaLikeBossOverlayElementBuilder VANILLA_LIKE_BOSS_OVERLAY = new VanillaLikeBossOverlayElementBuilder();
@@ -50,8 +48,7 @@ public class Elements {
         ElementRegistry.register(VANILLA_LIKE_PLAYER_FOOD);
         ElementRegistry.register(VANILLA_LIKE_PLAYER_ARMOR);
         ElementRegistry.register(VANILLA_LIKE_PLAYER_AIR);
-        ElementRegistry.register(VANILLA_LIKE_EXPERIENCE);
-        ElementRegistry.register(VANILLA_LIKE_JUMP_METER);
+        ElementRegistry.register(VANILLA_LIKE_CONTEXTUAL_BAR);
         ElementRegistry.register(VANILLA_LIKE_MOUNT_HEALTH);
         ElementRegistry.register(VANILLA_LIKE_EFFECTS);
         ElementRegistry.register(VANILLA_LIKE_BOSS_OVERLAY);

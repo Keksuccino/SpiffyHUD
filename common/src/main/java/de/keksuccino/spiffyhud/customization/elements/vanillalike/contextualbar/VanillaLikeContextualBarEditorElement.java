@@ -1,13 +1,13 @@
-package de.keksuccino.spiffyhud.customization.elements.vanillalike.experience;
+package de.keksuccino.spiffyhud.customization.elements.vanillalike.contextualbar;
 
 import de.keksuccino.fancymenu.customization.element.AbstractElement;
 import de.keksuccino.fancymenu.customization.element.editor.AbstractEditorElement;
 import de.keksuccino.fancymenu.customization.layout.editor.LayoutEditorScreen;
 import org.jetbrains.annotations.NotNull;
 
-public class VanillaLikeExperienceEditorElement extends AbstractEditorElement {
+public class VanillaLikeContextualBarEditorElement extends AbstractEditorElement {
 
-    public VanillaLikeExperienceEditorElement(@NotNull AbstractElement element, @NotNull LayoutEditorScreen editor) {
+    public VanillaLikeContextualBarEditorElement(@NotNull AbstractElement element, @NotNull LayoutEditorScreen editor) {
         super(element, editor);
         this.settings.setStretchable(false);
         this.settings.setAdvancedSizingSupported(false);
@@ -22,8 +22,8 @@ public class VanillaLikeExperienceEditorElement extends AbstractEditorElement {
 
     }
 
-    public VanillaLikeExperienceElement getElement() {
-        return (VanillaLikeExperienceElement) this.element;
+    public VanillaLikeContextualBarElement getElement() {
+        return (VanillaLikeContextualBarElement) this.element;
     }
 
 }

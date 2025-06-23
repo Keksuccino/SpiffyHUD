@@ -1,4 +1,4 @@
-package de.keksuccino.spiffyhud.customization.elements.vanillalike.experience;
+package de.keksuccino.spiffyhud.customization.elements.vanillalike.contextualbar;
 
 import de.keksuccino.fancymenu.customization.element.AbstractElement;
 import de.keksuccino.fancymenu.customization.element.ElementBuilder;
@@ -13,7 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
-public class VanillaLikeExperienceElement extends AbstractElement {
+public class VanillaLikeContextualBarElement extends AbstractElement {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -26,7 +26,7 @@ public class VanillaLikeExperienceElement extends AbstractElement {
 
     private final Minecraft minecraft = Minecraft.getInstance();
 
-    public VanillaLikeExperienceElement(@NotNull ElementBuilder<?, ?> builder) {
+    public VanillaLikeContextualBarElement(@NotNull ElementBuilder<?, ?> builder) {
         super(builder);
     }
 

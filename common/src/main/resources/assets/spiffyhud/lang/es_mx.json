@@ -40,7 +40,6 @@
   "spiffyhud.elements.vanillalike.player_armor": "[HUD] Barra de armadura del jugador estilo Vanilla",
   "spiffyhud.elements.vanillalike.player_air": "[HUD] Barra de aire del jugador estilo Vanilla",
   "spiffyhud.elements.vanillalike.player_experience": "[HUD] Barra de experiencia del jugador estilo Vanilla",
-  "spiffyhud.elements.vanillalike.jump_meter": "[HUD] Medidor de salto estilo Vanilla",
   "spiffyhud.elements.vanillalike.mount_health": "[HUD] Barra de salud de montura estilo Vanilla",
   "spiffyhud.elements.vanillalike.effects": "[HUD] Overlay de efectos estilo Vanilla",
   "spiffyhud.elements.vanillalike.boss_bars": "[HUD] Overlay de jefe estilo Vanilla",

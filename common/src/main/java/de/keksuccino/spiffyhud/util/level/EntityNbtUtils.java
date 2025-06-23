@@ -15,7 +15,9 @@ import net.minecraft.nbt.ByteArrayTag;
 import net.minecraft.nbt.IntArrayTag;
 import net.minecraft.nbt.LongArrayTag;
 import net.minecraft.nbt.NumericTag;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.storage.TagValueOutput;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,14 +39,14 @@ public class EntityNbtUtils {
 
         try {
             // Save entity data to a compound tag
-            CompoundTag entityData = new CompoundTag();
-            entity.saveWithoutId(entityData);
+            TagValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, entity.registryAccess());
+            entity.saveWithoutId(output);
 
             // Parse the NBT path
             NbtPathArgument.NbtPath nbtPath = NbtPathArgument.nbtPath().parse(new StringReader(path));
 
             // Get the data at the path
-            List<Tag> results = nbtPath.get(entityData);
+            List<Tag> results = nbtPath.get(output.buildResult());
 
             if (results.isEmpty()) {
                 return null;
@@ -95,12 +97,12 @@ public class EntityNbtUtils {
     @NotNull
     public static List<String> getAllNbtPaths(@NotNull Entity entity) {
         // Save entity data to a compound tag
-        CompoundTag entityData = new CompoundTag();
-        entity.saveWithoutId(entityData);
+        TagValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, entity.registryAccess());
+        entity.saveWithoutId(output);
 
         // Collect all paths
         List<String> paths = new ArrayList<>();
-        collectPaths("", entityData, paths);
+        collectPaths("", output.buildResult(), paths);
 
         // Sort for better readability
         Collections.sort(paths);

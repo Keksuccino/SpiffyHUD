@@ -10,10 +10,9 @@ import de.keksuccino.spiffyhud.customization.elements.vanillalike.air.VanillaLik
 import de.keksuccino.spiffyhud.customization.elements.vanillalike.armor.VanillaLikePlayerArmorElement;
 import de.keksuccino.spiffyhud.customization.elements.vanillalike.bossbars.VanillaLikeBossOverlayElement;
 import de.keksuccino.spiffyhud.customization.elements.vanillalike.effects.VanillaLikeEffectsElement;
-import de.keksuccino.spiffyhud.customization.elements.vanillalike.experience.VanillaLikeExperienceElement;
+import de.keksuccino.spiffyhud.customization.elements.vanillalike.contextualbar.VanillaLikeContextualBarElement;
 import de.keksuccino.spiffyhud.customization.elements.vanillalike.food.VanillaLikePlayerFoodElement;
 import de.keksuccino.spiffyhud.customization.elements.vanillalike.hotbar.VanillaLikeHotbarElement;
-import de.keksuccino.spiffyhud.customization.elements.vanillalike.jumpmeter.VanillaLikeJumpMeterElement;
 import de.keksuccino.spiffyhud.customization.elements.vanillalike.mounthealth.VanillaLikeMountHealthElement;
 import de.keksuccino.spiffyhud.customization.elements.vanillalike.playerhealth.VanillaLikePlayerHealthElement;
 import de.keksuccino.spiffyhud.util.SpiffyAlignment;
@@ -23,7 +22,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -47,8 +46,7 @@ public class SpiffyOverlayScreen extends Screen {
     private static final ResourceLocation HOTBAR_ATTACK_INDICATOR_PROGRESS_SPRITE = ResourceLocation.withDefaultNamespace("hud/hotbar_attack_indicator_progress");
 
     private static final VanillaLikeHotbarElement HOTBAR_ELEMENT = Elements.VANILLA_LIKE_HOTBAR.buildDefaultInstance();
-    private static final VanillaLikeJumpMeterElement JUMP_METER_ELEMENT = Elements.VANILLA_LIKE_JUMP_METER.buildDefaultInstance();
-    private static final VanillaLikeExperienceElement EXPERIENCE_ELEMENT = Elements.VANILLA_LIKE_EXPERIENCE.buildDefaultInstance();
+    private static final VanillaLikeContextualBarElement CONTEXTUAL_BAR_ELEMENT = Elements.VANILLA_LIKE_CONTEXTUAL_BAR.buildDefaultInstance();
     private static final VanillaLikePlayerFoodElement FOOD_ELEMENT = Elements.VANILLA_LIKE_PLAYER_FOOD.buildDefaultInstance();
     private static final VanillaLikePlayerArmorElement ARMOR_ELEMENT = Elements.VANILLA_LIKE_PLAYER_ARMOR.buildDefaultInstance();
     private static final VanillaLikePlayerAirElement AIR_ELEMENT = Elements.VANILLA_LIKE_PLAYER_AIR.buildDefaultInstance();
@@ -79,9 +77,7 @@ public class SpiffyOverlayScreen extends Screen {
 
         this.addRenderableWidget(this.buildHotbarWidget()).setMessage(Component.translatable("spiffyhud.elements.dummy.hotbar"));
 
-        this.addRenderableWidget(this.buildJumpMeterWidget()).setMessage(Component.translatable("spiffyhud.elements.dummy.jump_meter"));
-
-        this.addRenderableWidget(this.buildExperienceBarWidget()).setMessage(Component.translatable("spiffyhud.elements.dummy.experience_bar"));
+        this.addRenderableWidget(this.buildContextualBarWidget()).setMessage(Component.translatable("spiffyhud.elements.dummy.experience_bar"));
 
         this.addRenderableWidget(this.buildSelectedItemNameWidget()).setMessage(Component.translatable("spiffyhud.elements.dummy.selected_item_name"));
 
@@ -145,31 +141,17 @@ public class SpiffyOverlayScreen extends Screen {
         }).setWidgetIdentifierFancyMenu(VanillaHudElements.HOTBAR_IDENTIFIER);
     }
 
-    protected RendererWidget buildJumpMeterWidget() {
-        int screenCenter = this.width / 2;
-        int x = screenCenter - 91;
-        int y = (this.height - 32 + 3) - 5; // custom offset
-        int width = 182;
-        int height = 5;
-        return new SpiffyRendererWidget(x, y, width, height, (graphics, mX, mY, partial, gx, gy, gwidth, gheight, widget) -> {
-            JUMP_METER_ELEMENT.anchorPoint = ElementAnchorPoints.TOP_LEFT;
-            JUMP_METER_ELEMENT.posOffsetX = gx;
-            JUMP_METER_ELEMENT.posOffsetY = gy;
-            JUMP_METER_ELEMENT.render(graphics, mX, mY, partial);
-        }).setWidgetIdentifierFancyMenu(VanillaHudElements.JUMP_METER_IDENTIFIER);
-    }
-
-    protected RendererWidget buildExperienceBarWidget() {
+    protected RendererWidget buildContextualBarWidget() {
         int screenCenter = this.width / 2;
         int x = screenCenter - 91;
         int y = this.height - 32 + 3;
         int width = 182;
         int height = 5;
         return new SpiffyRendererWidget(x, y, width, height, (graphics, mX, mY, partial, gx, gy, gwidth, gheight, widget) -> {
-            EXPERIENCE_ELEMENT.anchorPoint = ElementAnchorPoints.TOP_LEFT;
-            EXPERIENCE_ELEMENT.posOffsetX = gx;
-            EXPERIENCE_ELEMENT.posOffsetY = gy;
-            EXPERIENCE_ELEMENT.render(graphics, mX, mY, partial);
+            CONTEXTUAL_BAR_ELEMENT.anchorPoint = ElementAnchorPoints.TOP_LEFT;
+            CONTEXTUAL_BAR_ELEMENT.posOffsetX = gx;
+            CONTEXTUAL_BAR_ELEMENT.posOffsetY = gy;
+            CONTEXTUAL_BAR_ELEMENT.render(graphics, mX, mY, partial);
         }).setWidgetIdentifierFancyMenu(VanillaHudElements.CONTEXTUAL_BAR_IDENTIFIER);
     }
 
@@ -329,7 +311,7 @@ public class SpiffyOverlayScreen extends Screen {
         int crosshairY = (this.height - 15) / 2;
         return new SpiffyRendererWidget(crosshairX, crosshairY, 15, 15, (graphics, mX, mY, partial, gx, gy, gwidth, gheight, widget) -> {
             // In 1.21.5, use the RenderType.crosshair() method for proper rendering
-            graphics.blitSprite(RenderType::crosshair, CROSSHAIR_SPRITE, crosshairX, crosshairY, 15, 15);
+            graphics.blitSprite(RenderPipelines.CROSSHAIR, CROSSHAIR_SPRITE, crosshairX, crosshairY, 15, 15);
         }).setWidgetIdentifierFancyMenu(VanillaHudElements.CROSSHAIR_IDENTIFIER);
     }
 
@@ -348,22 +330,22 @@ public class SpiffyOverlayScreen extends Screen {
                     int fillWidth = (int)(progress * 16.0f);
                     
                     // Use crosshair RenderType for attack indicator background
-                    graphics.blitSprite(RenderType::crosshair, CROSSHAIR_ATTACK_INDICATOR_BACKGROUND_SPRITE, crossX, crossY, 16, 4);
+                    graphics.blitSprite(RenderPipelines.CROSSHAIR, CROSSHAIR_ATTACK_INDICATOR_BACKGROUND_SPRITE, crossX, crossY, 16, 4);
                     
                     if (fillWidth > 0) {
                         // Use crosshair RenderType for attack indicator progress
-                        graphics.blitSprite(RenderType::crosshair, CROSSHAIR_ATTACK_INDICATOR_PROGRESS_SPRITE, 16, 4, 0, 0, crossX, crossY, fillWidth, 4);
+                        graphics.blitSprite(RenderPipelines.CROSSHAIR, CROSSHAIR_ATTACK_INDICATOR_PROGRESS_SPRITE, 16, 4, 0, 0, crossX, crossY, fillWidth, 4);
                     }
 
                     // Render hotbar indicator with RenderType.guiTextured
                     int fillHeight = (int)(progress * 18.0f);
                     
                     // Render background
-                    graphics.blitSprite(RenderType::guiTextured, HOTBAR_ATTACK_INDICATOR_BACKGROUND_SPRITE, hotX, hotY, 18, 18);
+                    graphics.blitSprite(RenderPipelines.GUI_TEXTURED, HOTBAR_ATTACK_INDICATOR_BACKGROUND_SPRITE, hotX, hotY, 18, 18);
                     
                     if (fillHeight > 0) {
                         // Render progress bar
-                        graphics.blitSprite(RenderType::guiTextured, HOTBAR_ATTACK_INDICATOR_PROGRESS_SPRITE, 18, 18, 0, 18 - fillHeight, hotX, hotY + 18 - fillHeight, 18, fillHeight);
+                        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, HOTBAR_ATTACK_INDICATOR_PROGRESS_SPRITE, 18, 18, 0, 18 - fillHeight, hotX, hotY + 18 - fillHeight, 18, fillHeight);
                     }
                 }
         ).setWidgetIdentifierFancyMenu(VanillaHudElements.ATTACK_INDICATOR_IDENTIFIER);
@@ -381,14 +363,14 @@ public class SpiffyOverlayScreen extends Screen {
 
         return new SpiffyRendererWidget(textX, textY, totalWidth, totalHeight,
                 (graphics, mouseX, mouseY, partial, x, y, width, height, widget) -> {
-                    graphics.pose().pushPose();
-                    graphics.pose().translate((float)this.width / 2, (float)this.height / 2, 0.0f);
+                    graphics.pose().pushMatrix();
+                    graphics.pose().translate((float)this.width / 2, (float)this.height / 2);
                     //Render title
-                    graphics.pose().pushPose();
-                    graphics.pose().scale(4.0f, 4.0f, 4.0f);
+                    graphics.pose().pushMatrix();
+                    graphics.pose().scale(4.0f, 4.0f);
                     graphics.drawString(font, title, -titleWidth / 2, -12, -1);
-                    graphics.pose().popPose();
-                    graphics.pose().popPose();
+                    graphics.pose().popMatrix();
+                    graphics.pose().popMatrix();
                 }
         ).setWidgetIdentifierFancyMenu(VanillaHudElements.TITLE_IDENTIFIER);
 
@@ -402,13 +384,13 @@ public class SpiffyOverlayScreen extends Screen {
         int textX = (this.width / 2) - (totalWidth / 2);
         int textY = (this.height / 2) + (6 * 2);
         return new SpiffyRendererWidget(textX, textY, totalWidth, totalHeight, (graphics, mX, mY, partial, gx, gy, gwidth, gheight, widget) -> {
-            graphics.pose().pushPose();
-            graphics.pose().translate(this.width / 2, this.height / 2, 0.0f);
-            graphics.pose().pushPose();
-            graphics.pose().scale(2.0f, 2.0f, 2.0f);
+            graphics.pose().pushMatrix();
+            graphics.pose().translate(this.width / 2, this.height / 2);
+            graphics.pose().pushMatrix();
+            graphics.pose().scale(2.0f, 2.0f);
             graphics.drawString(Minecraft.getInstance().font, subtitle, -subtitleWidth / 2, 6, 0xFFFFFF);
-            graphics.pose().popPose();
-            graphics.pose().popPose();
+            graphics.pose().popMatrix();
+            graphics.pose().popMatrix();
         }).setWidgetIdentifierFancyMenu(VanillaHudElements.SUBTITLE_IDENTIFIER);
     }
 
