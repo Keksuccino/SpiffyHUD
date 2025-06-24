@@ -111,10 +111,10 @@ public class GuiEntityRenderer {
         Vector3f translation = new Vector3f(0.0f, entity.getBbHeight() / 2.0f, 0.0f);
 
         // This fixes the entity being cut off at the edges
-        posX -= 100;
-        posY -= 100;
-        boxWidth += 200;
-        boxHeight += 200;
+        posX -= 10000;
+        posY -= 10000;
+        boxWidth += 20000;
+        boxHeight += 20000;
 
         // Submit the entity render state using the new 1.21.6 method
         graphics.submitEntityRenderState(
