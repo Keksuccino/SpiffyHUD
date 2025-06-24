@@ -1,21 +1,15 @@
 package de.keksuccino.spiffyhud.customization.elements.slot;
 
-import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.vertex.PoseStack;
 import de.keksuccino.fancymenu.customization.element.AbstractElement;
 import de.keksuccino.fancymenu.customization.element.ElementBuilder;
 import de.keksuccino.fancymenu.customization.placeholder.PlaceholderParser;
 import de.keksuccino.fancymenu.util.MathUtils;
 import de.keksuccino.fancymenu.util.rendering.DrawableColor;
 import de.keksuccino.fancymenu.util.rendering.ui.UIBase;
-import de.keksuccino.spiffyhud.util.rendering.BlockRenderingUtils;
-import de.keksuccino.spiffyhud.util.rendering.ItemRenderingUtils;
 import de.keksuccino.spiffyhud.util.rendering.SpiffyRenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.ItemStack;
@@ -113,11 +107,7 @@ public class SlotElement extends AbstractElement {
         pose.scale(scale, scale);
 
         // Now render the item at (0,0) because the translation has been applied.
-        ItemRenderingUtils.setItemOpacity(this.opacity);
-        BlockRenderingUtils.setBlockOpacity(this.opacity);
         graphics.renderItem(stack, 0, 0);
-        BlockRenderingUtils.resetBlockOpacity();
-        ItemRenderingUtils.resetItemOpacity();
 
         // Render durability bar if enabled and needed
         if (this.showDurability && stack.isBarVisible()) {

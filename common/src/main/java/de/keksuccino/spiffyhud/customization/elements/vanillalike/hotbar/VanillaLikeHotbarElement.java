@@ -1,14 +1,10 @@
 package de.keksuccino.spiffyhud.customization.elements.vanillalike.hotbar;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import de.keksuccino.fancymenu.customization.element.AbstractElement;
 import de.keksuccino.fancymenu.customization.element.ElementBuilder;
-import de.keksuccino.spiffyhud.util.rendering.BlockRenderingUtils;
-import de.keksuccino.spiffyhud.util.rendering.ItemRenderingUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.HumanoidArm;
@@ -155,11 +151,7 @@ public class VanillaLikeHotbarElement extends AbstractElement {
         }
 
         // Render the item within the slot.
-        ItemRenderingUtils.setItemOpacity(this.opacity);
-        BlockRenderingUtils.setBlockOpacity(this.opacity);
         graphics.renderItem(player, stack, slotX, slotY, renderSeed);
-        BlockRenderingUtils.resetBlockOpacity();
-        ItemRenderingUtils.resetItemOpacity();
 
         // If a pop animation was applied, revert the transformation.
         if (popTimeRemaining > 0.0f) {

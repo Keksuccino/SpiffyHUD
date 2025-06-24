@@ -41,7 +41,7 @@ public abstract class MixinChatComponent {
      * Modify chat translation to position it correctly based on corner setting
      * This only handles LEFT vs RIGHT positioning
      */
-    @WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lorg/joml/Matrix3x2fStack;translate(FF)Lorg/joml/Matrix3x2f;", ordinal = 0))
+    @WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lorg/joml/Matrix3x2fStack;translate(FF)Lorg/joml/Matrix3x2f;", ordinal = 0, remap = false))
     private Matrix3x2f modifyChatTranslation_Spiffy(Matrix3x2fStack instance, float x, float y, Operation<Matrix3x2f> original) {
         if (ChatCustomizerHandler.isChatRightAligned()) {
             // For right-aligned chat, adjust x position

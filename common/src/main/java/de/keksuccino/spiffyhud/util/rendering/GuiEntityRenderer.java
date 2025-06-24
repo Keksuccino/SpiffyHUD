@@ -102,8 +102,6 @@ public class GuiEntityRenderer {
         EntityRenderState renderState = renderer.createRenderState(entity, 1.0f);
         
         // Set opacity for rendering
-        ItemRenderingUtils.setItemOpacity(opacity);
-        BlockRenderingUtils.setBlockOpacity(opacity);
         EntityRenderingUtils.submitLivingEntityOpacity(renderState, opacity);
         
         // Create rotation quaternion (180° about Z-axis for facing)
@@ -130,10 +128,6 @@ public class GuiEntityRenderer {
             posX + boxWidth,
             posY + boxHeight
         );
-        
-        // Reset opacity
-        BlockRenderingUtils.resetBlockOpacity();
-        ItemRenderingUtils.resetItemOpacity();
 
         // Restore the entity's original rotation values.
         entity.yBodyRot = origYBodyRot;
