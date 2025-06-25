@@ -100,6 +100,8 @@ public class GuiEntityRenderer {
         EntityRenderDispatcher dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
         EntityRenderer<? super LivingEntity, ?> renderer = dispatcher.getRenderer(entity);
         EntityRenderState renderState = renderer.createRenderState(entity, 1.0f);
+        renderState.hitboxesRenderState = null;
+        renderState.serverHitboxesRenderState = null;
         
         // Set opacity for rendering
         EntityRenderingUtils.submitLivingEntityOpacity(renderState, opacity);

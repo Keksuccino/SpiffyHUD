@@ -14,10 +14,12 @@
     "client.MixinEditorElementSettings",
     "client.MixinGameRenderer",
     "client.MixinGuiGraphics",
+    "client.MixinGuiRenderer",
     "client.MixinLayout",
     "client.MixinLayoutEditorUI",
     "client.MixinLivingEntityRenderer",
     "client.MixinMinecraft",
+    "client.MixinPictureInPictureRenderer",
     "client.MixinScreenCustomization",
     "client.MixinVanillaWidgetEditorElement"
   ],
