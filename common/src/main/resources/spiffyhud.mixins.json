@@ -10,6 +10,7 @@
     "client.MixinChatComponent",
     "client.MixinChatScreen",
     "client.MixinCustomizationOverlayUI",
+    "client.MixinGuiGraphics",
     "client.MixinEditorElementSettings",
     "client.MixinLayout",
     "client.MixinLayoutEditorUI",

@@ -112,5 +112,12 @@
   "spiffyhud.requirements.is_player_in_structure.desc": "Checks if the player is currently in a specific structure type.\n§xSpiffy needs to be installed on the server for this to work!",
   "spiffyhud.requirements.is_player_in_structure.key": "Structure key to check for:",
   "spiffyhud.elements.vanillalike.attack_indicator": "[HUD] Vanilla-Like Attack Indicator",
-  "spiffyhud.elements.vanillalike.attack_indicator.is_hotbar": "Use Hotbar Indicator Type: %s"
+  "spiffyhud.elements.vanillalike.attack_indicator.is_hotbar": "Use Hotbar Indicator Type: %s",
+  "spiffyhud.elements.hud_eraser": "[HUD] Eraser",
+  "spiffyhud.elements.hud_eraser.desc": "The eraser makes it possible to erase parts of the default HUD without needing to hide a HUD element.\n\nThis is especially useful if you want to remove HUD elements added by other mods that Spiffy can't customize/hide.\n\nYou need to FULLY COVER the area the HUD element gets rendered to hide it! Elements that are not 100%% covered by the eraser will NOT get removed.",
+  "spiffyhud.aggression_level": "Aggression Level: %s",
+  "spiffyhud.aggression_level.desc": "How aggressive the eraser should try to remove HUD elements.\n\n§l- Normal:§r The eraser will not erase elements added via SpiffyHUD.\n§l- Aggressive:§r The eraser will remove both Vanilla and SpiffyHUD elements.\n\nUse §lAggressive§r if the normal level does not remove the target HUD element.",
+  "spiffyhud.aggression_level.normal": "Normal",
+  "spiffyhud.aggression_level.aggressive": "Aggressive",
+  "spiffyhud.aggression_level.super_aggressive": "Super Aggressive"
 }
