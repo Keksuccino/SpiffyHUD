@@ -1,4 +1,4 @@
-CHANGELOG | SPIFFYHUD v3.1.0
+CHANGELOG | SPIFFYHUD v3.1.0 [ !!  WIP !! NOT FINISHED YET !! WIP !! ]
 
 - Added "Eraser" element that allows you to hide/erase elements from the HUD without actually hiding the HUD element
   - This is useful to hide HUD elements from other mods that are not customizable with SpiffyHUD
