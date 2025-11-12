@@ -11,4 +11,4 @@ CHANGELOG | SPIFFYHUD v3.1.0 [ !!  WIP !! NOT FINISHED YET !! WIP !! ]
 - Fixed Vanilla-like hotbar renders items twice (#31)
 - Fixed crash related to Overlay Message widget's color calculation (#36)
 - Fixed "Vanilla-Like Player Health" element showing an additional empty row of hearts when the player has absorption hearts (#43)
-- Fixed "Vanilla-Like Hotbar" element and "Inventory Slot" element not showing item cooldowns from Ender Pearls, Crossbows, etc. (#51)
+- Fixed "Vanilla-Like Hotbar" and "Inventory Slot" elements not showing item cooldowns from Ender Pearls, Crossbows, etc. (#51)
