@@ -9,6 +9,7 @@ import de.keksuccino.fancymenu.customization.layer.ScreenCustomizationLayer;
 import de.keksuccino.fancymenu.customization.layer.ScreenCustomizationLayerHandler;
 import de.keksuccino.spiffyhud.SpiffyUtils;
 import de.keksuccino.spiffyhud.customization.SpiffyGui;
+import de.keksuccino.spiffyhud.customization.SpiffyOverlayScreen;
 import de.keksuccino.spiffyhud.customization.VanillaHudElements;
 import de.keksuccino.spiffyhud.customization.elements.eraser.EraserElement;
 import de.keksuccino.spiffyhud.customization.elements.overlayremover.OverlayRemoverElement;
@@ -18,6 +19,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -68,8 +70,20 @@ public class MixinGui {
 
         if (this.spiffyGui == null) this.spiffyGui = SpiffyGui.INSTANCE;
 
+        Minecraft minecraft = Minecraft.getInstance();
+        Screen previousScreen = minecraft.screen;
+        SpiffyOverlayScreen overlayScreen = null;
+        boolean swappedScreen = false;
+
         try {
-            ScreenCustomizationLayer layer = ScreenCustomizationLayerHandler.getLayerOfScreen(SpiffyUtils.DUMMY_SPIFFY_OVERLAY_SCREEN);
+            overlayScreen = this.spiffyGui.getOverlayScreen();
+            if ((overlayScreen != null) && (previousScreen != overlayScreen)) {
+                minecraft.screen = overlayScreen;
+                swappedScreen = true;
+            }
+
+            ScreenCustomizationLayer layer = ScreenCustomizationLayerHandler.getLayerOfScreen(
+                    (overlayScreen != null) ? overlayScreen : SpiffyUtils.DUMMY_SPIFFY_OVERLAY_SCREEN);
             if (layer != null) {
                 for (AbstractElement abstractElement : layer.allElements) {
                     if ((abstractElement instanceof EraserElement eraser) && eraser.shouldRender() &&
@@ -90,6 +104,10 @@ public class MixinGui {
             }
         } catch (Exception ex) {
             LOGGER_SPIFFY.error("[SPIFFY HUD] Failed to apply Eraser element areas to Gui!", ex);
+        } finally {
+            if (swappedScreen) {
+                minecraft.screen = previousScreen;
+            }
         }
 
     }

@@ -83,6 +83,11 @@ public class SpiffyGui implements Renderable {
         return l;
     }
 
+    @NotNull
+    public SpiffyOverlayScreen getOverlayScreen() {
+        return spiffyOverlayScreen;
+    }
+
     public void onResize() {
         try {
             this.initOverlayScreen(true);
