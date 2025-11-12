@@ -119,5 +119,7 @@
   "spiffyhud.aggression_level.desc": "How aggressive the eraser should try to remove HUD elements.\n\n§l- Normal:§r The eraser will not erase elements added via SpiffyHUD.\n§l- Aggressive:§r The eraser will remove both Vanilla and SpiffyHUD elements.\n\nUse §lAggressive§r if the normal level does not remove the target HUD element.",
   "spiffyhud.aggression_level.normal": "Normal",
   "spiffyhud.aggression_level.aggressive": "Aggressive",
-  "spiffyhud.aggression_level.super_aggressive": "Super Aggressive"
+  "spiffyhud.aggression_level.super_aggressive": "Super Aggressive",
+  "spiffyhud.elements.single_line_text.scale": "Set Text Scale",
+  "spiffyhud.elements.single_line_text.scale.desc": "Sets the multiplier that gets applied to the text size as float value (e.g.: 0.5, 1.0, 2.5, etc.).\nSupports placeholders that resolve to numbers."
 }
