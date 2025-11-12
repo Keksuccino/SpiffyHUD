@@ -9,4 +9,3 @@ CHANGELOG | SPIFFYHUD v3.1.0 [ !!  WIP !! NOT FINISHED YET !! WIP !! ]
     - Aggressive mode will try to erase EVERYTHING, including Spiffy elements, which should get used in cases where Normal is not enough to hide the target element
 - Fixed Vanilla-like hotbar renders items twice (#31)
 - Fixed crash related to Overlay Message widget's color calculation (#36)
-- 
