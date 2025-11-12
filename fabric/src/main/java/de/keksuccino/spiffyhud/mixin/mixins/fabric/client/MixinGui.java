@@ -83,24 +83,18 @@ public class MixinGui {
                 minecraft.screen = overlayScreen;
                 swappedScreen = true;
             }
-
-            ScreenCustomizationLayer layer = ScreenCustomizationLayerHandler.getLayerOfScreen(
-                    (overlayScreen != null) ? overlayScreen : SpiffyUtils.DUMMY_SPIFFY_OVERLAY_SCREEN);
+            ScreenCustomizationLayer layer = ScreenCustomizationLayerHandler.getLayerOfScreen((overlayScreen != null) ? overlayScreen : SpiffyUtils.DUMMY_SPIFFY_OVERLAY_SCREEN);
             if (layer != null) {
                 for (AbstractElement abstractElement : layer.allElements) {
-                    if ((abstractElement instanceof EraserElement eraser) && eraser.shouldRender() &&
-                            ((eraser.aggressionLevel == EraserElement.AggressionLevel.AGGRESSIVE) || (eraser.aggressionLevel == EraserElement.AggressionLevel.SUPER_AGGRESSIVE))) {
+                    if ((abstractElement instanceof EraserElement eraser) && eraser.shouldRender() && (eraser.aggressionLevel == EraserElement.AggressionLevel.AGGRESSIVE)) {
                         this.aggressionLevelAggressiveCount_Spiffy++;
-                        ExclusionAreaUtil.pushExclusionArea(graphics, eraser.getAbsoluteX(), eraser.getAbsoluteY(),
-                                eraser.getAbsoluteX() + eraser.getAbsoluteWidth(), eraser.getAbsoluteY() + eraser.getAbsoluteHeight());
+                        ExclusionAreaUtil.pushExclusionArea(graphics, eraser.getAbsoluteX(), eraser.getAbsoluteY(), eraser.getAbsoluteX() + eraser.getAbsoluteWidth(), eraser.getAbsoluteY() + eraser.getAbsoluteHeight());
                     }
                 }
                 for (AbstractElement abstractElement : layer.allElements) {
-                    if ((abstractElement instanceof EraserElement eraser) && eraser.shouldRender() &&
-                            (eraser.aggressionLevel == EraserElement.AggressionLevel.NORMAL)) {
+                    if ((abstractElement instanceof EraserElement eraser) && eraser.shouldRender() && (eraser.aggressionLevel == EraserElement.AggressionLevel.NORMAL)) {
                         this.aggressionLevelNormalCount_Spiffy++;
-                        ExclusionAreaUtil.pushExclusionArea(graphics, eraser.getAbsoluteX(), eraser.getAbsoluteY(),
-                                eraser.getAbsoluteX() + eraser.getAbsoluteWidth(), eraser.getAbsoluteY() + eraser.getAbsoluteHeight());
+                        ExclusionAreaUtil.pushExclusionArea(graphics, eraser.getAbsoluteX(), eraser.getAbsoluteY(), eraser.getAbsoluteX() + eraser.getAbsoluteWidth(), eraser.getAbsoluteY() + eraser.getAbsoluteHeight());
                     }
                 }
             }

@@ -41,12 +41,9 @@ public abstract class MixinScreenCustomizationLayer {
         this.spiffyHud$aggressiveEraserDepth = 0;
 
         for (AbstractElement abstractElement : this.allElements) {
-            if ((abstractElement instanceof EraserElement eraser) && eraser.shouldRender() &&
-                    ((eraser.aggressionLevel == EraserElement.AggressionLevel.AGGRESSIVE) ||
-                            (eraser.aggressionLevel == EraserElement.AggressionLevel.SUPER_AGGRESSIVE))) {
+            if ((abstractElement instanceof EraserElement eraser) && eraser.shouldRender() && (eraser.aggressionLevel == EraserElement.AggressionLevel.AGGRESSIVE)) {
                 this.spiffyHud$aggressiveEraserDepth++;
-                ExclusionAreaUtil.pushExclusionArea(graphics, eraser.getAbsoluteX(), eraser.getAbsoluteY(),
-                        eraser.getAbsoluteX() + eraser.getAbsoluteWidth(), eraser.getAbsoluteY() + eraser.getAbsoluteHeight());
+                ExclusionAreaUtil.pushExclusionArea(graphics, eraser.getAbsoluteX(), eraser.getAbsoluteY(), eraser.getAbsoluteX() + eraser.getAbsoluteWidth(), eraser.getAbsoluteY() + eraser.getAbsoluteHeight());
             }
         }
     }

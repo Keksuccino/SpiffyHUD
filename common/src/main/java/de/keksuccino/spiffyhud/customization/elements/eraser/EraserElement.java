@@ -51,8 +51,7 @@ public class EraserElement extends AbstractElement {
     public enum AggressionLevel implements LocalizedCycleEnum<AggressionLevel> {
 
         NORMAL("normal"),
-        AGGRESSIVE("aggressive"),
-        SUPER_AGGRESSIVE("super_aggressive");
+        AGGRESSIVE("aggressive");
 
         private final String name;
 
