@@ -3,6 +3,7 @@ package de.keksuccino.spiffyhud.mixin.mixins.fabric.client;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import de.keksuccino.fancymenu.customization.element.AbstractElement;
 import de.keksuccino.fancymenu.customization.layer.ScreenCustomizationLayer;
@@ -13,6 +14,7 @@ import de.keksuccino.spiffyhud.customization.SpiffyOverlayScreen;
 import de.keksuccino.spiffyhud.customization.VanillaHudElements;
 import de.keksuccino.spiffyhud.customization.elements.eraser.EraserElement;
 import de.keksuccino.spiffyhud.customization.elements.overlayremover.OverlayRemoverElement;
+import de.keksuccino.spiffyhud.util.rendering.SpiffyRenderUtils;
 import de.keksuccino.spiffyhud.util.rendering.exclusion.ExclusionAreaUtil;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -123,7 +125,11 @@ public class MixinGui {
         if (this.spiffyGui == null) this.spiffyGui = SpiffyGui.INSTANCE;
 
         if (!Minecraft.getInstance().options.hideGui) {
+            RenderSystem.enableBlend();
+            graphics.pose().pushPose();
             this.spiffyGui.render(graphics, -10000000, -10000000, deltaTracker.getGameTimeDeltaTicks());
+            graphics.pose().popPose();
+            RenderSystem.disableBlend();
         }
 
     }
