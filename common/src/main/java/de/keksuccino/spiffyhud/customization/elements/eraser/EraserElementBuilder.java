@@ -34,6 +34,16 @@ public class EraserElementBuilder extends ElementBuilder<EraserElement, EraserEd
     }
 
     @Override
+    public @Nullable EraserElement deserializeElementInternal(@NotNull SerializedElement serialized) {
+        EraserElement e = super.deserializeElementInternal(serialized);
+        if (e != null) {
+            // Fix "Stay on Screen" resetting itself for element types that have it disabled by default
+            e.stayOnScreen = this.deserializeBoolean(e.stayOnScreen, serialized.getValue("stay_on_screen"));
+        }
+        return e;
+    }
+
+    @Override
     public EraserElement deserializeElement(@NotNull SerializedElement serialized) {
 
         EraserElement element = this.buildDefaultInstance();
