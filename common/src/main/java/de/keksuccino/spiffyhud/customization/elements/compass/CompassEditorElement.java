@@ -13,7 +13,6 @@ public class CompassEditorElement extends AbstractEditorElement {
 
     public CompassEditorElement(@NotNull AbstractElement element, @NotNull LayoutEditorScreen editor) {
         super(element, editor);
-        this.settings.setParallaxAllowed(false);
         this.settings.setAutoSizingAllowed(false);
     }
 

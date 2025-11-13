@@ -53,6 +53,7 @@ public class CompassElement extends AbstractElement {
         super(builder);
         this.stickyAnchor = true;
         this.stayOnScreen = false;
+        this.supportsTilting = false;
     }
 
     @Override
@@ -169,6 +170,8 @@ public class CompassElement extends AbstractElement {
     }
 
     private void drawScaledCenteredString(@NotNull GuiGraphics graphics, @NotNull String text, float centerX, float centerY, float scale, int color, boolean outline) {
+        RenderSystem.disableDepthTest();
+        RenderingUtils.setDepthTestLocked(true);
         if (text.isEmpty() || scale <= 0.0F) {
             return;
         }
@@ -181,6 +184,7 @@ public class CompassElement extends AbstractElement {
         pose.pushPose();
         pose.translate(drawX, drawY, 0);
         pose.scale(scale, scale, 1.0F);
+        RenderSystem.enableBlend();
         if (outline) {
             int blackColor = applyOpacity(DrawableColor.BLACK.getColorInt());
             graphics.drawString(font, text, -1, 0, blackColor, false);
@@ -194,6 +198,8 @@ public class CompassElement extends AbstractElement {
         }
         graphics.drawString(font, text, 0, 0, color, false);
         pose.popPose();
+        RenderingUtils.setDepthTestLocked(false);
+        RenderSystem.enableDepthTest();
     }
 
     private ResolvedColors resolveColors() {
