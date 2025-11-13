@@ -38,6 +38,9 @@ public class CompassEditorElement extends AbstractEditorElement {
         this.addColorInput("needle_color", Component.translatable("spiffyhud.elements.player_compass.color.needle"), CompassElement.DEFAULT_NEEDLE_COLOR_STRING)
                 .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.color.needle.desc")));
 
+        this.addColorInput("death_pointer_color", Component.translatable("spiffyhud.elements.player_compass.color.death_pointer"), CompassElement.DEFAULT_DEATH_POINTER_COLOR_STRING)
+                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.color.death_pointer.desc")));
+
         this.addToggleContextMenuEntryTo(this.rightClickMenu, "cardinal_outline",
                         CompassEditorElement.class,
                         consumes -> consumes.getElement().cardinalOutlineEnabled,
@@ -50,6 +53,13 @@ public class CompassEditorElement extends AbstractEditorElement {
                         consumes -> consumes.getElement().degreeOutlineEnabled,
                         (editorElement, value) -> editorElement.getElement().degreeOutlineEnabled = value,
                         "spiffyhud.elements.player_compass.degree_outline")
+                .setStackable(true);
+
+        this.addToggleContextMenuEntryTo(this.rightClickMenu, "death_pointer_enabled",
+                        CompassEditorElement.class,
+                        consumes -> consumes.getElement().deathPointerEnabled,
+                        (editorElement, value) -> editorElement.getElement().deathPointerEnabled = value,
+                        "spiffyhud.elements.player_compass.death_pointer")
                 .setStackable(true);
     }
 
@@ -71,6 +81,7 @@ public class CompassEditorElement extends AbstractEditorElement {
             case "cardinal_text_color" -> element.cardinalTextColor;
             case "number_text_color" -> element.numberTextColor;
             case "needle_color" -> element.needleColor;
+            case "death_pointer_color" -> element.deathPointerColor;
             default -> null;
         };
     }
@@ -85,6 +96,7 @@ public class CompassEditorElement extends AbstractEditorElement {
             case "cardinal_text_color" -> element.cardinalTextColor = value;
             case "number_text_color" -> element.numberTextColor = value;
             case "needle_color" -> element.needleColor = value;
+            case "death_pointer_color" -> element.deathPointerColor = value;
             default -> {
             }
         }

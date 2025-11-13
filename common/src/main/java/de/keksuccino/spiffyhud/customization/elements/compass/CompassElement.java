@@ -6,13 +6,18 @@ import de.keksuccino.fancymenu.customization.element.ElementBuilder;
 import de.keksuccino.fancymenu.customization.placeholder.PlaceholderParser;
 import de.keksuccino.fancymenu.util.rendering.DrawableColor;
 import de.keksuccino.fancymenu.util.rendering.RenderingUtils;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.GlobalPos;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Optional;
 
 public class CompassElement extends AbstractElement {
 
@@ -23,6 +28,7 @@ public class CompassElement extends AbstractElement {
     private static final int DEFAULT_CARDINAL_TEXT_COLOR = 0xFFFFFFFF;
     private static final int DEFAULT_NUMBER_TEXT_COLOR = 0xFFDCDCDC;
     private static final int DEFAULT_NEEDLE_COLOR = 0xFFFF4545;
+    private static final int DEFAULT_DEATH_POINTER_COLOR = 0xFF66C3FF;
 
     public static final String DEFAULT_BACKGROUND_COLOR_STRING = "#B0101010";
     public static final String DEFAULT_BAR_COLOR_STRING = "#C0FFFFFF";
@@ -31,6 +37,7 @@ public class CompassElement extends AbstractElement {
     public static final String DEFAULT_CARDINAL_TEXT_COLOR_STRING = "#FFFFFFFF";
     public static final String DEFAULT_NUMBER_TEXT_COLOR_STRING = "#FFDCDCDC";
     public static final String DEFAULT_NEEDLE_COLOR_STRING = "#FFFF4545";
+    public static final String DEFAULT_DEATH_POINTER_COLOR_STRING = "#FF66C3FF";
 
     @NotNull public String backgroundColor = DEFAULT_BACKGROUND_COLOR_STRING;
     @NotNull public String barColor = DEFAULT_BAR_COLOR_STRING;
@@ -41,6 +48,8 @@ public class CompassElement extends AbstractElement {
     @NotNull public String needleColor = DEFAULT_NEEDLE_COLOR_STRING;
     public boolean cardinalOutlineEnabled = true;
     public boolean degreeOutlineEnabled = true;
+    public boolean deathPointerEnabled = true;
+    @NotNull public String deathPointerColor = DEFAULT_DEATH_POINTER_COLOR_STRING;
 
     private final Minecraft minecraft = Minecraft.getInstance();
 
@@ -60,6 +69,7 @@ public class CompassElement extends AbstractElement {
         int y = this.getAbsoluteY();
 
         CompassReading reading = this.collectReading(partial);
+        DeathPointerData deathPointer = this.collectDeathPointer();
         ResolvedColors colors = this.resolveColors();
         Font font = this.minecraft.font;
         CompassLayout layout = this.computeLayout(font, x, y, width, height);
@@ -71,6 +81,7 @@ public class CompassElement extends AbstractElement {
         this.drawCardinalLabels(graphics, layout, colors);
         this.drawDegreeNumbers(graphics, layout, colors);
         this.drawNeedle(graphics, layout, reading, colors);
+        this.drawDeathNeedle(graphics, layout, deathPointer, colors);
         RenderingUtils.resetShaderColor(graphics);
     }
 
@@ -136,6 +147,18 @@ public class CompassElement extends AbstractElement {
         graphics.fill(xi, layout.y(), xi + needleWidth, layout.y() + layout.height(), colors.needleColor());
     }
 
+    private void drawDeathNeedle(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @Nullable DeathPointerData pointer, @NotNull ResolvedColors colors) {
+        if (pointer == null) {
+            return;
+        }
+        float signed = Mth.clamp(pointer.signedDegrees(), -180.0F, 180.0F);
+        float x = this.computeScreenX(layout, signed);
+        int needleWidth = Math.max(1, Mth.floor(layout.width() * 0.006F));
+        int half = Math.max(0, needleWidth / 2);
+        int xi = Mth.clamp(Mth.floor(x) - half, layout.x(), layout.x() + layout.width() - needleWidth);
+        graphics.fill(xi, layout.y(), xi + needleWidth, layout.y() + layout.height(), colors.deathNeedleColor());
+    }
+
     private float computeScreenX(@NotNull CompassLayout layout, float signedDegrees) {
         float clamped = Mth.clamp(signedDegrees, -180.0F, 180.0F);
         float normalized = (clamped / 360.0F) + 0.5F;
@@ -179,7 +202,8 @@ public class CompassElement extends AbstractElement {
                 this.applyOpacity(parseColor(this.minorTickColor, DEFAULT_MINOR_TICK_COLOR)),
                 this.applyOpacity(parseColor(this.cardinalTextColor, DEFAULT_CARDINAL_TEXT_COLOR)),
                 this.applyOpacity(parseColor(this.numberTextColor, DEFAULT_NUMBER_TEXT_COLOR)),
-                this.applyOpacity(parseColor(this.needleColor, DEFAULT_NEEDLE_COLOR))
+                this.applyOpacity(parseColor(this.needleColor, DEFAULT_NEEDLE_COLOR)),
+                this.applyOpacity(parseColor(this.deathPointerColor, DEFAULT_DEATH_POINTER_COLOR))
         );
     }
 
@@ -227,6 +251,39 @@ public class CompassElement extends AbstractElement {
         return normalized;
     }
 
+    @Nullable
+    private DeathPointerData collectDeathPointer() {
+        if (!this.deathPointerEnabled) {
+            return null;
+        }
+        if (this.isEditor()) {
+            return new DeathPointerData(60.0F);
+        }
+        Player player = this.minecraft.player;
+        if (player == null) {
+            return null;
+        }
+        Level level = player.level();
+        Optional<GlobalPos> optional = player.getLastDeathLocation();
+        if (optional.isEmpty()) {
+            return null;
+        }
+        GlobalPos globalPos = optional.get();
+        if (!level.dimension().equals(globalPos.dimension())) {
+            return null;
+        }
+        BlockPos deathPos = globalPos.pos();
+        double dx = (double) deathPos.getX() + 0.5D - player.getX();
+        double dz = (double) deathPos.getZ() + 0.5D - player.getZ();
+        double distanceSq = dx * dx + dz * dz;
+        if (distanceSq < 1.0E-4D) {
+            return null;
+        }
+        double angleRad = Math.atan2(dx, -dz);
+        float degrees = (float) (angleRad * (180.0D / Math.PI));
+        return new DeathPointerData(degrees);
+    }
+
     private static float toSigned(float headingDegrees) {
         return (headingDegrees > 180.0F) ? (headingDegrees - 360.0F) : headingDegrees;
     }
@@ -261,9 +318,12 @@ public class CompassElement extends AbstractElement {
     }
 
     private record ResolvedColors(int backgroundColor, int barColor, int majorTickColor, int minorTickColor,
-                                  int cardinalTextColor, int numberTextColor, int needleColor) {
+                                  int cardinalTextColor, int numberTextColor, int needleColor, int deathNeedleColor) {
     }
 
     private record CompassReading(float headingDegrees) {
+    }
+
+    private record DeathPointerData(float signedDegrees) {
     }
 }

@@ -222,5 +222,8 @@
   "spiffyhud.elements.player_compass.color.needle": "Needle Color [HEX]",
   "spiffyhud.elements.player_compass.color.needle.desc": "Sets the color of the moving compass needle. Accepts HEX codes and placeholders.",
   "spiffyhud.elements.player_compass.cardinal_outline": "Outline Cardinal Letters: %s",
-  "spiffyhud.elements.player_compass.degree_outline": "Outline Degree Numbers: %s"
+  "spiffyhud.elements.player_compass.degree_outline": "Outline Degree Numbers: %s",
+  "spiffyhud.elements.player_compass.color.death_pointer": "Death Pointer Color [HEX]",
+  "spiffyhud.elements.player_compass.color.death_pointer.desc": "Controls the highlight color for the last-death indicator line. Accepts HEX codes and placeholders.",
+  "spiffyhud.elements.player_compass.death_pointer": "Show Death Pointer: %s"
 }

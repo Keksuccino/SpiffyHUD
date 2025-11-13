@@ -37,8 +37,10 @@ public class CompassElementBuilder extends ElementBuilder<CompassElement, Compas
         element.cardinalTextColor = Objects.requireNonNullElse(serialized.getValue("cardinal_text_color"), element.cardinalTextColor);
         element.numberTextColor = Objects.requireNonNullElse(serialized.getValue("number_text_color"), element.numberTextColor);
         element.needleColor = Objects.requireNonNullElse(serialized.getValue("needle_color"), element.needleColor);
+        element.deathPointerColor = Objects.requireNonNullElse(serialized.getValue("death_pointer_color"), element.deathPointerColor);
         element.cardinalOutlineEnabled = deserializeBoolean(element.cardinalOutlineEnabled, serialized.getValue("cardinal_outline"));
         element.degreeOutlineEnabled = deserializeBoolean(element.degreeOutlineEnabled, serialized.getValue("degree_outline"));
+        element.deathPointerEnabled = deserializeBoolean(element.deathPointerEnabled, serialized.getValue("death_pointer_enabled"));
 
         return element;
     }
@@ -52,8 +54,10 @@ public class CompassElementBuilder extends ElementBuilder<CompassElement, Compas
         serializeTo.putProperty("cardinal_text_color", element.cardinalTextColor);
         serializeTo.putProperty("number_text_color", element.numberTextColor);
         serializeTo.putProperty("needle_color", element.needleColor);
+        serializeTo.putProperty("death_pointer_color", element.deathPointerColor);
         serializeTo.putProperty("cardinal_outline", "" + element.cardinalOutlineEnabled);
         serializeTo.putProperty("degree_outline", "" + element.degreeOutlineEnabled);
+        serializeTo.putProperty("death_pointer_enabled", "" + element.deathPointerEnabled);
         return serializeTo;
     }
 
