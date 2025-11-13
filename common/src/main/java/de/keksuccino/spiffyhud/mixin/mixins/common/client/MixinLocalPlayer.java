@@ -36,4 +36,5 @@ public abstract class MixinLocalPlayer extends AbstractClientPlayer {
         }
         DeathPointStorage.recordDeath(level, this.getX(), this.getY(), this.getZ());
     }
+    
 }
