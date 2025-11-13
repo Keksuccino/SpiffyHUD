@@ -180,7 +180,8 @@ public class PlayerHeartHealthBarElement extends AbstractElement {
             try {
                 ITexture texture = supplier.get();
                 if ((texture != null) && texture.isReady() && (texture.getResourceLocation() != null)) {
-                    graphics.blit(texture.getResourceLocation(), 0, 0, 0.0F, 0.0F, size, size, texture.getWidth(), texture.getHeight());
+                    RenderSystem.enableBlend();
+                    graphics.blit(texture.getResourceLocation(), 0, 0, 0.0F, 0.0F, size, size, size, size);
                     return;
                 }
             } catch (Exception ex) {

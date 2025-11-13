@@ -5,12 +5,8 @@ import de.keksuccino.fancymenu.customization.element.editor.AbstractEditorElemen
 import de.keksuccino.fancymenu.customization.layout.editor.LayoutEditorScreen;
 import de.keksuccino.fancymenu.util.LocalizationUtils;
 import de.keksuccino.fancymenu.util.rendering.ui.contextmenu.v2.ContextMenu;
-import de.keksuccino.fancymenu.util.rendering.ui.screen.resource.ResourceChooserScreen;
 import de.keksuccino.fancymenu.util.rendering.ui.tooltip.Tooltip;
-import de.keksuccino.fancymenu.util.resource.ResourceSupplier;
-import de.keksuccino.fancymenu.util.resource.resources.texture.ITexture;
 import de.keksuccino.spiffyhud.util.SpiffyAlignment;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
@@ -95,32 +91,16 @@ public class PlayerHeartHealthBarEditorElement extends AbstractEditorElement {
                 .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_heart_health_bar.textures.desc")));
 
         for (PlayerHeartHealthBarElement.HeartTextureKind kind : PlayerHeartHealthBarElement.HeartTextureKind.values()) {
-            texturesMenu.addClickableEntry("set_texture_" + kind.name().toLowerCase(),
+            this.addImageResourceChooserContextMenuEntryTo(texturesMenu,
+                            "texture_" + kind.name().toLowerCase(),
+                            PlayerHeartHealthBarEditorElement.class,
+                            null,
+                            consumes -> consumes.getElement().getCustomTexture(kind),
+                            (editorElement, supplier) -> editorElement.getElement().setCustomTexture(kind, supplier),
                             Component.translatable(kind.getTranslationKey()),
-                            (menu, entry) -> this.openTextureChooser(kind))
-                    .setStackable(true);
-
-            texturesMenu.addClickableEntry("reset_texture_" + kind.name().toLowerCase(),
-                            Component.translatable("spiffyhud.elements.player_heart_health_bar.texture.reset"),
-                            (menu, entry) -> {
-                                editor.history.saveSnapshot();
-                                this.getElement().setCustomTexture(kind, null);
-                            })
+                            true, null, true, true, true)
                     .setStackable(true);
         }
-    }
-
-    private void openTextureChooser(@NotNull PlayerHeartHealthBarElement.HeartTextureKind kind) {
-        ResourceSupplier<ITexture> current = this.getElement().getCustomTexture(kind);
-        ResourceChooserScreen<ITexture, ?> chooser = ResourceChooserScreen.image(null, source -> {
-            if (source != null) {
-                this.editor.history.saveSnapshot();
-                this.getElement().setCustomTexture(kind, ResourceSupplier.image(source));
-            }
-            Minecraft.getInstance().setScreen(this.editor);
-        });
-        chooser.setSource((current != null) ? current.getSourceWithPrefix() : null, false);
-        Minecraft.getInstance().setScreen(chooser);
     }
 
     public PlayerHeartHealthBarElement getElement() {
