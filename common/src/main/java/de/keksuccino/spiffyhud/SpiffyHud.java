@@ -30,6 +30,7 @@ public class SpiffyHud {
 	public static final String MOD_LOADER = Services.PLATFORM.getPlatformName();
 	public static final String MOD_ID = "spiffyhud";
 	public static final File MOD_DIR = createDirectory(new File(GameDirectoryUtils.getGameDirectory(), "/config/spiffyhud"));
+    public static final File INSTANCE_DIR = createDirectory(new File(GameDirectoryUtils.getGameDirectory(), "/spiffy_instance_data"));
 
 	private static Options options;
 
@@ -40,6 +41,10 @@ public class SpiffyHud {
 		} else {
 			LOGGER.info("[SPIFFY HUD] Loading v" + VERSION + " in server-side mode on " + MOD_LOADER.toUpperCase() + "!");
 		}
+        
+        if (!INSTANCE_DIR.exists()) {
+            INSTANCE_DIR.mkdirs();
+        }
 
 		if (Services.PLATFORM.isOnClient()) {
 
