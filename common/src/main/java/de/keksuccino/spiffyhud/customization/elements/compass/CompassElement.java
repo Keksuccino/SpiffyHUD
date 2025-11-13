@@ -77,11 +77,11 @@ public class CompassElement extends AbstractElement {
         RenderSystem.enableBlend();
         this.drawBackground(graphics, layout, colors.backgroundColor());
         this.drawBar(graphics, layout, colors.barColor());
-        this.drawGradeLines(graphics, layout, colors);
-        this.drawCardinalLabels(graphics, layout, colors);
-        this.drawDegreeNumbers(graphics, layout, colors);
-        this.drawNeedle(graphics, layout, reading, colors);
-        this.drawDeathNeedle(graphics, layout, deathPointer, colors);
+        this.drawGradeLines(graphics, layout, colors, reading);
+        this.drawCardinalLabels(graphics, layout, colors, reading);
+        this.drawDegreeNumbers(graphics, layout, colors, reading);
+        this.drawNeedle(graphics, layout, colors);
+        this.drawDeathNeedle(graphics, layout, reading, deathPointer, colors);
         RenderingUtils.resetShaderColor(graphics);
     }
 
@@ -93,37 +93,40 @@ public class CompassElement extends AbstractElement {
         graphics.fill(layout.x(), layout.barTop(), layout.x() + layout.width(), layout.barTop() + layout.barHeight(), color);
     }
 
-    private void drawGradeLines(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull ResolvedColors colors) {
+    private void drawGradeLines(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull ResolvedColors colors, @NotNull CompassReading reading) {
         for (int degrees = -180; degrees <= 180; degrees += 10) {
             boolean major = (degrees % 30) == 0;
             int color = major ? colors.majorTickColor() : colors.minorTickColor();
             int halfHeight = major ? layout.majorTickHalfHeight() : layout.minorTickHalfHeight();
-            this.drawTick(graphics, layout, degrees, halfHeight, color);
+            int absolute = toAbsoluteDegrees(degrees);
+            float relative = this.relativeToHeading(absolute, reading.headingDegrees());
+            this.drawTick(graphics, layout, relative, halfHeight, color);
         }
     }
 
-    private void drawTick(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float degrees, int halfHeight, int color) {
-        float x = this.computeScreenX(layout, degrees);
+    private void drawTick(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float relativeDegrees, int halfHeight, int color) {
+        float x = this.computeScreenX(layout, relativeDegrees);
         int xi = Mth.clamp(Mth.floor(x), layout.x(), layout.x() + layout.width() - 1);
         int top = layout.barCenterY() - halfHeight;
         int bottom = layout.barCenterY() + halfHeight;
         graphics.fill(xi, top, xi + 1, bottom, color);
     }
 
-    private void drawCardinalLabels(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull ResolvedColors colors) {
-        this.drawCardinal(graphics, layout, -180F, "S", colors.cardinalTextColor());
-        this.drawCardinal(graphics, layout, -90F, "W", colors.cardinalTextColor());
-        this.drawCardinal(graphics, layout, 0F, "N", colors.cardinalTextColor());
-        this.drawCardinal(graphics, layout, 90F, "E", colors.cardinalTextColor());
-        this.drawCardinal(graphics, layout, 180F, "S", colors.cardinalTextColor());
+    private void drawCardinalLabels(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull ResolvedColors colors, @NotNull CompassReading reading) {
+        String[] labels = {"N", "E", "S", "W"};
+        float[] angles = {0F, 90F, 180F, 270F};
+        for (int i = 0; i < labels.length; i++) {
+            this.drawCardinal(graphics, layout, angles[i], labels[i], colors.cardinalTextColor(), reading);
+        }
     }
 
-    private void drawCardinal(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float degrees, @NotNull String text, int color) {
-        float centerX = this.computeScreenX(layout, degrees);
+    private void drawCardinal(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float absoluteDegrees, @NotNull String text, int color, @NotNull CompassReading reading) {
+        float relative = this.relativeToHeading(absoluteDegrees, reading.headingDegrees());
+        float centerX = this.computeScreenX(layout, relative);
         this.drawScaledCenteredString(graphics, text, centerX, layout.cardinalCenterY(), layout.cardinalScale(), color, this.cardinalOutlineEnabled);
     }
 
-    private void drawDegreeNumbers(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull ResolvedColors colors) {
+    private void drawDegreeNumbers(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull ResolvedColors colors, @NotNull CompassReading reading) {
         for (int degrees = -150; degrees <= 150; degrees += 30) {
             if (degrees == 0) {
                 continue;
@@ -133,26 +136,27 @@ public class CompassElement extends AbstractElement {
                 continue;
             }
             String label = Integer.toString(absolute);
-            float centerX = this.computeScreenX(layout, degrees);
+            float relative = this.relativeToHeading(absolute, reading.headingDegrees());
+            float centerX = this.computeScreenX(layout, relative);
             this.drawScaledCenteredString(graphics, label, centerX, layout.numberCenterY(), layout.numberScale(), colors.numberTextColor(), this.degreeOutlineEnabled);
         }
     }
 
-    private void drawNeedle(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull CompassReading reading, @NotNull ResolvedColors colors) {
-        float signedHeading = toSigned(reading.headingDegrees());
-        float x = this.computeScreenX(layout, signedHeading);
+    private void drawNeedle(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull ResolvedColors colors) {
         int needleWidth = Math.max(1, Mth.floor(layout.width() * 0.01F));
         int half = Math.max(0, needleWidth / 2);
-        int xi = Mth.clamp(Mth.floor(x) - half, layout.x(), layout.x() + layout.width() - needleWidth);
+        int centerX = layout.x() + layout.width() / 2;
+        int xi = Mth.clamp(centerX - half, layout.x(), layout.x() + layout.width() - needleWidth);
         graphics.fill(xi, layout.y(), xi + needleWidth, layout.y() + layout.height(), colors.needleColor());
     }
 
-    private void drawDeathNeedle(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @Nullable DeathPointerData pointer, @NotNull ResolvedColors colors) {
+    private void drawDeathNeedle(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull CompassReading reading, @Nullable DeathPointerData pointer, @NotNull ResolvedColors colors) {
         if (pointer == null) {
             return;
         }
-        float signed = Mth.clamp(pointer.signedDegrees(), -180.0F, 180.0F);
-        float x = this.computeScreenX(layout, signed);
+        float signedHeading = toSigned(reading.headingDegrees());
+        float relative = Mth.wrapDegrees(pointer.signedDegrees() - signedHeading);
+        float x = this.computeScreenX(layout, relative);
         int needleWidth = Math.max(1, Mth.floor(layout.width() * 0.006F));
         int half = Math.max(0, needleWidth / 2);
         int xi = Mth.clamp(Mth.floor(x) - half, layout.x(), layout.x() + layout.width() - needleWidth);
@@ -294,6 +298,10 @@ public class CompassElement extends AbstractElement {
             wrapped += 360;
         }
         return wrapped;
+    }
+
+    private float relativeToHeading(float targetDegrees, float headingDegrees) {
+        return Mth.wrapDegrees(targetDegrees - headingDegrees);
     }
 
     private CompassLayout computeLayout(@NotNull Font font, int x, int y, int width, int height) {
