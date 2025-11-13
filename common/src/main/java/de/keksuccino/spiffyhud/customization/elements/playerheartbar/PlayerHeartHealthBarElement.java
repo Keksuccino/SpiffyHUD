@@ -106,37 +106,49 @@ public class PlayerHeartHealthBarElement extends AbstractElement {
         boolean shake = this.shouldShake(data.currentHealth);
         float shakeStrengthBase = shake ? 0.9F : 0.0F;
 
-        int slot = 0;
-        for (int i = 0; i < data.baseHeartSlots; i++, slot++) {
-            float heartValue = data.currentHealth - (i * 2.0F);
-            HeartTextureKind texture = this.selectBaseTextureForSlot(heartValue, data.visualStyle, i, now);
-            this.renderSingleHeart(graphics, metrics, slot, texture, shakeStrengthBase, scale);
-        }
+        int totalSlots = data.baseHeartSlots + data.absorptionSlots;
+        for (int logicalIndex = totalSlots - 1; logicalIndex >= 0; logicalIndex--) {
+            boolean isAbsorption = logicalIndex >= data.baseHeartSlots;
+            SlotPlacement placement = this.computeSlotPlacement(logicalIndex, metrics);
 
-        for (int i = 0; i < data.absorptionSlots; i++, slot++) {
-            float heartValue = data.absorption - (i * 2.0F);
-            if (heartValue <= 0.0F) {
-                break;
+            HeartTextureKind textureKind;
+            if (isAbsorption) {
+                int absorptionSlot = logicalIndex - data.baseHeartSlots;
+                float absorptionValue = data.absorption - (absorptionSlot * 2.0F);
+                if (absorptionValue <= 0.0F) continue;
+                textureKind = (absorptionValue >= 2.0F) ? HeartTextureKind.ABSORPTION_FULL : HeartTextureKind.ABSORPTION_HALF;
+            } else {
+                textureKind = this.resolveBaseTexture(logicalIndex, data, now);
             }
-            HeartTextureKind texture = this.selectAbsorptionTexture(heartValue);
-            this.renderSingleHeart(graphics, metrics, slot, texture, shakeStrengthBase, scale);
+
+            float appliedShake = ((shakeStrengthBase > 0.0F) && (textureKind != HeartTextureKind.EMPTY)) ? shakeStrengthBase : 0.0F;
+            this.renderSingleHeart(graphics, metrics, placement, logicalIndex, textureKind, appliedShake, scale);
         }
 
         pose.popPose();
     }
 
-    private void renderSingleHeart(@NotNull GuiGraphics graphics, @NotNull RenderMetrics metrics, int slotIndex,
-                                   @NotNull HeartTextureKind textureKind, float shakeStrengthBase, float scale) {
+    private HeartTextureKind resolveBaseTexture(int logicalIndex, @NotNull PlayerData data, long now) {
+        if (this.blinkOnLoss && logicalIndex == this.lastBlinkSlotIndex && now < this.blinkEndTimeMs) {
+            return ((now / 120L) % 2L == 0L) ? data.visualStyle.halfTexture : HeartTextureKind.EMPTY;
+        }
+        float heartLowerBound = logicalIndex * 2.0F;
+        float fillValue = data.currentHealth - heartLowerBound;
+        if (fillValue >= 2.0F) return data.visualStyle.fullTexture;
+        if (fillValue > 0.0F) return data.visualStyle.halfTexture;
+        return HeartTextureKind.EMPTY;
+    }
 
-        int col = slotIndex % metrics.heartsPerRow;
-        int row = slotIndex / metrics.heartsPerRow;
-        float baseX = col * (metrics.baseHeartSize + metrics.horizontalGap);
-        float baseY = row * (metrics.baseHeartSize + metrics.verticalGap);
+    private void renderSingleHeart(@NotNull GuiGraphics graphics, @NotNull RenderMetrics metrics, @NotNull SlotPlacement placement,
+                                   int logicalIndex, @NotNull HeartTextureKind textureKind, float shakeStrengthBase, float scale) {
+
+        float baseX = placement.column * (metrics.baseHeartSize + metrics.horizontalGap);
+        float baseY = placement.row * (metrics.baseHeartSize + metrics.verticalGap);
 
         float offsetX = 0.0F;
         float offsetY = 0.0F;
         if ((shakeStrengthBase > 0.0F) && (textureKind != HeartTextureKind.EMPTY)) {
-            float[] offsets = this.computeShakeOffset(slotIndex, shakeStrengthBase);
+            float[] offsets = this.computeShakeOffset(logicalIndex, shakeStrengthBase);
             offsetX = offsets[0];
             offsetY = offsets[1];
         }
@@ -149,31 +161,11 @@ public class PlayerHeartHealthBarElement extends AbstractElement {
         pose.popPose();
     }
 
-    private float[] computeShakeOffset(int slotIndex, float shakeStrengthBase) {
-        this.shakeRandom.setSeed(((long) this.cachedTickCount * 341873128712L) + (slotIndex * 132897987541L));
+    private float[] computeShakeOffset(int logicalIndex, float shakeStrengthBase) {
+        this.shakeRandom.setSeed(((long) this.cachedTickCount * 341873128712L) + (logicalIndex * 132897987541L));
         float dx = (this.shakeRandom.nextFloat() - 0.5F) * shakeStrengthBase;
         float dy = (this.shakeRandom.nextFloat() - 0.5F) * shakeStrengthBase;
         return new float[] { dx, dy };
-    }
-
-    private HeartTextureKind selectBaseTextureForSlot(float heartValue, @NotNull HeartVisualStyle style, int slotIndex, long now) {
-        if (this.blinkOnLoss && slotIndex == this.lastBlinkSlotIndex && now < this.blinkEndTimeMs) {
-            return ((now / 120L) % 2L == 0L) ? style.halfTexture : HeartTextureKind.EMPTY;
-        }
-        if (heartValue >= 2.0F) {
-            return style.fullTexture;
-        }
-        if (heartValue > 0.0F) {
-            return style.halfTexture;
-        }
-        return HeartTextureKind.EMPTY;
-    }
-
-    private HeartTextureKind selectAbsorptionTexture(float heartValue) {
-        if (heartValue >= 2.0F) {
-            return HeartTextureKind.ABSORPTION_FULL;
-        }
-        return HeartTextureKind.ABSORPTION_HALF;
     }
 
     private void drawHeartTexture(@NotNull GuiGraphics graphics, @NotNull HeartTextureKind kind, int size) {
@@ -324,6 +316,51 @@ public class PlayerHeartHealthBarElement extends AbstractElement {
 
     private record RenderMetrics(int heartsPerRow, int baseHeartSize, int totalSlots, int bodyWidth, int bodyHeight,
                                  int rows, int horizontalGap, int verticalGap) {
+    }
+
+    private SlotPlacement computeSlotPlacement(int logicalIndex, RenderMetrics metrics) {
+        int perRow = metrics.heartsPerRow;
+        int rawRow = logicalIndex / perRow;
+        int row = isTopAligned() ? rawRow : (metrics.rows - 1 - rawRow);
+
+        int topRowRawIndex = (metrics.totalSlots - 1) / perRow;
+        int heartsInRow = (rawRow == topRowRawIndex) ? (metrics.totalSlots - rawRow * perRow) : perRow;
+        if (heartsInRow <= 0) heartsInRow = perRow;
+
+        int alignmentOffset = 0;
+        if ((rawRow == topRowRawIndex) && isCenterAligned()) {
+            alignmentOffset = (perRow - heartsInRow) / 2;
+        }
+
+        int rawColumn = logicalIndex % perRow;
+        int column = isRightAligned() ? (perRow - 1 - rawColumn) : rawColumn;
+        column = Math.max(0, column + alignmentOffset);
+
+        return new SlotPlacement(column, Math.max(0, row));
+    }
+
+    private boolean isTopAligned() {
+        return switch (this.spiffyAlignment) {
+            case TOP_LEFT, TOP_CENTERED, TOP_RIGHT -> true;
+            default -> false;
+        };
+    }
+
+    private boolean isCenterAligned() {
+        return switch (this.spiffyAlignment) {
+            case TOP_CENTERED, MID_CENTERED, BOTTOM_CENTERED -> true;
+            default -> false;
+        };
+    }
+
+    private boolean isRightAligned() {
+        return switch (this.spiffyAlignment) {
+            case TOP_RIGHT, MID_RIGHT, BOTTOM_RIGHT -> true;
+            default -> false;
+        };
+    }
+
+    private record SlotPlacement(int column, int row) {
     }
 
     private static class PlayerData {
