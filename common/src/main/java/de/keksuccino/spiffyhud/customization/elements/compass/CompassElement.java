@@ -51,6 +51,8 @@ public class CompassElement extends AbstractElement {
 
     public CompassElement(@NotNull ElementBuilder<?, ?> builder) {
         super(builder);
+        this.stickyAnchor = true;
+        this.stayOnScreen = false;
     }
 
     @Override

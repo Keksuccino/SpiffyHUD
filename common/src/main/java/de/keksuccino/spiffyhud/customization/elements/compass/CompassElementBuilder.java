@@ -6,6 +6,7 @@ import de.keksuccino.fancymenu.customization.element.SerializedElement;
 import de.keksuccino.fancymenu.customization.layout.editor.LayoutEditorScreen;
 import de.keksuccino.fancymenu.util.LocalizationUtils;
 import de.keksuccino.spiffyhud.customization.SpiffyOverlayScreen;
+import de.keksuccino.spiffyhud.customization.elements.playerairbar.PlayerAirBubbleBarElement;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -42,6 +43,16 @@ public class CompassElementBuilder extends ElementBuilder<CompassElement, Compas
         element.degreeOutlineEnabled = deserializeBoolean(element.degreeOutlineEnabled, serialized.getValue("degree_outline"));
         element.deathPointerEnabled = deserializeBoolean(element.deathPointerEnabled, serialized.getValue("death_pointer_enabled"));
 
+        return element;
+    }
+
+    @Override
+    public @Nullable CompassElement deserializeElementInternal(@NotNull SerializedElement serialized) {
+        CompassElement element = super.deserializeElementInternal(serialized);
+        if (element != null) {
+            // Fix for elements that have stay on screen disabled by default
+            element.stayOnScreen = this.deserializeBoolean(element.stayOnScreen, serialized.getValue("stay_on_screen"));
+        }
         return element;
     }
 
