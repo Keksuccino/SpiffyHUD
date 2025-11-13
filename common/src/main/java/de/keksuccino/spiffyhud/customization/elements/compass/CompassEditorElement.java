@@ -27,19 +27,18 @@ public class CompassEditorElement extends AbstractEditorElement {
         this.addColorInput("bar_color", Component.translatable("spiffyhud.elements.player_compass.color.bar"), CompassElement.DEFAULT_BAR_COLOR_STRING)
                 .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.color.bar.desc")));
 
+        this.addColorInput("needle_color", Component.translatable("spiffyhud.elements.player_compass.color.needle"), CompassElement.DEFAULT_NEEDLE_COLOR_STRING)
+                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.color.needle.desc")));
+
+        this.rightClickMenu.addSeparatorEntry("separator_after_general_compass_settings");
+
         this.addColorInput("major_tick_color", Component.translatable("spiffyhud.elements.player_compass.color.major_tick"), CompassElement.DEFAULT_MAJOR_TICK_COLOR_STRING);
 
         this.addColorInput("minor_tick_color", Component.translatable("spiffyhud.elements.player_compass.color.minor_tick"), CompassElement.DEFAULT_MINOR_TICK_COLOR_STRING);
 
+        this.rightClickMenu.addSeparatorEntry("separator_after_tick_colors");
+
         this.addColorInput("cardinal_text_color", Component.translatable("spiffyhud.elements.player_compass.color.cardinal_text"), CompassElement.DEFAULT_CARDINAL_TEXT_COLOR_STRING);
-
-        this.addColorInput("number_text_color", Component.translatable("spiffyhud.elements.player_compass.color.number_text"), CompassElement.DEFAULT_NUMBER_TEXT_COLOR_STRING);
-
-        this.addColorInput("needle_color", Component.translatable("spiffyhud.elements.player_compass.color.needle"), CompassElement.DEFAULT_NEEDLE_COLOR_STRING)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.color.needle.desc")));
-
-        this.addColorInput("death_pointer_color", Component.translatable("spiffyhud.elements.player_compass.color.death_pointer"), CompassElement.DEFAULT_DEATH_POINTER_COLOR_STRING)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.color.death_pointer.desc")));
 
         this.addToggleContextMenuEntryTo(this.rightClickMenu, "cardinal_outline",
                         CompassEditorElement.class,
@@ -48,6 +47,10 @@ public class CompassEditorElement extends AbstractEditorElement {
                         "spiffyhud.elements.player_compass.cardinal_outline")
                 .setStackable(true);
 
+        this.rightClickMenu.addSeparatorEntry("separator_after_cardinal");
+
+        this.addColorInput("degree_text_color", Component.translatable("spiffyhud.elements.player_compass.color.number_text"), CompassElement.DEFAULT_NUMBER_TEXT_COLOR_STRING);
+
         this.addToggleContextMenuEntryTo(this.rightClickMenu, "degree_outline",
                         CompassEditorElement.class,
                         consumes -> consumes.getElement().degreeOutlineEnabled,
@@ -55,12 +58,18 @@ public class CompassEditorElement extends AbstractEditorElement {
                         "spiffyhud.elements.player_compass.degree_outline")
                 .setStackable(true);
 
+        this.rightClickMenu.addSeparatorEntry("separator_after_degree");
+
         this.addToggleContextMenuEntryTo(this.rightClickMenu, "death_pointer_enabled",
                         CompassEditorElement.class,
                         consumes -> consumes.getElement().deathPointerEnabled,
                         (editorElement, value) -> editorElement.getElement().deathPointerEnabled = value,
                         "spiffyhud.elements.player_compass.death_pointer")
                 .setStackable(true);
+
+        this.addColorInput("death_pointer_color", Component.translatable("spiffyhud.elements.player_compass.color.death_pointer"), CompassElement.DEFAULT_DEATH_POINTER_COLOR_STRING)
+                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.color.death_pointer.desc")));
+
     }
 
     private ContextMenu.ClickableContextMenuEntry<?> addColorInput(String id, Component label, String defaultValue) {
