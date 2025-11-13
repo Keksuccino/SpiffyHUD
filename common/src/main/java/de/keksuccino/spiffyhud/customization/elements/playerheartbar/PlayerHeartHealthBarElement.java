@@ -32,7 +32,7 @@ public class PlayerHeartHealthBarElement extends AbstractElement {
     public static final String DEFAULT_SCALE_STRING = "1.0";
     private static final float DEFAULT_SCALE = 1.0F;
     private static final float MIN_SCALE = 0.2F;
-    private static final float MAX_SCALE = 8.0F;
+    private static final float MAX_SCALE = 70.0F;
     private static final int BASE_HEART_PIXEL_SIZE = 8;
     private static final long BLINK_DURATION_MS = 650L;
     private static final long EDITOR_PREVIEW_INTERVAL_MS = 10_000L;
