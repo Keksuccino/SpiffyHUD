@@ -7,7 +7,7 @@ CHANGELOG | SPIFFYHUD v3.1.0 [ !!  WIP !! NOT FINISHED YET !! WIP !! ]
   - The eraser has two aggression modes (Normal & Aggressive)
     - Normal mode will try to only hide non-Spiffy elements
     - Aggressive mode will try to erase EVERYTHING, including Spiffy elements, which should get used in cases where Normal is not enough to hide the target element
-- Added "Player Heart Health Bar" element that is a fully customizable health bar that works similar to the Vanilla one, with health points being displayed as individual icons
+- Added "Player Heart Health Bar" element that is a fully customizable health bar that works similar to the Vanilla one, with health points being displayed as individual icons (#56)
   - Allows to set custom textures for all kinds of heart types (normal, absorption, frozen, poisoned, etc., including half heart versions for all of them)
   - Customizable appearance (shaking, blinking, icons per row, etc.)
   - Supports scaling
