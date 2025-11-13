@@ -57,6 +57,7 @@ public class PlayerHeartHealthBarElement extends AbstractElement {
     private int lastBlinkSlotIndex = -1;
     private long blinkEndTimeMs = -1L;
     private int cachedTickCount = 0;
+    private float blinkDisplayHealth = -1.0F;
 
     public PlayerHeartHealthBarElement(@NotNull ElementBuilder<?, ?> builder) {
         super(builder);
@@ -131,11 +132,13 @@ public class PlayerHeartHealthBarElement extends AbstractElement {
     }
 
     private HeartTextureKind resolveBaseTexture(int logicalIndex, @NotNull PlayerData data, long now) {
-        if (this.blinkOnLoss && logicalIndex == this.lastBlinkSlotIndex && now < this.blinkEndTimeMs) {
+        boolean blinkActive = this.isBlinkActive(now);
+        if (blinkActive && logicalIndex == this.lastBlinkSlotIndex) {
             return ((now / 120L) % 2L == 0L) ? data.visualStyle.halfTexture : HeartTextureKind.EMPTY;
         }
+        float displayedHealth = this.getEffectiveHealthForSlot(data.currentHealth, logicalIndex, now, blinkActive);
         float heartLowerBound = logicalIndex * 2.0F;
-        float fillValue = data.currentHealth - heartLowerBound;
+        float fillValue = displayedHealth - heartLowerBound;
         if (fillValue >= 2.0F) return data.visualStyle.fullTexture;
         if (fillValue > 0.0F) return data.visualStyle.halfTexture;
         return HeartTextureKind.EMPTY;
@@ -222,24 +225,30 @@ public class PlayerHeartHealthBarElement extends AbstractElement {
     private void updateBlinkState(float currentHealth, int baseHeartSlots) {
         if (!this.blinkOnLoss || baseHeartSlots <= 0) {
             this.lastRecordedHealth = currentHealth;
+            this.lastBlinkSlotIndex = -1;
+            this.blinkDisplayHealth = -1.0F;
             return;
         }
 
-        if ((this.lastRecordedHealth < 0.0F)) {
+        if (this.lastRecordedHealth < 0.0F) {
             this.lastRecordedHealth = currentHealth;
+            this.blinkDisplayHealth = -1.0F;
             return;
         }
 
         if (currentHealth < this.lastRecordedHealth - 0.01F) {
-            int slot = Mth.clamp(Mth.ceil(currentHealth / 2.0F), 0, Math.max(0, baseHeartSlots - 1));
+            this.blinkDisplayHealth = this.lastRecordedHealth;
+            int slot = resolveBlinkSlotIndex(this.lastRecordedHealth, baseHeartSlots);
             this.lastBlinkSlotIndex = slot;
             this.blinkEndTimeMs = System.currentTimeMillis() + BLINK_DURATION_MS;
         } else if (currentHealth > this.lastRecordedHealth + 0.01F) {
             this.lastBlinkSlotIndex = -1;
+            this.blinkDisplayHealth = -1.0F;
         }
         this.lastRecordedHealth = currentHealth;
         if ((this.lastBlinkSlotIndex >= baseHeartSlots) || (System.currentTimeMillis() >= this.blinkEndTimeMs)) {
             this.lastBlinkSlotIndex = -1;
+            this.blinkDisplayHealth = -1.0F;
         }
     }
 
@@ -311,6 +320,22 @@ public class PlayerHeartHealthBarElement extends AbstractElement {
             } catch (NumberFormatException ignored) {}
         }
         return DEFAULT_SCALE;
+    }
+
+    private float getEffectiveHealthForSlot(float currentHealth, int logicalIndex, long now, boolean blinkActive) {
+        if (blinkActive && this.blinkDisplayHealth >= 0.0F && logicalIndex < this.lastBlinkSlotIndex) {
+            return Math.max(currentHealth, this.blinkDisplayHealth);
+        }
+        return currentHealth;
+    }
+
+    private boolean isBlinkActive(long now) {
+        return this.blinkOnLoss && this.lastBlinkSlotIndex >= 0 && now < this.blinkEndTimeMs;
+    }
+
+    private static int resolveBlinkSlotIndex(float previousValue, int maxSlots) {
+        int slot = Mth.ceil(previousValue / 2.0F) - 1;
+        return Mth.clamp(slot, 0, Math.max(0, maxSlots - 1));
     }
 
     private record RenderMetrics(int heartsPerRow, int baseHeartSize, int totalSlots, int bodyWidth, int bodyHeight,

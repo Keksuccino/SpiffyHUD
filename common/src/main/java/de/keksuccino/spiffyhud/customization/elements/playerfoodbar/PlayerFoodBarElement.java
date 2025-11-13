@@ -59,6 +59,7 @@ public class PlayerFoodBarElement extends AbstractElement {
     private int lastBlinkSlotIndex = -1;
     private long blinkEndTimeMs = -1L;
     private int cachedTickCount = 0;
+    private float blinkDisplayFood = -1.0F;
 
     public PlayerFoodBarElement(@NotNull ElementBuilder<?, ?> builder) {
         super(builder);
@@ -122,12 +123,14 @@ public class PlayerFoodBarElement extends AbstractElement {
     }
 
     private FoodTextureKind resolveTextureKind(int logicalIndex, @NotNull PlayerData data, long now) {
-        if (this.blinkOnLoss && logicalIndex == this.lastBlinkSlotIndex && now < this.blinkEndTimeMs) {
+        boolean blinkActive = this.isBlinkActive(now);
+        if (blinkActive && logicalIndex == this.lastBlinkSlotIndex) {
             return ((now / 120L) % 2L == 0L) ? data.visualStyle.halfTexture : FoodTextureKind.EMPTY;
         }
 
+        float displayedFood = this.getEffectiveFoodForSlot(data.currentFood, logicalIndex, now, blinkActive);
         float slotLowerBound = logicalIndex * 2.0F;
-        float fillValue = data.currentFood - slotLowerBound;
+        float fillValue = displayedFood - slotLowerBound;
         if (fillValue >= 2.0F) return data.visualStyle.fullTexture;
         if (fillValue > 0.0F) return data.visualStyle.halfTexture;
         return FoodTextureKind.EMPTY;
@@ -205,24 +208,30 @@ public class PlayerFoodBarElement extends AbstractElement {
     private void updateBlinkState(float currentFood) {
         if (!this.blinkOnLoss) {
             this.lastRecordedFood = currentFood;
+            this.lastBlinkSlotIndex = -1;
+            this.blinkDisplayFood = -1.0F;
             return;
         }
 
         if (this.lastRecordedFood < 0.0F) {
             this.lastRecordedFood = currentFood;
+            this.blinkDisplayFood = -1.0F;
             return;
         }
 
         if (currentFood < this.lastRecordedFood - 0.01F) {
-            int slot = Mth.clamp(Mth.ceil(currentFood / 2.0F), 0, BASE_SLOT_COUNT - 1);
+            this.blinkDisplayFood = this.lastRecordedFood;
+            int slot = resolveBlinkSlotIndex(this.lastRecordedFood);
             this.lastBlinkSlotIndex = slot;
             this.blinkEndTimeMs = System.currentTimeMillis() + BLINK_DURATION_MS;
         } else if (currentFood > this.lastRecordedFood + 0.01F) {
             this.lastBlinkSlotIndex = -1;
+            this.blinkDisplayFood = -1.0F;
         }
         this.lastRecordedFood = currentFood;
         if ((this.lastBlinkSlotIndex >= BASE_SLOT_COUNT) || (System.currentTimeMillis() >= this.blinkEndTimeMs)) {
             this.lastBlinkSlotIndex = -1;
+            this.blinkDisplayFood = -1.0F;
         }
     }
 
@@ -277,6 +286,22 @@ public class PlayerFoodBarElement extends AbstractElement {
             } catch (NumberFormatException ignored) {}
         }
         return DEFAULT_SCALE;
+    }
+
+    private float getEffectiveFoodForSlot(float currentFood, int logicalIndex, long now, boolean blinkActive) {
+        if (blinkActive && this.blinkDisplayFood >= 0.0F && logicalIndex < this.lastBlinkSlotIndex) {
+            return Math.max(currentFood, this.blinkDisplayFood);
+        }
+        return currentFood;
+    }
+
+    private boolean isBlinkActive(long now) {
+        return this.blinkOnLoss && this.lastBlinkSlotIndex >= 0 && now < this.blinkEndTimeMs;
+    }
+
+    private static int resolveBlinkSlotIndex(float previousValue) {
+        int slot = Mth.ceil(previousValue / 2.0F) - 1;
+        return Mth.clamp(slot, 0, BASE_SLOT_COUNT - 1);
     }
 
     private record RenderMetrics(int iconsPerRow, int baseIconSize, int totalSlots, int bodyWidth, int bodyHeight,
