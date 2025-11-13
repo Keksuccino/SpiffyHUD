@@ -125,15 +125,14 @@ public class PlayerFoodBarElement extends AbstractElement {
     private FoodTextureKind resolveTextureKind(int logicalIndex, @NotNull PlayerData data, long now) {
         boolean blinkActive = this.isBlinkActive(now);
         if (blinkActive && logicalIndex == this.lastBlinkSlotIndex) {
-            return ((now / 120L) % 2L == 0L) ? data.visualStyle.halfTexture : FoodTextureKind.EMPTY;
+            FoodTextureKind previousTexture = this.resolvePreviousTextureForSlot(logicalIndex, data.visualStyle);
+            return ((now / 120L) % 2L == 0L) ? previousTexture : FoodTextureKind.EMPTY;
         }
 
         float displayedFood = this.getEffectiveFoodForSlot(data.currentFood, logicalIndex, now, blinkActive);
         float slotLowerBound = logicalIndex * 2.0F;
         float fillValue = displayedFood - slotLowerBound;
-        if (fillValue >= 2.0F) return data.visualStyle.fullTexture;
-        if (fillValue > 0.0F) return data.visualStyle.halfTexture;
-        return FoodTextureKind.EMPTY;
+        return this.textureFromFill(fillValue, data.visualStyle);
     }
 
     private void renderSingleIcon(@NotNull GuiGraphics graphics, @NotNull RenderMetrics metrics, @NotNull SlotPlacement placement,
@@ -302,6 +301,22 @@ public class PlayerFoodBarElement extends AbstractElement {
     private static int resolveBlinkSlotIndex(float previousValue) {
         int slot = Mth.ceil(previousValue / 2.0F) - 1;
         return Mth.clamp(slot, 0, BASE_SLOT_COUNT - 1);
+    }
+
+    private FoodTextureKind resolvePreviousTextureForSlot(int logicalIndex, @NotNull FoodVisualStyle style) {
+        if (this.blinkDisplayFood < 0.0F) {
+            return style.fullTexture;
+        }
+        float slotLowerBound = logicalIndex * 2.0F;
+        float fillValue = this.blinkDisplayFood - slotLowerBound;
+        FoodTextureKind texture = this.textureFromFill(fillValue, style);
+        return (texture == FoodTextureKind.EMPTY) ? style.halfTexture : texture;
+    }
+
+    private FoodTextureKind textureFromFill(float fillValue, @NotNull FoodVisualStyle style) {
+        if (fillValue >= 2.0F) return style.fullTexture;
+        if (fillValue > 0.0F) return style.halfTexture;
+        return FoodTextureKind.EMPTY;
     }
 
     private record RenderMetrics(int iconsPerRow, int baseIconSize, int totalSlots, int bodyWidth, int bodyHeight,

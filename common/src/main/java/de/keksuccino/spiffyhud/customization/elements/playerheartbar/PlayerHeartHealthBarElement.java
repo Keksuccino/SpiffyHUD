@@ -134,14 +134,13 @@ public class PlayerHeartHealthBarElement extends AbstractElement {
     private HeartTextureKind resolveBaseTexture(int logicalIndex, @NotNull PlayerData data, long now) {
         boolean blinkActive = this.isBlinkActive(now);
         if (blinkActive && logicalIndex == this.lastBlinkSlotIndex) {
-            return ((now / 120L) % 2L == 0L) ? data.visualStyle.halfTexture : HeartTextureKind.EMPTY;
+            HeartTextureKind previous = this.resolvePreviousTextureForSlot(logicalIndex, data.visualStyle);
+            return ((now / 120L) % 2L == 0L) ? previous : HeartTextureKind.EMPTY;
         }
         float displayedHealth = this.getEffectiveHealthForSlot(data.currentHealth, logicalIndex, now, blinkActive);
         float heartLowerBound = logicalIndex * 2.0F;
         float fillValue = displayedHealth - heartLowerBound;
-        if (fillValue >= 2.0F) return data.visualStyle.fullTexture;
-        if (fillValue > 0.0F) return data.visualStyle.halfTexture;
-        return HeartTextureKind.EMPTY;
+        return this.textureFromFill(fillValue, data.visualStyle);
     }
 
     private void renderSingleHeart(@NotNull GuiGraphics graphics, @NotNull RenderMetrics metrics, @NotNull SlotPlacement placement,
@@ -336,6 +335,22 @@ public class PlayerHeartHealthBarElement extends AbstractElement {
     private static int resolveBlinkSlotIndex(float previousValue, int maxSlots) {
         int slot = Mth.ceil(previousValue / 2.0F) - 1;
         return Mth.clamp(slot, 0, Math.max(0, maxSlots - 1));
+    }
+
+    private HeartTextureKind resolvePreviousTextureForSlot(int logicalIndex, @NotNull HeartVisualStyle style) {
+        if (this.blinkDisplayHealth < 0.0F) {
+            return style.halfTexture;
+        }
+        float heartLowerBound = logicalIndex * 2.0F;
+        float fillValue = this.blinkDisplayHealth - heartLowerBound;
+        HeartTextureKind texture = this.textureFromFill(fillValue, style);
+        return (texture == HeartTextureKind.EMPTY) ? style.halfTexture : texture;
+    }
+
+    private HeartTextureKind textureFromFill(float fillValue, @NotNull HeartVisualStyle style) {
+        if (fillValue >= 2.0F) return style.fullTexture;
+        if (fillValue > 0.0F) return style.halfTexture;
+        return HeartTextureKind.EMPTY;
     }
 
     private record RenderMetrics(int heartsPerRow, int baseHeartSize, int totalSlots, int bodyWidth, int bodyHeight,
