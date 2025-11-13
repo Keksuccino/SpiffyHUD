@@ -149,6 +149,11 @@ public class PlayerMountHealthBarElement extends AbstractElement {
         float displayedHealth = data.currentHealth;
         float heartLowerBound = logicalIndex * 2.0F;
         float fillValue = displayedHealth - heartLowerBound;
+
+        if ((logicalIndex == data.baseHeartSlots - 1) && (data.currentHealth >= data.maxHealth - 0.01F)) {
+            return data.visualStyle.fullTexture;
+        }
+
         return this.textureFromFill(fillValue, data.visualStyle);
     }
 
