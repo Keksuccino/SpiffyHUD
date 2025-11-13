@@ -6,6 +6,7 @@ import de.keksuccino.spiffyhud.customization.elements.eraser.EraserElementBuilde
 import de.keksuccino.spiffyhud.customization.elements.overlayremover.OverlayRemoverElementBuilder;
 import de.keksuccino.spiffyhud.customization.elements.player.PlayerElementBuilder;
 import de.keksuccino.spiffyhud.customization.elements.playerairbar.PlayerAirBubbleBarElementBuilder;
+import de.keksuccino.spiffyhud.customization.elements.playermounthealthbar.PlayerMountHealthBarElementBuilder;
 import de.keksuccino.spiffyhud.customization.elements.playernbthelper.PlayerNbtHelperElementBuilder;
 import de.keksuccino.spiffyhud.customization.elements.playerheartbar.PlayerHeartHealthBarElementBuilder;
 import de.keksuccino.spiffyhud.customization.elements.playerfoodbar.PlayerFoodBarElementBuilder;
@@ -48,6 +49,7 @@ public class Elements {
     public static final PlayerHeartHealthBarElementBuilder PLAYER_HEART_HEALTH_BAR = new PlayerHeartHealthBarElementBuilder();
     public static final PlayerFoodBarElementBuilder PLAYER_FOOD_BAR = new PlayerFoodBarElementBuilder();
     public static final PlayerAirBubbleBarElementBuilder PLAYER_AIR_BUBBLE_BAR = new PlayerAirBubbleBarElementBuilder();
+    public static final PlayerMountHealthBarElementBuilder PLAYER_MOUNT_HEALTH_BAR = new PlayerMountHealthBarElementBuilder();
     public static final EraserElementBuilder ERASER = new EraserElementBuilder();
 
     public static void registerAll() {
@@ -74,6 +76,7 @@ public class Elements {
         ElementRegistry.register(PLAYER_HEART_HEALTH_BAR);
         ElementRegistry.register(PLAYER_FOOD_BAR);
         ElementRegistry.register(PLAYER_AIR_BUBBLE_BAR);
+        ElementRegistry.register(PLAYER_MOUNT_HEALTH_BAR);
         ElementRegistry.register(ERASER);
 
     }
