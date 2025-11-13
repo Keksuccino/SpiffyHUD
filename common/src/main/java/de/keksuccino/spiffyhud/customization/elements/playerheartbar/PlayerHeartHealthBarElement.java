@@ -142,8 +142,11 @@ public class PlayerHeartHealthBarElement extends AbstractElement {
     private void renderSingleHeart(@NotNull GuiGraphics graphics, @NotNull RenderMetrics metrics, @NotNull SlotPlacement placement,
                                    int logicalIndex, @NotNull HeartTextureKind textureKind, float shakeStrengthBase, float scale) {
 
-        float baseX = placement.column * (metrics.baseHeartSize + metrics.horizontalGap);
-        float baseY = placement.row * (metrics.baseHeartSize + metrics.verticalGap);
+        float gap = this.heartGap;
+        float baseSpacingX = (metrics.baseHeartSize + gap) * scale;
+        float baseSpacingY = (metrics.baseHeartSize + gap) * scale;
+        float baseX = placement.column * baseSpacingX;
+        float baseY = placement.row * baseSpacingY;
 
         float offsetX = 0.0F;
         float offsetY = 0.0F;
@@ -198,10 +201,10 @@ public class PlayerHeartHealthBarElement extends AbstractElement {
         int rowSize = Math.min(heartsPerRowClamped, totalSlots);
         int rows = Math.max(1, (int) Math.ceil(totalSlots / (double) heartsPerRowClamped));
         int gap = Math.max(0, this.heartGap);
-        int unscaledWidth = rowSize * BASE_HEART_PIXEL_SIZE + Math.max(0, rowSize - 1) * gap;
-        int unscaledHeight = rows * BASE_HEART_PIXEL_SIZE + Math.max(0, rows - 1) * gap;
-        int bodyWidth = Math.max(1, Mth.ceil(unscaledWidth * scale));
-        int bodyHeight = Math.max(1, Mth.ceil(unscaledHeight * scale));
+        float scaledWidth = rowSize * BASE_HEART_PIXEL_SIZE * scale + Math.max(0, rowSize - 1) * gap * scale;
+        float scaledHeight = rows * BASE_HEART_PIXEL_SIZE * scale + Math.max(0, rows - 1) * gap * scale;
+        int bodyWidth = Math.max(1, Mth.ceil(scaledWidth));
+        int bodyHeight = Math.max(1, Mth.ceil(scaledHeight));
         return new RenderMetrics(
                 heartsPerRowClamped,
                 BASE_HEART_PIXEL_SIZE,
