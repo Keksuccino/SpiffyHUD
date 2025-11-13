@@ -220,5 +220,7 @@
   "spiffyhud.elements.player_compass.color.cardinal_text": "N/E/S/W Text Color [HEX]",
   "spiffyhud.elements.player_compass.color.number_text": "Number Text Color [HEX]",
   "spiffyhud.elements.player_compass.color.needle": "Needle Color [HEX]",
-  "spiffyhud.elements.player_compass.color.needle.desc": "Sets the color of the moving compass needle. Accepts HEX codes and placeholders."
+  "spiffyhud.elements.player_compass.color.needle.desc": "Sets the color of the moving compass needle. Accepts HEX codes and placeholders.",
+  "spiffyhud.elements.player_compass.cardinal_outline": "Outline Cardinal Letters: %s",
+  "spiffyhud.elements.player_compass.degree_outline": "Outline Degree Numbers: %s"
 }

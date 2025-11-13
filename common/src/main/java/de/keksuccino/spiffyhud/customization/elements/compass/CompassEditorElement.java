@@ -37,6 +37,20 @@ public class CompassEditorElement extends AbstractEditorElement {
 
         this.addColorInput("needle_color", Component.translatable("spiffyhud.elements.player_compass.color.needle"), CompassElement.DEFAULT_NEEDLE_COLOR_STRING)
                 .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.color.needle.desc")));
+
+        this.addToggleContextMenuEntryTo(this.rightClickMenu, "cardinal_outline",
+                        CompassEditorElement.class,
+                        consumes -> consumes.getElement().cardinalOutlineEnabled,
+                        (editorElement, value) -> editorElement.getElement().cardinalOutlineEnabled = value,
+                        "spiffyhud.elements.player_compass.cardinal_outline")
+                .setStackable(true);
+
+        this.addToggleContextMenuEntryTo(this.rightClickMenu, "degree_outline",
+                        CompassEditorElement.class,
+                        consumes -> consumes.getElement().degreeOutlineEnabled,
+                        (editorElement, value) -> editorElement.getElement().degreeOutlineEnabled = value,
+                        "spiffyhud.elements.player_compass.degree_outline")
+                .setStackable(true);
     }
 
     private ContextMenu.ClickableContextMenuEntry<?> addColorInput(String id, Component label, String defaultValue) {

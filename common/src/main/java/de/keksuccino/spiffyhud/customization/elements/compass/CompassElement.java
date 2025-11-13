@@ -39,6 +39,8 @@ public class CompassElement extends AbstractElement {
     @NotNull public String cardinalTextColor = DEFAULT_CARDINAL_TEXT_COLOR_STRING;
     @NotNull public String numberTextColor = DEFAULT_NUMBER_TEXT_COLOR_STRING;
     @NotNull public String needleColor = DEFAULT_NEEDLE_COLOR_STRING;
+    public boolean cardinalOutlineEnabled = true;
+    public boolean degreeOutlineEnabled = true;
 
     private final Minecraft minecraft = Minecraft.getInstance();
 
@@ -107,7 +109,7 @@ public class CompassElement extends AbstractElement {
 
     private void drawCardinal(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float degrees, @NotNull String text, int color) {
         float centerX = this.computeScreenX(layout, degrees);
-        this.drawScaledCenteredString(graphics, text, centerX, layout.cardinalCenterY(), layout.cardinalScale(), color, true);
+        this.drawScaledCenteredString(graphics, text, centerX, layout.cardinalCenterY(), layout.cardinalScale(), color, this.cardinalOutlineEnabled);
     }
 
     private void drawDegreeNumbers(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull ResolvedColors colors) {
@@ -121,7 +123,7 @@ public class CompassElement extends AbstractElement {
             }
             String label = Integer.toString(absolute);
             float centerX = this.computeScreenX(layout, degrees);
-            this.drawScaledCenteredString(graphics, label, centerX, layout.numberCenterY(), layout.numberScale(), colors.numberTextColor(), true);
+            this.drawScaledCenteredString(graphics, label, centerX, layout.numberCenterY(), layout.numberScale(), colors.numberTextColor(), this.degreeOutlineEnabled);
         }
     }
 

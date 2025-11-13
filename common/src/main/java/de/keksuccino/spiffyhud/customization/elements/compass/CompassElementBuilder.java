@@ -37,6 +37,8 @@ public class CompassElementBuilder extends ElementBuilder<CompassElement, Compas
         element.cardinalTextColor = Objects.requireNonNullElse(serialized.getValue("cardinal_text_color"), element.cardinalTextColor);
         element.numberTextColor = Objects.requireNonNullElse(serialized.getValue("number_text_color"), element.numberTextColor);
         element.needleColor = Objects.requireNonNullElse(serialized.getValue("needle_color"), element.needleColor);
+        element.cardinalOutlineEnabled = deserializeBoolean(element.cardinalOutlineEnabled, serialized.getValue("cardinal_outline"));
+        element.degreeOutlineEnabled = deserializeBoolean(element.degreeOutlineEnabled, serialized.getValue("degree_outline"));
 
         return element;
     }
@@ -50,6 +52,8 @@ public class CompassElementBuilder extends ElementBuilder<CompassElement, Compas
         serializeTo.putProperty("cardinal_text_color", element.cardinalTextColor);
         serializeTo.putProperty("number_text_color", element.numberTextColor);
         serializeTo.putProperty("needle_color", element.needleColor);
+        serializeTo.putProperty("cardinal_outline", "" + element.cardinalOutlineEnabled);
+        serializeTo.putProperty("degree_outline", "" + element.degreeOutlineEnabled);
         return serializeTo;
     }
 
