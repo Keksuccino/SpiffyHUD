@@ -25,6 +25,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public class PlayerFoodBarElement extends AbstractElement {
@@ -56,10 +58,8 @@ public class PlayerFoodBarElement extends AbstractElement {
     private final EnumMap<FoodTextureKind, ResourceSupplier<ITexture>> customTextures = new EnumMap<>(FoodTextureKind.class);
 
     private float lastRecordedFood = -1.0F;
-    private int lastBlinkSlotIndex = -1;
-    private long blinkEndTimeMs = -1L;
     private int cachedTickCount = 0;
-    private float blinkDisplayFood = -1.0F;
+    private final Map<Integer, BlinkState> activeBlinkSlots = new HashMap<>();
 
     public PlayerFoodBarElement(@NotNull ElementBuilder<?, ?> builder) {
         super(builder);
@@ -123,13 +123,20 @@ public class PlayerFoodBarElement extends AbstractElement {
     }
 
     private FoodTextureKind resolveTextureKind(int logicalIndex, @NotNull PlayerData data, long now) {
-        boolean blinkActive = this.isBlinkActive(now);
-        if (blinkActive && logicalIndex == this.lastBlinkSlotIndex) {
-            FoodTextureKind previousTexture = this.resolvePreviousTextureForSlot(logicalIndex, data.visualStyle);
-            return ((now / 120L) % 2L == 0L) ? previousTexture : FoodTextureKind.EMPTY;
+        BlinkState blink = this.activeBlinkSlots.get(logicalIndex);
+        if (blink != null) {
+            if (now < blink.endTimeMs) {
+                FoodTextureKind previousTexture = this.textureFromFill(blink.previousFill, data.visualStyle);
+                if (previousTexture == FoodTextureKind.EMPTY) {
+                    previousTexture = data.visualStyle.halfTexture;
+                }
+                return ((now / 120L) % 2L == 0L) ? previousTexture : FoodTextureKind.EMPTY;
+            } else {
+                this.activeBlinkSlots.remove(logicalIndex);
+            }
         }
 
-        float displayedFood = this.getEffectiveFoodForSlot(data.currentFood, logicalIndex, now, blinkActive);
+        float displayedFood = data.currentFood;
         float slotLowerBound = logicalIndex * 2.0F;
         float fillValue = displayedFood - slotLowerBound;
         return this.textureFromFill(fillValue, data.visualStyle);
@@ -205,33 +212,26 @@ public class PlayerFoodBarElement extends AbstractElement {
     }
 
     private void updateBlinkState(float currentFood) {
+        long now = System.currentTimeMillis();
+        this.cleanupExpiredBlinks(now);
+
         if (!this.blinkOnLoss) {
+            this.activeBlinkSlots.clear();
             this.lastRecordedFood = currentFood;
-            this.lastBlinkSlotIndex = -1;
-            this.blinkDisplayFood = -1.0F;
             return;
         }
 
         if (this.lastRecordedFood < 0.0F) {
             this.lastRecordedFood = currentFood;
-            this.blinkDisplayFood = -1.0F;
             return;
         }
 
         if (currentFood < this.lastRecordedFood - 0.01F) {
-            this.blinkDisplayFood = this.lastRecordedFood;
-            int slot = resolveBlinkSlotIndex(this.lastRecordedFood);
-            this.lastBlinkSlotIndex = slot;
-            this.blinkEndTimeMs = System.currentTimeMillis() + BLINK_DURATION_MS;
+            this.registerBlinkSlots(this.lastRecordedFood, currentFood, now);
         } else if (currentFood > this.lastRecordedFood + 0.01F) {
-            this.lastBlinkSlotIndex = -1;
-            this.blinkDisplayFood = -1.0F;
+            this.activeBlinkSlots.clear();
         }
         this.lastRecordedFood = currentFood;
-        if ((this.lastBlinkSlotIndex >= BASE_SLOT_COUNT) || (System.currentTimeMillis() >= this.blinkEndTimeMs)) {
-            this.lastBlinkSlotIndex = -1;
-            this.blinkDisplayFood = -1.0F;
-        }
     }
 
     private boolean shouldShake(float currentFood) {
@@ -287,36 +287,38 @@ public class PlayerFoodBarElement extends AbstractElement {
         return DEFAULT_SCALE;
     }
 
-    private float getEffectiveFoodForSlot(float currentFood, int logicalIndex, long now, boolean blinkActive) {
-        if (blinkActive && this.blinkDisplayFood >= 0.0F && logicalIndex < this.lastBlinkSlotIndex) {
-            return Math.max(currentFood, this.blinkDisplayFood);
-        }
-        return currentFood;
-    }
-
-    private boolean isBlinkActive(long now) {
-        return this.blinkOnLoss && this.lastBlinkSlotIndex >= 0 && now < this.blinkEndTimeMs;
-    }
-
-    private static int resolveBlinkSlotIndex(float previousValue) {
-        int slot = Mth.ceil(previousValue / 2.0F) - 1;
-        return Mth.clamp(slot, 0, BASE_SLOT_COUNT - 1);
-    }
-
-    private FoodTextureKind resolvePreviousTextureForSlot(int logicalIndex, @NotNull FoodVisualStyle style) {
-        if (this.blinkDisplayFood < 0.0F) {
-            return style.fullTexture;
-        }
-        float slotLowerBound = logicalIndex * 2.0F;
-        float fillValue = this.blinkDisplayFood - slotLowerBound;
-        FoodTextureKind texture = this.textureFromFill(fillValue, style);
-        return (texture == FoodTextureKind.EMPTY) ? style.halfTexture : texture;
-    }
-
     private FoodTextureKind textureFromFill(float fillValue, @NotNull FoodVisualStyle style) {
         if (fillValue >= 2.0F) return style.fullTexture;
         if (fillValue > 0.0F) return style.halfTexture;
         return FoodTextureKind.EMPTY;
+    }
+
+    private void registerBlinkSlots(float previousFood, float currentFood, long now) {
+        for (int slot = 0; slot < BASE_SLOT_COUNT; slot++) {
+            float prevFill = this.fillForSlot(previousFood, slot);
+            float newFill = this.fillForSlot(currentFood, slot);
+            if (prevFill > newFill + 0.01F && prevFill > 0.0F) {
+                this.activeBlinkSlots.put(slot, new BlinkState(prevFill, now + BLINK_DURATION_MS));
+            }
+        }
+    }
+
+    private float fillForSlot(float value, int slot) {
+        float slotLowerBound = slot * 2.0F;
+        return Mth.clamp(value - slotLowerBound, 0.0F, 2.0F);
+    }
+
+    private void cleanupExpiredBlinks(long now) {
+        Iterator<Map.Entry<Integer, BlinkState>> iterator = this.activeBlinkSlots.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<Integer, BlinkState> entry = iterator.next();
+            if (now >= entry.getValue().endTimeMs) {
+                iterator.remove();
+            }
+        }
+    }
+
+    private record BlinkState(float previousFill, long endTimeMs) {
     }
 
     private record RenderMetrics(int iconsPerRow, int baseIconSize, int totalSlots, int bodyWidth, int bodyHeight,

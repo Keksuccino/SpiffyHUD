@@ -24,6 +24,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public class PlayerHeartHealthBarElement extends AbstractElement {
@@ -54,10 +56,8 @@ public class PlayerHeartHealthBarElement extends AbstractElement {
     private final EnumMap<HeartTextureKind, ResourceSupplier<ITexture>> customTextures = new EnumMap<>(HeartTextureKind.class);
 
     private float lastRecordedHealth = -1.0F;
-    private int lastBlinkSlotIndex = -1;
-    private long blinkEndTimeMs = -1L;
     private int cachedTickCount = 0;
-    private float blinkDisplayHealth = -1.0F;
+    private final Map<Integer, BlinkState> activeBlinkSlots = new HashMap<>();
 
     public PlayerHeartHealthBarElement(@NotNull ElementBuilder<?, ?> builder) {
         super(builder);
@@ -132,12 +132,19 @@ public class PlayerHeartHealthBarElement extends AbstractElement {
     }
 
     private HeartTextureKind resolveBaseTexture(int logicalIndex, @NotNull PlayerData data, long now) {
-        boolean blinkActive = this.isBlinkActive(now);
-        if (blinkActive && logicalIndex == this.lastBlinkSlotIndex) {
-            HeartTextureKind previous = this.resolvePreviousTextureForSlot(logicalIndex, data.visualStyle);
-            return ((now / 120L) % 2L == 0L) ? previous : HeartTextureKind.EMPTY;
+        BlinkState blink = this.activeBlinkSlots.get(logicalIndex);
+        if (blink != null) {
+            if (now < blink.endTimeMs) {
+                HeartTextureKind previous = this.textureFromFill(blink.previousFill, data.visualStyle);
+                if (previous == HeartTextureKind.EMPTY) {
+                    previous = data.visualStyle.halfTexture;
+                }
+                return ((now / 120L) % 2L == 0L) ? previous : HeartTextureKind.EMPTY;
+            } else {
+                this.activeBlinkSlots.remove(logicalIndex);
+            }
         }
-        float displayedHealth = this.getEffectiveHealthForSlot(data.currentHealth, logicalIndex, now, blinkActive);
+        float displayedHealth = data.currentHealth;
         float heartLowerBound = logicalIndex * 2.0F;
         float fillValue = displayedHealth - heartLowerBound;
         return this.textureFromFill(fillValue, data.visualStyle);
@@ -222,33 +229,26 @@ public class PlayerHeartHealthBarElement extends AbstractElement {
     }
 
     private void updateBlinkState(float currentHealth, int baseHeartSlots) {
+        long now = System.currentTimeMillis();
+        this.cleanupExpiredBlinks(now);
+
         if (!this.blinkOnLoss || baseHeartSlots <= 0) {
+            this.activeBlinkSlots.clear();
             this.lastRecordedHealth = currentHealth;
-            this.lastBlinkSlotIndex = -1;
-            this.blinkDisplayHealth = -1.0F;
             return;
         }
 
         if (this.lastRecordedHealth < 0.0F) {
             this.lastRecordedHealth = currentHealth;
-            this.blinkDisplayHealth = -1.0F;
             return;
         }
 
         if (currentHealth < this.lastRecordedHealth - 0.01F) {
-            this.blinkDisplayHealth = this.lastRecordedHealth;
-            int slot = resolveBlinkSlotIndex(this.lastRecordedHealth, baseHeartSlots);
-            this.lastBlinkSlotIndex = slot;
-            this.blinkEndTimeMs = System.currentTimeMillis() + BLINK_DURATION_MS;
+            this.registerBlinkSlots(this.lastRecordedHealth, currentHealth, baseHeartSlots, now);
         } else if (currentHealth > this.lastRecordedHealth + 0.01F) {
-            this.lastBlinkSlotIndex = -1;
-            this.blinkDisplayHealth = -1.0F;
+            this.activeBlinkSlots.clear();
         }
         this.lastRecordedHealth = currentHealth;
-        if ((this.lastBlinkSlotIndex >= baseHeartSlots) || (System.currentTimeMillis() >= this.blinkEndTimeMs)) {
-            this.lastBlinkSlotIndex = -1;
-            this.blinkDisplayHealth = -1.0F;
-        }
     }
 
     private boolean shouldShake(float currentHealth) {
@@ -321,36 +321,38 @@ public class PlayerHeartHealthBarElement extends AbstractElement {
         return DEFAULT_SCALE;
     }
 
-    private float getEffectiveHealthForSlot(float currentHealth, int logicalIndex, long now, boolean blinkActive) {
-        if (blinkActive && this.blinkDisplayHealth >= 0.0F && logicalIndex < this.lastBlinkSlotIndex) {
-            return Math.max(currentHealth, this.blinkDisplayHealth);
-        }
-        return currentHealth;
-    }
-
-    private boolean isBlinkActive(long now) {
-        return this.blinkOnLoss && this.lastBlinkSlotIndex >= 0 && now < this.blinkEndTimeMs;
-    }
-
-    private static int resolveBlinkSlotIndex(float previousValue, int maxSlots) {
-        int slot = Mth.ceil(previousValue / 2.0F) - 1;
-        return Mth.clamp(slot, 0, Math.max(0, maxSlots - 1));
-    }
-
-    private HeartTextureKind resolvePreviousTextureForSlot(int logicalIndex, @NotNull HeartVisualStyle style) {
-        if (this.blinkDisplayHealth < 0.0F) {
-            return style.halfTexture;
-        }
-        float heartLowerBound = logicalIndex * 2.0F;
-        float fillValue = this.blinkDisplayHealth - heartLowerBound;
-        HeartTextureKind texture = this.textureFromFill(fillValue, style);
-        return (texture == HeartTextureKind.EMPTY) ? style.halfTexture : texture;
-    }
-
     private HeartTextureKind textureFromFill(float fillValue, @NotNull HeartVisualStyle style) {
         if (fillValue >= 2.0F) return style.fullTexture;
         if (fillValue > 0.0F) return style.halfTexture;
         return HeartTextureKind.EMPTY;
+    }
+
+    private void registerBlinkSlots(float previousHealth, float currentHealth, int baseHeartSlots, long now) {
+        for (int slot = 0; slot < baseHeartSlots; slot++) {
+            float prevFill = this.fillForSlot(previousHealth, slot);
+            float newFill = this.fillForSlot(currentHealth, slot);
+            if (prevFill > newFill + 0.01F && prevFill > 0.0F) {
+                this.activeBlinkSlots.put(slot, new BlinkState(prevFill, now + BLINK_DURATION_MS));
+            }
+        }
+    }
+
+    private float fillForSlot(float value, int slot) {
+        float heartLowerBound = slot * 2.0F;
+        return Mth.clamp(value - heartLowerBound, 0.0F, 2.0F);
+    }
+
+    private void cleanupExpiredBlinks(long now) {
+        Iterator<Map.Entry<Integer, BlinkState>> iterator = this.activeBlinkSlots.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<Integer, BlinkState> entry = iterator.next();
+            if (now >= entry.getValue().endTimeMs) {
+                iterator.remove();
+            }
+        }
+    }
+
+    private record BlinkState(float previousFill, long endTimeMs) {
     }
 
     private record RenderMetrics(int heartsPerRow, int baseHeartSize, int totalSlots, int bodyWidth, int bodyHeight,
