@@ -35,6 +35,8 @@ public class PlayerHeartHealthBarElement extends AbstractElement {
     private static final float MAX_SCALE = 8.0F;
     private static final int BASE_HEART_PIXEL_SIZE = 8;
     private static final long BLINK_DURATION_MS = 650L;
+    private static final long EDITOR_PREVIEW_INTERVAL_MS = 10_000L;
+    private static final HeartVisualStyle[] EDITOR_PREVIEW_STYLES = HeartVisualStyle.values();
 
     private final Minecraft minecraft = Minecraft.getInstance();
     private final RandomSource shakeRandom = RandomSource.create();
@@ -262,13 +264,7 @@ public class PlayerHeartHealthBarElement extends AbstractElement {
 
     private PlayerData collectPlayerData() {
         if (isEditor()) {
-            int phase = (this.cachedTickCount / 40) % 4;
-            HeartVisualStyle style = switch (phase) {
-                case 1 -> HeartVisualStyle.POISON;
-                case 2 -> HeartVisualStyle.WITHER;
-                case 3 -> HeartVisualStyle.BURNING;
-                default -> HeartVisualStyle.NORMAL;
-            };
+            HeartVisualStyle style = this.pickEditorPreviewStyle();
             return new PlayerData(13.0F, 20.0F, 6.0F, style);
         }
 
@@ -445,4 +441,11 @@ public class PlayerHeartHealthBarElement extends AbstractElement {
     public Map<HeartTextureKind, ResourceSupplier<ITexture>> getCustomTextureMap() {
         return Collections.unmodifiableMap(this.customTextures);
     }
+
+    private HeartVisualStyle pickEditorPreviewStyle() {
+        long bucket = System.currentTimeMillis() / EDITOR_PREVIEW_INTERVAL_MS;
+        int index = (int) (bucket % EDITOR_PREVIEW_STYLES.length);
+        return EDITOR_PREVIEW_STYLES[Math.max(0, index)];
+    }
+
 }
