@@ -41,7 +41,7 @@ public class SpiffyHud {
 		} else {
 			LOGGER.info("[SPIFFY HUD] Loading v" + VERSION + " in server-side mode on " + MOD_LOADER.toUpperCase() + "!");
 		}
-        
+
         if (!INSTANCE_DIR.exists()) {
             INSTANCE_DIR.mkdirs();
         }

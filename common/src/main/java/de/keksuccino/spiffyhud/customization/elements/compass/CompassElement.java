@@ -6,18 +6,14 @@ import de.keksuccino.fancymenu.customization.element.ElementBuilder;
 import de.keksuccino.fancymenu.customization.placeholder.PlaceholderParser;
 import de.keksuccino.fancymenu.util.rendering.DrawableColor;
 import de.keksuccino.fancymenu.util.rendering.RenderingUtils;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.GlobalPos;
+import de.keksuccino.spiffyhud.util.death.DeathPointStorage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Optional;
 
 public class CompassElement extends AbstractElement {
 
@@ -267,18 +263,15 @@ public class CompassElement extends AbstractElement {
         if (player == null) {
             return null;
         }
-        Level level = player.level();
-        Optional<GlobalPos> optional = player.getLastDeathLocation();
-        if (optional.isEmpty()) {
+        DeathPointStorage.StoredDeathPoint point = DeathPointStorage.get();
+        if (point == null || !point.dimensionMatches(player.level())) {
             return null;
         }
-        GlobalPos globalPos = optional.get();
-        if (!level.dimension().equals(globalPos.dimension())) {
+        if (point.squaredDistanceTo(player.getX(), player.getY(), player.getZ()) <= 1.0E-3D) {
             return null;
         }
-        BlockPos deathPos = globalPos.pos();
-        double dx = (double) deathPos.getX() + 0.5D - player.getX();
-        double dz = (double) deathPos.getZ() + 0.5D - player.getZ();
+        double dx = point.getX() - player.getX();
+        double dz = point.getZ() - player.getZ();
         double distanceSq = dx * dx + dz * dz;
         if (distanceSq < 1.0E-4D) {
             return null;
