@@ -6,6 +6,7 @@ import de.keksuccino.spiffyhud.customization.elements.eraser.EraserElementBuilde
 import de.keksuccino.spiffyhud.customization.elements.overlayremover.OverlayRemoverElementBuilder;
 import de.keksuccino.spiffyhud.customization.elements.player.PlayerElementBuilder;
 import de.keksuccino.spiffyhud.customization.elements.playernbthelper.PlayerNbtHelperElementBuilder;
+import de.keksuccino.spiffyhud.customization.elements.playerheartbar.PlayerHeartHealthBarElementBuilder;
 import de.keksuccino.spiffyhud.customization.elements.singlelinetext.SingleLineTextElementBuilder;
 import de.keksuccino.spiffyhud.customization.elements.slot.SlotElementBuilder;
 import de.keksuccino.spiffyhud.customization.elements.vanillalike.air.VanillaLikePlayerAirElementBuilder;
@@ -42,6 +43,7 @@ public class Elements {
     public static final ChatCustomizerElementBuilder CHAT_CUSTOMIZER = new ChatCustomizerElementBuilder();
     public static final PlayerNbtHelperElementBuilder PLAYER_NBT_HELPER = new PlayerNbtHelperElementBuilder();
     public static final SingleLineTextElementBuilder SINGLE_LINE_TEXT = new SingleLineTextElementBuilder();
+    public static final PlayerHeartHealthBarElementBuilder PLAYER_HEART_HEALTH_BAR = new PlayerHeartHealthBarElementBuilder();
     public static final EraserElementBuilder ERASER = new EraserElementBuilder();
 
     public static void registerAll() {
@@ -65,6 +67,7 @@ public class Elements {
         ElementRegistry.register(CHAT_CUSTOMIZER);
         ElementRegistry.register(PLAYER_NBT_HELPER);
         ElementRegistry.register(SINGLE_LINE_TEXT);
+        ElementRegistry.register(PLAYER_HEART_HEALTH_BAR);
         ElementRegistry.register(ERASER);
 
     }
