@@ -1,4 +1,4 @@
-package de.keksuccino.spiffyhud.customization.elements.playerheartbar;
+package de.keksuccino.spiffyhud.customization.elements.playerfoodbar;
 
 import de.keksuccino.fancymenu.customization.element.AbstractElement;
 import de.keksuccino.fancymenu.customization.element.ElementBuilder;
@@ -12,34 +12,33 @@ import de.keksuccino.spiffyhud.util.SpiffyAlignment;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import java.awt.*;
 import java.util.Locale;
 import java.util.Objects;
 
-public class PlayerHeartHealthBarElementBuilder extends ElementBuilder<PlayerHeartHealthBarElement, PlayerHeartHealthBarEditorElement> {
+public class PlayerFoodBarElementBuilder extends ElementBuilder<PlayerFoodBarElement, PlayerFoodBarEditorElement> {
 
-    public PlayerHeartHealthBarElementBuilder() {
-        super("spiffy_player_heart_health_bar");
+    public PlayerFoodBarElementBuilder() {
+        super("spiffy_player_food_bar");
     }
 
     @Override
-    public @NotNull PlayerHeartHealthBarElement buildDefaultInstance() {
-        PlayerHeartHealthBarElement element = new PlayerHeartHealthBarElement(this);
+    public @NotNull PlayerFoodBarElement buildDefaultInstance() {
+        PlayerFoodBarElement element = new PlayerFoodBarElement(this);
         element.baseWidth = 100;
         element.baseHeight = 100;
         return element;
     }
 
     @Override
-    public PlayerHeartHealthBarElement deserializeElement(@NotNull SerializedElement serialized) {
-        PlayerHeartHealthBarElement element = this.buildDefaultInstance();
+    public PlayerFoodBarElement deserializeElement(@NotNull SerializedElement serialized) {
+        PlayerFoodBarElement element = this.buildDefaultInstance();
 
-        element.heartsPerRow = Math.max(1, deserializeNumber(Integer.class, element.heartsPerRow, serialized.getValue("hearts_per_row")));
-        element.heartGap = Math.max(0, deserializeNumber(Integer.class, element.heartGap, serialized.getValue("heart_gap")));
+        element.iconsPerRow = Math.max(1, deserializeNumber(Integer.class, element.iconsPerRow, serialized.getValue("icons_per_row")));
+        element.iconGap = Math.max(0, deserializeNumber(Integer.class, element.iconGap, serialized.getValue("icon_gap")));
         element.scaleMultiplier = Objects.requireNonNullElse(serialized.getValue("scale_multiplier"), element.scaleMultiplier);
         element.blinkOnLoss = deserializeBoolean(element.blinkOnLoss, serialized.getValue("blink_on_loss"));
-        element.lowHealthShakeEnabled = deserializeBoolean(element.lowHealthShakeEnabled, serialized.getValue("shake_enabled"));
-        element.lowHealthShakeThresholdHearts = Math.max(0, deserializeNumber(Integer.class, element.lowHealthShakeThresholdHearts, serialized.getValue("shake_threshold_hearts")));
+        element.lowFoodShakeEnabled = deserializeBoolean(element.lowFoodShakeEnabled, serialized.getValue("shake_enabled"));
+        element.lowFoodShakeThresholdIcons = Math.max(0, deserializeNumber(Integer.class, element.lowFoodShakeThresholdIcons, serialized.getValue("shake_threshold_icons")));
 
         String alignment = serialized.getValue("spiffy_alignment");
         if (alignment != null) {
@@ -49,7 +48,7 @@ public class PlayerHeartHealthBarElementBuilder extends ElementBuilder<PlayerHea
             }
         }
 
-        for (PlayerHeartHealthBarElement.HeartTextureKind kind : PlayerHeartHealthBarElement.HeartTextureKind.values()) {
+        for (PlayerFoodBarElement.FoodTextureKind kind : PlayerFoodBarElement.FoodTextureKind.values()) {
             String key = texturePropertyKey(kind);
             ResourceSupplier<ITexture> supplier = deserializeImageResourceSupplier(serialized.getValue(key));
             element.setCustomTexture(kind, supplier);
@@ -59,8 +58,8 @@ public class PlayerHeartHealthBarElementBuilder extends ElementBuilder<PlayerHea
     }
 
     @Override
-    public @Nullable PlayerHeartHealthBarElement deserializeElementInternal(@NotNull SerializedElement serialized) {
-        PlayerHeartHealthBarElement element = super.deserializeElementInternal(serialized);
+    public @Nullable PlayerFoodBarElement deserializeElementInternal(@NotNull SerializedElement serialized) {
+        PlayerFoodBarElement element = super.deserializeElementInternal(serialized);
         if (element != null) {
             element.stayOnScreen = this.deserializeBoolean(element.stayOnScreen, serialized.getValue("stay_on_screen"));
         }
@@ -68,17 +67,17 @@ public class PlayerHeartHealthBarElementBuilder extends ElementBuilder<PlayerHea
     }
 
     @Override
-    protected SerializedElement serializeElement(@NotNull PlayerHeartHealthBarElement element, @NotNull SerializedElement serializeTo) {
+    protected SerializedElement serializeElement(@NotNull PlayerFoodBarElement element, @NotNull SerializedElement serializeTo) {
 
-        serializeTo.putProperty("hearts_per_row", "" + element.heartsPerRow);
-        serializeTo.putProperty("heart_gap", "" + element.heartGap);
+        serializeTo.putProperty("icons_per_row", "" + element.iconsPerRow);
+        serializeTo.putProperty("icon_gap", "" + element.iconGap);
         serializeTo.putProperty("scale_multiplier", element.scaleMultiplier);
         serializeTo.putProperty("blink_on_loss", "" + element.blinkOnLoss);
-        serializeTo.putProperty("shake_enabled", "" + element.lowHealthShakeEnabled);
-        serializeTo.putProperty("shake_threshold_hearts", "" + element.lowHealthShakeThresholdHearts);
+        serializeTo.putProperty("shake_enabled", "" + element.lowFoodShakeEnabled);
+        serializeTo.putProperty("shake_threshold_icons", "" + element.lowFoodShakeThresholdIcons);
         serializeTo.putProperty("spiffy_alignment", element.spiffyAlignment.getName());
 
-        for (PlayerHeartHealthBarElement.HeartTextureKind kind : PlayerHeartHealthBarElement.HeartTextureKind.values()) {
+        for (PlayerFoodBarElement.FoodTextureKind kind : PlayerFoodBarElement.FoodTextureKind.values()) {
             ResourceSupplier<ITexture> supplier = element.getCustomTexture(kind);
             if (supplier != null) {
                 serializeTo.putProperty(texturePropertyKey(kind), supplier.getSourceWithPrefix());
@@ -88,23 +87,23 @@ public class PlayerHeartHealthBarElementBuilder extends ElementBuilder<PlayerHea
         return serializeTo;
     }
 
-    private static String texturePropertyKey(@NotNull PlayerHeartHealthBarElement.HeartTextureKind kind) {
+    private static String texturePropertyKey(@NotNull PlayerFoodBarElement.FoodTextureKind kind) {
         return "texture_" + kind.name().toLowerCase(Locale.ROOT);
     }
 
     @Override
-    public @NotNull PlayerHeartHealthBarEditorElement wrapIntoEditorElement(@NotNull PlayerHeartHealthBarElement element, @NotNull LayoutEditorScreen editor) {
-        return new PlayerHeartHealthBarEditorElement(element, editor);
+    public @NotNull PlayerFoodBarEditorElement wrapIntoEditorElement(@NotNull PlayerFoodBarElement element, @NotNull LayoutEditorScreen editor) {
+        return new PlayerFoodBarEditorElement(element, editor);
     }
 
     @Override
     public @NotNull Component getDisplayName(@Nullable AbstractElement element) {
-        return Component.translatable("spiffyhud.elements.player_heart_health_bar");
+        return Component.translatable("spiffyhud.elements.player_food_bar");
     }
 
     @Override
     public @Nullable Component[] getDescription(@Nullable AbstractElement element) {
-        return LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_heart_health_bar.desc");
+        return LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_food_bar.desc");
     }
 
     @Override
