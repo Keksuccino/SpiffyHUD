@@ -9,7 +9,7 @@ CHANGELOG | SPIFFYHUD v3.1.0 [ !!  WIP !! NOT FINISHED YET !! WIP !! ]
     - Aggressive mode will try to erase EVERYTHING, including Spiffy elements, which should get used in cases where Normal is not enough to hide the target element
 - Added "Player Heart Health Bar" element that is a fully customizable health bar that works similar to the Vanilla one, with health points being displayed as individual hearts
   - Allows to set custom textures for all kinds of heart types (normal, absorption, frozen, poisoned, etc., including half heart versions for all of them)
-  - Customizable effects (shaking, blinking, hearts per row, etc.)
+  - Customizable appearance (shaking, blinking, hearts per row, etc.)
   - Supports scaling
 - The "Single-Line Text" element now has an option to set its text scale
 - Fixed Vanilla-like hotbar renders items twice (#31)
