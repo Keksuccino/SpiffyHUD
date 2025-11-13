@@ -11,6 +11,10 @@ CHANGELOG | SPIFFYHUD v3.1.0 [ !!  WIP !! NOT FINISHED YET !! WIP !! ]
   - Allows to set custom textures for all kinds of heart types (normal, absorption, frozen, poisoned, etc., including half heart versions for all of them)
   - Customizable appearance (shaking, blinking, icons per row, etc.)
   - Supports scaling
+- Added "Mount Heart Health Bar" element that is a fully customizable mount health bar that works similar to the Vanilla one, with health points being displayed as individual icons
+  - Allows to set custom textures for all kinds of heart types (normal, frozen, poisoned, etc., including half heart versions for all of them)
+  - Customizable appearance (shaking, blinking, icons per row, etc.)
+  - Supports scaling
 - Added "Player Food Icon Bar" element that is a fully customizable food bar that works similar to the Vanilla one, with food points being displayed as individual icons
   - Allows to set custom textures for all kinds of food types (empty, half, full, half hungry, full hungry)
   - Customizable appearance (shaking, blinking, icons per row, etc.)
