@@ -2,6 +2,7 @@ package de.keksuccino.spiffyhud.mixin.mixins.common.client;
 
 import com.mojang.authlib.GameProfile;
 import de.keksuccino.spiffyhud.util.death.DeathPointStorage;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
@@ -30,7 +31,7 @@ public abstract class MixinLocalPlayer extends AbstractClientPlayer {
             return;
         }
         Level level = this.level();
-        if (level == null || !level.isClientSide()) {
+        if ((level == null) || (Minecraft.getInstance().player != (Object) this)) {
             return;
         }
         DeathPointStorage.recordDeath(level, this.getX(), this.getY(), this.getZ());
