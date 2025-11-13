@@ -208,5 +208,17 @@
   "spiffyhud.requirements.is_player_in_structure.desc": "Checks if the player is currently in a specific structure type.\n§xSpiffy needs to be installed on the server for this to work!",
   "spiffyhud.requirements.is_player_in_structure.key": "Structure key to check for:",
   "spiffyhud.requirements.is_player_using_item": "Is Player Using Item",
-  "spiffyhud.requirements.is_player_using_item.desc": "Returns true when the player is using an item.\nUsing an item means, for example, eating food, drinking a potion, drawing a bow, etc."
+  "spiffyhud.requirements.is_player_using_item.desc": "Returns true when the player is using an item.\nUsing an item means, for example, eating food, drinking a potion, drawing a bow, etc.",
+  "spiffyhud.elements.player_compass": "[HUD] Player Compass",
+  "spiffyhud.elements.player_compass.desc": "Draws a horizontal RPG-style compass that fills the element bounds, complete with major and minor degree markers, numeric grades, N/E/S/W text and a moving needle that tracks the player's facing direction.\nEvery color can be overridden via HEX strings or placeholders.",
+  "spiffyhud.elements.player_compass.color.background": "Background Color [HEX]",
+  "spiffyhud.elements.player_compass.color.background.desc": "Sets the color of the overall compass backdrop. Accepts HEX codes (e.g. #AAF0F0F0) or placeholder values.",
+  "spiffyhud.elements.player_compass.color.bar": "Bar Color [HEX]",
+  "spiffyhud.elements.player_compass.color.bar.desc": "Controls the solid fill behind the grade lines. Accepts HEX codes and placeholders.",
+  "spiffyhud.elements.player_compass.color.major_tick": "Major Grade Color [HEX]",
+  "spiffyhud.elements.player_compass.color.minor_tick": "Minor Grade Color [HEX]",
+  "spiffyhud.elements.player_compass.color.cardinal_text": "N/E/S/W Text Color [HEX]",
+  "spiffyhud.elements.player_compass.color.number_text": "Number Text Color [HEX]",
+  "spiffyhud.elements.player_compass.color.needle": "Needle Color [HEX]",
+  "spiffyhud.elements.player_compass.color.needle.desc": "Sets the color of the moving compass needle. Accepts HEX codes and placeholders."
 }
