@@ -107,7 +107,7 @@ public class CompassElement extends AbstractElement {
 
     private void drawCardinal(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float degrees, @NotNull String text, int color) {
         float centerX = this.computeScreenX(layout, degrees);
-        this.drawScaledCenteredString(graphics, text, centerX, layout.cardinalCenterY(), layout.cardinalScale(), color);
+        this.drawScaledCenteredString(graphics, text, centerX, layout.cardinalCenterY(), layout.cardinalScale(), color, true);
     }
 
     private void drawDegreeNumbers(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull ResolvedColors colors) {
@@ -121,7 +121,7 @@ public class CompassElement extends AbstractElement {
             }
             String label = Integer.toString(absolute);
             float centerX = this.computeScreenX(layout, degrees);
-            this.drawScaledCenteredString(graphics, label, centerX, layout.numberCenterY(), layout.numberScale(), colors.numberTextColor());
+            this.drawScaledCenteredString(graphics, label, centerX, layout.numberCenterY(), layout.numberScale(), colors.numberTextColor(), true);
         }
     }
 
@@ -141,7 +141,7 @@ public class CompassElement extends AbstractElement {
         return Mth.clamp(px, layout.x(), layout.x() + layout.width() - 1);
     }
 
-    private void drawScaledCenteredString(@NotNull GuiGraphics graphics, @NotNull String text, float centerX, float centerY, float scale, int color) {
+    private void drawScaledCenteredString(@NotNull GuiGraphics graphics, @NotNull String text, float centerX, float centerY, float scale, int color, boolean outline) {
         if (text.isEmpty() || scale <= 0.0F) {
             return;
         }
@@ -154,6 +154,17 @@ public class CompassElement extends AbstractElement {
         pose.pushPose();
         pose.translate(drawX, drawY, 0);
         pose.scale(scale, scale, 1.0F);
+        if (outline) {
+            int blackColor = applyOpacity(DrawableColor.BLACK.getColorInt());
+            graphics.drawString(font, text, -1, 0, blackColor, false);
+            graphics.drawString(font, text, 0, -1, blackColor, false);
+            graphics.drawString(font, text, 1, 0, blackColor, false);
+            graphics.drawString(font, text, 0, 1, blackColor, false);
+            graphics.drawString(font, text, -1, -1, blackColor, false);
+            graphics.drawString(font, text, 1, -1, blackColor, false);
+            graphics.drawString(font, text, 1, 1, blackColor, false);
+            graphics.drawString(font, text, -1, 1, blackColor, false);
+        }
         graphics.drawString(font, text, 0, 0, color, false);
         pose.popPose();
     }
