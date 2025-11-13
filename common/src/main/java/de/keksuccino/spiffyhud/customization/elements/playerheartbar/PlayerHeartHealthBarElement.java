@@ -130,18 +130,20 @@ public class PlayerHeartHealthBarElement extends AbstractElement {
 
         int col = slotIndex % metrics.heartsPerRow;
         int row = slotIndex / metrics.heartsPerRow;
-        int baseX = col * (metrics.baseHeartSize + metrics.horizontalGap);
-        int baseY = row * (metrics.baseHeartSize + metrics.verticalGap);
+        float baseX = col * (metrics.baseHeartSize + metrics.horizontalGap);
+        float baseY = row * (metrics.baseHeartSize + metrics.verticalGap);
 
-        if (shakeStrengthBase > 0.0F) {
+        float offsetX = 0.0F;
+        float offsetY = 0.0F;
+        if ((shakeStrengthBase > 0.0F) && (textureKind != HeartTextureKind.EMPTY)) {
             float[] offsets = this.computeShakeOffset(slotIndex, shakeStrengthBase);
-            baseX += Math.round(offsets[0]);
-            baseY += Math.round(offsets[1]);
+            offsetX = offsets[0];
+            offsetY = offsets[1];
         }
 
         PoseStack pose = graphics.pose();
         pose.pushPose();
-        pose.translate(baseX, baseY, 0);
+        pose.translate(baseX + offsetX, baseY + offsetY, 0);
         pose.scale(scale, scale, 1.0F);
         this.drawHeartTexture(graphics, textureKind, metrics.baseHeartSize);
         pose.popPose();
