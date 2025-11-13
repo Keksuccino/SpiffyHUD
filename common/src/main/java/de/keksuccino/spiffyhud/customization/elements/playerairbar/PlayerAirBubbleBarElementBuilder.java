@@ -40,6 +40,7 @@ public class PlayerAirBubbleBarElementBuilder extends ElementBuilder<PlayerAirBu
         element.blinkOnLoss = deserializeBoolean(element.blinkOnLoss, serialized.getValue("blink_on_loss"));
         element.lowAirShakeEnabled = deserializeBoolean(element.lowAirShakeEnabled, serialized.getValue("shake_enabled"));
         element.lowAirShakeThresholdBubbles = Math.max(0, deserializeNumber(Integer.class, element.lowAirShakeThresholdBubbles, serialized.getValue("shake_threshold_bubbles")));
+        element.poppingDurationMs = Math.max(0, deserializeNumber(Integer.class, element.poppingDurationMs, serialized.getValue("pop_duration_ms")));
 
         String alignment = serialized.getValue("spiffy_alignment");
         if (alignment != null) {
@@ -76,6 +77,7 @@ public class PlayerAirBubbleBarElementBuilder extends ElementBuilder<PlayerAirBu
         serializeTo.putProperty("blink_on_loss", "" + element.blinkOnLoss);
         serializeTo.putProperty("shake_enabled", "" + element.lowAirShakeEnabled);
         serializeTo.putProperty("shake_threshold_bubbles", "" + element.lowAirShakeThresholdBubbles);
+        serializeTo.putProperty("pop_duration_ms", "" + element.poppingDurationMs);
         serializeTo.putProperty("spiffy_alignment", element.spiffyAlignment.getName());
 
         for (PlayerAirBubbleBarElement.AirTextureKind kind : PlayerAirBubbleBarElement.AirTextureKind.values()) {

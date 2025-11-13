@@ -66,6 +66,15 @@ public class PlayerAirBubbleBarEditorElement extends AbstractEditorElement {
                         "spiffyhud.elements.player_air_bubble_bar.blink")
                 .setStackable(true);
 
+        this.addIntegerInputContextMenuEntryTo(this.rightClickMenu, "pop_duration_ms",
+                        PlayerAirBubbleBarEditorElement.class,
+                        consumes -> consumes.getElement().poppingDurationMs,
+                        (editorElement, value) -> editorElement.getElement().poppingDurationMs = Math.max(0, value),
+                        Component.translatable("spiffyhud.elements.player_air_bubble_bar.pop_duration"),
+                        true, PlayerAirBubbleBarElement.DEFAULT_POPPING_DURATION_MS, null, null)
+                .setStackable(true)
+                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_air_bubble_bar.pop_duration.desc")));
+
         this.addToggleContextMenuEntryTo(this.rightClickMenu, "shake_enabled",
                         PlayerAirBubbleBarEditorElement.class,
                         consumes -> consumes.getElement().lowAirShakeEnabled,

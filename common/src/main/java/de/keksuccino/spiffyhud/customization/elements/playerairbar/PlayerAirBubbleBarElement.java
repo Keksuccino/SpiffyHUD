@@ -37,7 +37,7 @@ public class PlayerAirBubbleBarElement extends AbstractElement {
     private static final int BASE_BUBBLE_PIXEL_SIZE = 8;
     private static final int BASE_SLOT_COUNT = 10;
     private static final int POINTS_PER_SLOT = 2;
-    private static final long BLINK_DURATION_MS = 650L;
+    public static final int DEFAULT_POPPING_DURATION_MS = 217;
 
     private final Minecraft minecraft = Minecraft.getInstance();
     private final RandomSource shakeRandom = RandomSource.create();
@@ -51,6 +51,7 @@ public class PlayerAirBubbleBarElement extends AbstractElement {
     public boolean blinkOnLoss = true;
     public boolean lowAirShakeEnabled = true;
     public int lowAirShakeThresholdBubbles = 4;
+    public int poppingDurationMs = DEFAULT_POPPING_DURATION_MS;
 
     private final EnumMap<AirTextureKind, ResourceSupplier<ITexture>> customTextures = new EnumMap<>(AirTextureKind.class);
 
@@ -123,7 +124,7 @@ public class PlayerAirBubbleBarElement extends AbstractElement {
         BlinkState blink = this.activeBlinkSlots.get(logicalIndex);
         if (blink != null) {
             if (now < blink.endTimeMs) {
-                return ((now / 120L) % 2L == 0L) ? AirTextureKind.POPPING : AirTextureKind.EMPTY;
+                return AirTextureKind.POPPING;
             } else {
                 this.activeBlinkSlots.remove(logicalIndex);
             }
@@ -208,7 +209,7 @@ public class PlayerAirBubbleBarElement extends AbstractElement {
         long now = System.currentTimeMillis();
         this.cleanupExpiredBlinks(now);
 
-        if (!this.blinkOnLoss) {
+        if (!this.blinkOnLoss || this.poppingDurationMs <= 0) {
             this.activeBlinkSlots.clear();
             this.lastRecordedAirPoints = currentAirPoints;
             return;
@@ -289,11 +290,15 @@ public class PlayerAirBubbleBarElement extends AbstractElement {
     }
 
     private void registerBlinkSlots(float previousAirPoints, float currentAirPoints, long now) {
+        int duration = Math.max(0, this.poppingDurationMs);
+        if (duration <= 0) {
+            return;
+        }
         for (int slot = 0; slot < BASE_SLOT_COUNT; slot++) {
             float prevFill = this.fillForSlot(previousAirPoints, slot);
             float newFill = this.fillForSlot(currentAirPoints, slot);
             if (prevFill >= POINTS_PER_SLOT && newFill < POINTS_PER_SLOT) {
-                this.activeBlinkSlots.put(slot, new BlinkState(prevFill, now + BLINK_DURATION_MS));
+                this.activeBlinkSlots.put(slot, new BlinkState(now + duration));
             }
         }
     }
@@ -313,7 +318,7 @@ public class PlayerAirBubbleBarElement extends AbstractElement {
         }
     }
 
-    private record BlinkState(float previousFill, long endTimeMs) {
+    private record BlinkState(long endTimeMs) {
     }
 
     private record RenderMetrics(int bubblesPerRow, int baseBubbleSize, int totalSlots, int bodyWidth, int bodyHeight,
