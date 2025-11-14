@@ -19,7 +19,10 @@ import java.util.WeakHashMap;
 /**
  * Utility for rendering a mob's head (or a centered bust) inside a GUI square.
  */
-public final class EntityHeadRenderUtils {
+public class EntityHeadRenderUtils {
+
+    //TODO Machen, dass methode stattdessen volles model von vorn rendert
+    //TODO Machen, dass methode automatisch die mob size/bounds checkt, um die render size anzupassen, damit alle mobs in ähnlicher größe gerendert werden (aktuell zu ungenau, Parrots viel zu klein, zum Beispiel)
 
     private static final Minecraft MC = Minecraft.getInstance();
     private static final float BASE_DEPTH = 150.0F;
