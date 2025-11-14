@@ -30,6 +30,8 @@ public class CompassEditorElement extends AbstractEditorElement {
                         "spiffyhud.elements.player_compass.background_enabled")
                 .setStackable(true);
 
+        this.rightClickMenu.addSeparatorEntry("separator_after_background");
+
         this.addColorInput("bar_color", Component.translatable("spiffyhud.elements.player_compass.color.bar"), CompassElement.DEFAULT_BAR_COLOR_STRING)
                 .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.color.bar.desc")));
 
@@ -39,6 +41,8 @@ public class CompassEditorElement extends AbstractEditorElement {
                         (editorElement, value) -> editorElement.getElement().barEnabled = value,
                         "spiffyhud.elements.player_compass.bar_enabled")
                 .setStackable(true);
+
+        this.rightClickMenu.addSeparatorEntry("separator_after_bar");
 
         this.addColorInput("needle_color", Component.translatable("spiffyhud.elements.player_compass.color.needle"), CompassElement.DEFAULT_NEEDLE_COLOR_STRING)
                 .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.color.needle.desc")));
@@ -50,7 +54,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         "spiffyhud.elements.player_compass.needle_enabled")
                 .setStackable(true);
 
-        this.rightClickMenu.addSeparatorEntry("separator_after_general_compass_settings");
+        this.rightClickMenu.addSeparatorEntry("separator_after_needle");
 
         this.addColorInput("major_tick_color", Component.translatable("spiffyhud.elements.player_compass.color.major_tick"), CompassElement.DEFAULT_MAJOR_TICK_COLOR_STRING);
 
@@ -61,6 +65,8 @@ public class CompassEditorElement extends AbstractEditorElement {
                         "spiffyhud.elements.player_compass.major_ticks_enabled")
                 .setStackable(true);
 
+        this.rightClickMenu.addSeparatorEntry("separator_after_major_tick");
+
         this.addColorInput("minor_tick_color", Component.translatable("spiffyhud.elements.player_compass.color.minor_tick"), CompassElement.DEFAULT_MINOR_TICK_COLOR_STRING);
 
         this.addToggleContextMenuEntryTo(this.rightClickMenu, "minor_ticks_enabled",
@@ -70,7 +76,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         "spiffyhud.elements.player_compass.minor_ticks_enabled")
                 .setStackable(true);
 
-        this.rightClickMenu.addSeparatorEntry("separator_after_tick_colors");
+        this.rightClickMenu.addSeparatorEntry("separator_after_minor_tick");
 
         this.addColorInput("cardinal_text_color", Component.translatable("spiffyhud.elements.player_compass.color.cardinal_text"), CompassElement.DEFAULT_CARDINAL_TEXT_COLOR_STRING);
 
