@@ -101,6 +101,10 @@
   "spiffyhud.elements.player_compass.major_ticks_enabled": "Show Major Tick Lines: %s",
   "spiffyhud.elements.player_compass.minor_ticks_enabled": "Show Minor Tick Lines: %s",
   "spiffyhud.elements.player_compass.needle_enabled": "Show Needle: %s",
+  "spiffyhud.elements.player_compass.texture.death_pointer": "Death Pointer Texture",
+  "spiffyhud.elements.player_compass.texture.death_pointer.desc": "Overrides the death pointer marker with a custom image. Leave empty to use the colored bar.",
+  "spiffyhud.elements.player_compass.texture.needle": "Needle Texture",
+  "spiffyhud.elements.player_compass.texture.needle.desc": "Overrides the center needle with a custom image. Leave empty to use the colored bar.",
   "spiffyhud.elements.player_food_bar": "[HUD] Player Food Icon Bar",
   "spiffyhud.elements.player_food_bar.blink": "Blink Lost Food: %s",
   "spiffyhud.elements.player_food_bar.desc": "Displays the player's hunger as rows of fully customizable food icons.\nSupports alignment controls, auto sizing, scaling, blinking when food is lost\nand optional low-food shaking with per-state custom textures.",
@@ -232,9 +236,5 @@
   "spiffyhud.requirements.is_player_in_structure.desc": "Checks if the player is currently in a specific structure type.\n§xSpiffy needs to be installed on the server for this to work!",
   "spiffyhud.requirements.is_player_in_structure.key": "Structure key to check for:",
   "spiffyhud.requirements.is_player_using_item": "Is Player Using Item",
-  "spiffyhud.requirements.is_player_using_item.desc": "Returns true when the player is using an item.\nUsing an item means, for example, eating food, drinking a potion, drawing a bow, etc.",
-  "spiffyhud.elements.player_compass.texture.needle": "Needle Texture",
-  "spiffyhud.elements.player_compass.texture.needle.desc": "Overrides the center needle with a custom image. Leave empty to use the colored bar.",
-  "spiffyhud.elements.player_compass.texture.death_pointer": "Death Pointer Texture",
-  "spiffyhud.elements.player_compass.texture.death_pointer.desc": "Overrides the death pointer marker with a custom image. Leave empty to use the colored bar."
+  "spiffyhud.requirements.is_player_using_item.desc": "Returns true when the player is using an item.\nUsing an item means, for example, eating food, drinking a potion, drawing a bow, etc."
 }
