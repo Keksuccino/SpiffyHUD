@@ -205,8 +205,8 @@ public class CompassElement extends AbstractElement {
         if (!dots.hasAny()) {
             return;
         }
-        float minY = layout.y() + layout.height() * 0.58F;
-        float maxY = layout.y() + layout.height() * 0.92F;
+        float minY = layout.y();
+        float maxY = layout.y() + layout.height();
         float dotDiameter = Mth.clamp(layout.height() * 0.12F, 2.0F, 18.0F);
         float radius = dotDiameter / 2.0F;
         if (!dots.hostileDots().isEmpty()) {
@@ -230,10 +230,15 @@ public class CompassElement extends AbstractElement {
 
     private void drawMobDot(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float relativeDegrees, float centerY, float radius, int color, @Nullable ResourceSupplier<ITexture> texture) {
         float centerX = this.computeScreenX(layout, relativeDegrees);
-        if (this.drawNeedleTexture(graphics, layout, centerX, centerY, texture, true, false)) {
+        int size = Math.max(2, Mth.ceil(radius * 2.0F));
+        DotBounds bounds = this.computeDotBounds(layout, centerX, centerY, radius, size);
+        if (this.drawDotTexture(graphics, bounds, texture)) {
             return;
         }
-        int size = Math.max(2, Mth.ceil(radius * 2.0F));
+        graphics.fill(bounds.left(), bounds.top(), bounds.left() + bounds.size(), bounds.top() + bounds.size(), color);
+    }
+
+    private DotBounds computeDotBounds(@NotNull CompassLayout layout, float centerX, float centerY, float radius, int size) {
         int maxWidth = Math.max(1, layout.width());
         int maxHeight = Math.max(1, layout.height());
         int minX = layout.x();
@@ -242,7 +247,18 @@ public class CompassElement extends AbstractElement {
         int maxTop = Math.max(minY, minY + maxHeight - size);
         int left = Mth.clamp(Mth.floor(centerX - radius), minX, maxLeft);
         int top = Mth.clamp(Mth.floor(centerY - radius), minY, maxTop);
-        graphics.fill(left, top, left + size, top + size, color);
+        return new DotBounds(left, top, size);
+    }
+
+    private boolean drawDotTexture(@NotNull GuiGraphics graphics, @NotNull DotBounds bounds, @Nullable ResourceSupplier<ITexture> supplier) {
+        TextureHandle handle = this.resolveTexture(supplier);
+        if (handle == null || !this.isDotTextureSizeValid(handle)) {
+            return false;
+        }
+        graphics.setColor(1.0F, 1.0F, 1.0F, this.opacity);
+        graphics.blit(handle.location(), bounds.left(), bounds.top(), 0.0F, 0.0F, bounds.size(), bounds.size(), handle.width(), handle.height());
+        graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+        return true;
     }
 
     private void drawNeedle(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull ResolvedColors colors) {
@@ -668,7 +684,16 @@ public class CompassElement extends AbstractElement {
     private record MobDotData(float relativeDegrees, float distanceRatio) {
     }
 
+    private record DotBounds(int left, int top, int size) {
+    }
+
     private record TextureHandle(ResourceLocation location, int width, int height, @NotNull AspectRatio aspectRatio) {
+    }
+
+    private boolean isDotTextureSizeValid(@NotNull TextureHandle handle) {
+        int width = handle.width();
+        int height = handle.height();
+        return width == height && width >= 2 && (width % 2 == 0);
     }
 
     private void drawDeathNeedleStrips(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float centerX, int color) {
