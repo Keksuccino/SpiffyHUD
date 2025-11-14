@@ -219,9 +219,10 @@ public class CompassElement extends AbstractElement {
             return false;
         }
         if (wrapAcross) {
-            this.drawNeedleTextureInstance(graphics, layout, centerX - layout.width(), handle, clampCenter);
-            this.drawNeedleTextureInstance(graphics, layout, centerX, handle, clampCenter);
-            this.drawNeedleTextureInstance(graphics, layout, centerX + layout.width(), handle, clampCenter);
+            float normalizedCenter = this.normalizeCenterForWrap(layout, centerX);
+            this.drawNeedleTextureInstance(graphics, layout, normalizedCenter - layout.width(), handle, clampCenter);
+            this.drawNeedleTextureInstance(graphics, layout, normalizedCenter, handle, clampCenter);
+            this.drawNeedleTextureInstance(graphics, layout, normalizedCenter + layout.width(), handle, clampCenter);
         } else {
             this.drawNeedleTextureInstance(graphics, layout, centerX, handle, clampCenter);
         }
@@ -466,9 +467,10 @@ public class CompassElement extends AbstractElement {
     private void drawDeathNeedleStrips(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float centerX, int color) {
         int needleWidth = Math.max(1, Mth.floor(layout.width() * 0.006F));
         int half = Math.max(0, needleWidth / 2);
-        this.drawNeedleStrip(graphics, layout, centerX - layout.width(), needleWidth, half, color);
-        this.drawNeedleStrip(graphics, layout, centerX, needleWidth, half, color);
-        this.drawNeedleStrip(graphics, layout, centerX + layout.width(), needleWidth, half, color);
+        float normalizedCenter = this.normalizeCenterForWrap(layout, centerX);
+        this.drawNeedleStrip(graphics, layout, normalizedCenter - layout.width(), needleWidth, half, color);
+        this.drawNeedleStrip(graphics, layout, normalizedCenter, needleWidth, half, color);
+        this.drawNeedleStrip(graphics, layout, normalizedCenter + layout.width(), needleWidth, half, color);
     }
 
     private void drawNeedleStrip(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float centerX, int width, int halfWidth, int color) {
@@ -491,6 +493,19 @@ public class CompassElement extends AbstractElement {
         }
         this.lastDeathPointerRelative = adjusted;
         return adjusted;
+    }
+
+    private float normalizeCenterForWrap(@NotNull CompassLayout layout, float centerX) {
+        float width = Math.max(1, layout.width());
+        if (width <= 0) {
+            return layout.x();
+        }
+        float offset = centerX - layout.x();
+        float normalized = offset % width;
+        if (normalized < 0) {
+            normalized += width;
+        }
+        return layout.x() + normalized;
     }
 
 }
