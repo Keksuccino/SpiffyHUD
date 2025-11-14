@@ -32,6 +32,18 @@ public class PlayerAirBubbleBarEditorElement extends AbstractEditorElement {
                         }))
                 .setStackable(false);
 
+        this.addStringInputContextMenuEntryTo(this.rightClickMenu, "scale_multiplier",
+                        PlayerAirBubbleBarEditorElement.class,
+                        consumes -> consumes.getElement().scaleMultiplier,
+                        (editorElement, value) -> editorElement.getElement().scaleMultiplier = (value == null || value.isBlank()) ? PlayerAirBubbleBarElement.DEFAULT_SCALE_STRING : value,
+                        null, false, true,
+                        Component.translatable("spiffyhud.elements.player_air_bubble_bar.scale"),
+                        true, PlayerAirBubbleBarElement.DEFAULT_SCALE_STRING, null, null)
+                .setStackable(true)
+                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_air_bubble_bar.scale.desc")));
+
+        this.rightClickMenu.addSeparatorEntry("separator_after_general");
+
         this.addIntegerInputContextMenuEntryTo(this.rightClickMenu, "bubbles_per_row",
                         PlayerAirBubbleBarEditorElement.class,
                         consumes -> consumes.getElement().bubblesPerRow,
@@ -49,21 +61,13 @@ public class PlayerAirBubbleBarEditorElement extends AbstractEditorElement {
                 .setStackable(true)
                 .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_air_bubble_bar.bubble_gap.desc")));
 
-        this.addStringInputContextMenuEntryTo(this.rightClickMenu, "scale_multiplier",
-                        PlayerAirBubbleBarEditorElement.class,
-                        consumes -> consumes.getElement().scaleMultiplier,
-                        (editorElement, value) -> editorElement.getElement().scaleMultiplier = (value == null || value.isBlank()) ? PlayerAirBubbleBarElement.DEFAULT_SCALE_STRING : value,
-                        null, false, true,
-                        Component.translatable("spiffyhud.elements.player_air_bubble_bar.scale"),
-                        true, PlayerAirBubbleBarElement.DEFAULT_SCALE_STRING, null, null)
-                .setStackable(true)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_air_bubble_bar.scale.desc")));
+        this.rightClickMenu.addSeparatorEntry("separator_after_bubble_general");
 
-        this.addToggleContextMenuEntryTo(this.rightClickMenu, "blink_on_loss",
+        this.addToggleContextMenuEntryTo(this.rightClickMenu, "pop_animation",
                         PlayerAirBubbleBarEditorElement.class,
                         consumes -> consumes.getElement().blinkOnLoss,
                         (editorElement, value) -> editorElement.getElement().blinkOnLoss = value,
-                        "spiffyhud.elements.player_air_bubble_bar.blink")
+                        "spiffyhud.elements.player_air_bubble_bar.pop_animation")
                 .setStackable(true);
 
         this.addIntegerInputContextMenuEntryTo(this.rightClickMenu, "pop_duration_ms",
@@ -74,6 +78,8 @@ public class PlayerAirBubbleBarEditorElement extends AbstractEditorElement {
                         true, PlayerAirBubbleBarElement.DEFAULT_POPPING_DURATION_MS, null, null)
                 .setStackable(true)
                 .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_air_bubble_bar.pop_duration.desc")));
+
+        this.rightClickMenu.addSeparatorEntry("separator_after_bubble_pop");
 
         this.addToggleContextMenuEntryTo(this.rightClickMenu, "shake_enabled",
                         PlayerAirBubbleBarEditorElement.class,
@@ -90,6 +96,8 @@ public class PlayerAirBubbleBarEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.player_air_bubble_bar.shake_threshold"),
                         true, 4, null, null)
                 .setStackable(true);
+
+        this.rightClickMenu.addSeparatorEntry("separator_before_textures");
 
         ContextMenu texturesMenu = new ContextMenu();
         this.rightClickMenu.addSubMenuEntry("air_textures",
@@ -110,9 +118,11 @@ public class PlayerAirBubbleBarEditorElement extends AbstractEditorElement {
                             true, null, true, true, true)
                     .setStackable(true);
         }
+
     }
 
     public PlayerAirBubbleBarElement getElement() {
         return (PlayerAirBubbleBarElement) this.element;
     }
+
 }

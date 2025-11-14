@@ -32,6 +32,18 @@ public class PlayerHeartHealthBarEditorElement extends AbstractEditorElement {
                         }))
                 .setStackable(false);
 
+        this.addStringInputContextMenuEntryTo(this.rightClickMenu, "scale_multiplier",
+                        PlayerHeartHealthBarEditorElement.class,
+                        consumes -> consumes.getElement().scaleMultiplier,
+                        (editorElement, value) -> editorElement.getElement().scaleMultiplier = (value == null || value.isBlank()) ? PlayerHeartHealthBarElement.DEFAULT_SCALE_STRING : value,
+                        null, false, true,
+                        Component.translatable("spiffyhud.elements.player_heart_health_bar.scale"),
+                        true, PlayerHeartHealthBarElement.DEFAULT_SCALE_STRING, null, null)
+                .setStackable(true)
+                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_heart_health_bar.scale.desc")));
+
+        this.rightClickMenu.addSeparatorEntry("separator_after_general");
+
         this.addIntegerInputContextMenuEntryTo(this.rightClickMenu, "hearts_per_row",
                         PlayerHeartHealthBarEditorElement.class,
                         consumes -> consumes.getElement().heartsPerRow,
@@ -49,15 +61,7 @@ public class PlayerHeartHealthBarEditorElement extends AbstractEditorElement {
                 .setStackable(true)
                 .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_heart_health_bar.heart_gap.desc")));
 
-        this.addStringInputContextMenuEntryTo(this.rightClickMenu, "scale_multiplier",
-                        PlayerHeartHealthBarEditorElement.class,
-                        consumes -> consumes.getElement().scaleMultiplier,
-                        (editorElement, value) -> editorElement.getElement().scaleMultiplier = (value == null || value.isBlank()) ? PlayerHeartHealthBarElement.DEFAULT_SCALE_STRING : value,
-                        null, false, true,
-                        Component.translatable("spiffyhud.elements.player_heart_health_bar.scale"),
-                        true, PlayerHeartHealthBarElement.DEFAULT_SCALE_STRING, null, null)
-                .setStackable(true)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_heart_health_bar.scale.desc")));
+        this.rightClickMenu.addSeparatorEntry("separator_after_heart");
 
         this.addToggleContextMenuEntryTo(this.rightClickMenu, "blink_on_loss",
                         PlayerHeartHealthBarEditorElement.class,
@@ -65,6 +69,8 @@ public class PlayerHeartHealthBarEditorElement extends AbstractEditorElement {
                         (editorElement, value) -> editorElement.getElement().blinkOnLoss = value,
                         "spiffyhud.elements.player_heart_health_bar.blink")
                 .setStackable(true);
+
+        this.rightClickMenu.addSeparatorEntry("separator_after_blink");
 
         this.addToggleContextMenuEntryTo(this.rightClickMenu, "shake_enabled",
                         PlayerHeartHealthBarEditorElement.class,
@@ -81,6 +87,8 @@ public class PlayerHeartHealthBarEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.player_heart_health_bar.shake_threshold"),
                         true, 4, null, null)
                 .setStackable(true);
+
+        this.rightClickMenu.addSeparatorEntry("separator_after_shake");
 
         ContextMenu texturesMenu = new ContextMenu();
         this.rightClickMenu.addSubMenuEntry("heart_textures",
@@ -101,9 +109,11 @@ public class PlayerHeartHealthBarEditorElement extends AbstractEditorElement {
                             true, null, true, true, true)
                     .setStackable(true);
         }
+
     }
 
     public PlayerHeartHealthBarElement getElement() {
         return (PlayerHeartHealthBarElement) this.element;
     }
+
 }
