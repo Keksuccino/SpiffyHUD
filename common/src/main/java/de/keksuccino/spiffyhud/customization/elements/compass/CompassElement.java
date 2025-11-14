@@ -10,11 +10,13 @@ import de.keksuccino.fancymenu.util.rendering.RenderingUtils;
 import de.keksuccino.fancymenu.util.resource.ResourceSupplier;
 import de.keksuccino.fancymenu.util.resource.resources.texture.ITexture;
 import de.keksuccino.spiffyhud.util.death.DeathPointStorage;
+import de.keksuccino.spiffyhud.util.rendering.EntityHeadRenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.player.Player;
@@ -79,10 +81,14 @@ public class CompassElement extends AbstractElement {
     @NotNull public String passiveDotsColor = DEFAULT_PASSIVE_DOT_COLOR_STRING;
     public int hostileDotsRange = 200;
     public int passiveDotsRange = 200;
+    public boolean hostileDotsShowHeads = false;
+    public boolean passiveDotsShowHeads = false;
 
     private final Minecraft minecraft = Minecraft.getInstance();
     private boolean hasLastDeathPointerRelative = false;
     private float lastDeathPointerRelative = 0.0F;
+    @Nullable private Mob previewHostileMob;
+    @Nullable private Mob previewPassiveMob;
 
     public CompassElement(@NotNull ElementBuilder<?, ?> builder) {
         super(builder);
@@ -217,16 +223,18 @@ public class CompassElement extends AbstractElement {
         float maxY = layout.y() + layout.height();
         float dotDiameter = Mth.clamp(layout.height() * 0.12F, 2.0F, 18.0F);
         float radius = dotDiameter / 2.0F;
+        boolean drawHostileHeads = this.hostileDotsShowHeads;
         if (!dots.hostileDots().isEmpty()) {
             for (MobDotData data : dots.hostileDots()) {
                 float centerY = this.computeDotCenterY(minY, maxY, data.distanceRatio());
-                this.drawMobDot(graphics, layout, data.relativeDegrees(), centerY, radius, colors.hostileDotColor(), this.hostileDotTexture);
+                this.drawMobDot(graphics, layout, data, centerY, radius, drawHostileHeads, colors.hostileDotColor(), this.hostileDotTexture);
             }
         }
+        boolean drawPassiveHeads = this.passiveDotsShowHeads;
         if (!dots.passiveDots().isEmpty()) {
             for (MobDotData data : dots.passiveDots()) {
                 float centerY = this.computeDotCenterY(minY, maxY, data.distanceRatio());
-                this.drawMobDot(graphics, layout, data.relativeDegrees(), centerY, radius, colors.passiveDotColor(), this.passiveDotTexture);
+                this.drawMobDot(graphics, layout, data, centerY, radius, drawPassiveHeads, colors.passiveDotColor(), this.passiveDotTexture);
             }
         }
     }
@@ -236,14 +244,16 @@ public class CompassElement extends AbstractElement {
         return Mth.clamp(Mth.lerp(clampedRatio, minY, maxY), minY, maxY);
     }
 
-    private void drawMobDot(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float relativeDegrees, float centerY, float radius, int color, @Nullable ResourceSupplier<ITexture> texture) {
-        float centerX = this.computeScreenX(layout, relativeDegrees);
+    private void drawMobDot(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull MobDotData data, float centerY, float radius, boolean drawHead, int color, @Nullable ResourceSupplier<ITexture> texture) {
+        float centerX = this.computeScreenX(layout, data.relativeDegrees());
         int size = Math.max(2, Mth.ceil(radius * 2.0F));
         DotBounds bounds = this.computeDotBounds(layout, centerX, centerY, radius, size);
+        if (drawHead && this.drawMobHead(graphics, bounds, data.mob())) {
+            return;
+        }
         if (this.drawDotTexture(graphics, bounds, texture)) {
             return;
         }
-        RenderSystem.enableBlend();
         graphics.fill(bounds.left(), bounds.top(), bounds.left() + bounds.size(), bounds.top() + bounds.size(), color);
     }
 
@@ -270,6 +280,13 @@ public class CompassElement extends AbstractElement {
         graphics.blit(handle.location(), bounds.left(), bounds.top(), 0.0F, 0.0F, size, size, size, size);
         graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
         return true;
+    }
+
+    private boolean drawMobHead(@NotNull GuiGraphics graphics, @NotNull DotBounds bounds, @Nullable Mob mob) {
+        if (mob == null) {
+            return false;
+        }
+        return EntityHeadRenderUtils.renderMobHead(graphics, bounds.left(), bounds.top(), bounds.size(), mob, this.opacity);
     }
 
     private void drawNeedle(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull ResolvedColors colors) {
@@ -585,15 +602,17 @@ public class CompassElement extends AbstractElement {
         float cyclePassive = (float) ((now % 5000L) / 5000.0D * 360.0D) - 180.0F;
         List<MobDotData> hostileDots = hostilesEnabled ? new ArrayList<>() : Collections.emptyList();
         List<MobDotData> passiveDots = passiveEnabled ? new ArrayList<>() : Collections.emptyList();
+        Mob previewHostile = (this.hostileDotsShowHeads && hostilesEnabled) ? this.ensurePreviewMob(true) : null;
+        Mob previewPassive = (this.passiveDotsShowHeads && passiveEnabled) ? this.ensurePreviewMob(false) : null;
         if (hostilesEnabled) {
-            hostileDots.add(new MobDotData(Mth.wrapDegrees(cycleHostile - 60.0F), 0.2F));
-            hostileDots.add(new MobDotData(Mth.wrapDegrees(cycleHostile + 10.0F), 0.55F));
-            hostileDots.add(new MobDotData(Mth.wrapDegrees(cycleHostile + 85.0F), 0.85F));
+            hostileDots.add(new MobDotData(Mth.wrapDegrees(cycleHostile - 60.0F), 0.2F, previewHostile));
+            hostileDots.add(new MobDotData(Mth.wrapDegrees(cycleHostile + 10.0F), 0.55F, previewHostile));
+            hostileDots.add(new MobDotData(Mth.wrapDegrees(cycleHostile + 85.0F), 0.85F, previewHostile));
         }
         if (passiveEnabled) {
-            passiveDots.add(new MobDotData(Mth.wrapDegrees(cyclePassive - 140.0F), 0.35F));
-            passiveDots.add(new MobDotData(Mth.wrapDegrees(cyclePassive - 20.0F), 0.65F));
-            passiveDots.add(new MobDotData(Mth.wrapDegrees(cyclePassive + 120.0F), 0.9F));
+            passiveDots.add(new MobDotData(Mth.wrapDegrees(cyclePassive - 140.0F), 0.35F, previewPassive));
+            passiveDots.add(new MobDotData(Mth.wrapDegrees(cyclePassive - 20.0F), 0.65F, previewPassive));
+            passiveDots.add(new MobDotData(Mth.wrapDegrees(cyclePassive + 120.0F), 0.9F, previewPassive));
         }
         List<MobDotData> hostileOut = hostilesEnabled ? List.copyOf(hostileDots) : Collections.emptyList();
         List<MobDotData> passiveOut = passiveEnabled ? List.copyOf(passiveDots) : Collections.emptyList();
@@ -602,6 +621,35 @@ public class CompassElement extends AbstractElement {
 
     private boolean shouldIncludeMob(@Nullable Mob mob) {
         return mob != null && mob.isAlive() && !mob.isRemoved() && !mob.isSpectator();
+    }
+
+    @Nullable
+    private Mob ensurePreviewMob(boolean hostile) {
+        Mob cached = hostile ? this.previewHostileMob : this.previewPassiveMob;
+        if (cached != null) {
+            if (cached.isRemoved() || cached.level() != this.minecraft.level) {
+                cached = null;
+            }
+        }
+        if (cached != null) {
+            return cached;
+        }
+        if (this.minecraft.level == null) {
+            return null;
+        }
+        EntityType<? extends Mob> type = hostile ? EntityType.ZOMBIE : EntityType.COW;
+        Mob created = type.create(this.minecraft.level);
+        if (created == null) {
+            return null;
+        }
+        created.setNoGravity(true);
+        created.setNoAi(true);
+        if (hostile) {
+            this.previewHostileMob = created;
+        } else {
+            this.previewPassiveMob = created;
+        }
+        return created;
     }
 
     private void appendMobDot(@NotNull List<MobDotData> dots, @NotNull Mob mob, @NotNull Player player, @NotNull CompassReading reading, double maxRange) {
@@ -622,7 +670,7 @@ public class CompassElement extends AbstractElement {
         float absolute = normalizeUnsignedDegrees(signed);
         float relative = this.relativeToHeading(absolute, reading.headingDegrees());
         float ratio = (float) Mth.clamp(distance / maxRange, 0.0D, 1.0D);
-        dots.add(new MobDotData(relative, ratio));
+        dots.add(new MobDotData(relative, ratio, mob));
     }
 
     private static float toSigned(float headingDegrees) {
@@ -690,7 +738,7 @@ public class CompassElement extends AbstractElement {
         }
     }
 
-    private record MobDotData(float relativeDegrees, float distanceRatio) {
+    private record MobDotData(float relativeDegrees, float distanceRatio, @Nullable Mob mob) {
     }
 
     private record DotBounds(int left, int top, int size) {

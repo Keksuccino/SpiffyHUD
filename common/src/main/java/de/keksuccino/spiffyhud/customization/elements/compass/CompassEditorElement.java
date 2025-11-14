@@ -158,6 +158,14 @@ public class CompassEditorElement extends AbstractEditorElement {
                 .setStackable(true)
                 .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.hostile_dots.desc")));
 
+        this.addToggleContextMenuEntryTo(this.rightClickMenu, "hostile_dots_heads_enabled",
+                        CompassEditorElement.class,
+                        consumes -> consumes.getElement().hostileDotsShowHeads,
+                        (editorElement, value) -> editorElement.getElement().hostileDotsShowHeads = value,
+                        "spiffyhud.elements.player_compass.hostile_dots.heads")
+                .setStackable(true)
+                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.hostile_dots.heads.desc")));
+
         this.addColorInput("hostile_dots_color", Component.translatable("spiffyhud.elements.player_compass.color.hostile_dots"), CompassElement.DEFAULT_HOSTILE_DOT_COLOR_STRING)
                 .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.color.hostile_dots.desc")));
 
@@ -191,6 +199,14 @@ public class CompassEditorElement extends AbstractEditorElement {
                         "spiffyhud.elements.player_compass.passive_dots")
                 .setStackable(true)
                 .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.passive_dots.desc")));
+
+        this.addToggleContextMenuEntryTo(this.rightClickMenu, "passive_dots_heads_enabled",
+                        CompassEditorElement.class,
+                        consumes -> consumes.getElement().passiveDotsShowHeads,
+                        (editorElement, value) -> editorElement.getElement().passiveDotsShowHeads = value,
+                        "spiffyhud.elements.player_compass.passive_dots.heads")
+                .setStackable(true)
+                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.passive_dots.heads.desc")));
 
         this.addColorInput("passive_dots_color", Component.translatable("spiffyhud.elements.player_compass.color.passive_dots"), CompassElement.DEFAULT_PASSIVE_DOT_COLOR_STRING)
                 .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.color.passive_dots.desc")));
