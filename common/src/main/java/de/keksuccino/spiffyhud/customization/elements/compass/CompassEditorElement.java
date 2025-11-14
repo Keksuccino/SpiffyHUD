@@ -47,15 +47,7 @@ public class CompassEditorElement extends AbstractEditorElement {
         this.addColorInput("needle_color", Component.translatable("spiffyhud.elements.player_compass.color.needle"), CompassElement.DEFAULT_NEEDLE_COLOR_STRING)
                 .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.color.needle.desc")));
 
-        ContextMenu texturesMenu = new ContextMenu();
-        this.rightClickMenu.addSubMenuEntry("compass_textures",
-                        Component.translatable("spiffyhud.elements.player_compass.textures"),
-                        texturesMenu)
-                .setStackable(true)
-                .setIcon(ContextMenu.IconFactory.getIcon("image"))
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.textures.desc")));
-
-        this.addImageResourceChooserContextMenuEntryTo(texturesMenu,
+        this.addImageResourceChooserContextMenuEntryTo(this.rightClickMenu,
                         "needle_texture",
                         CompassEditorElement.class,
                         null,
@@ -66,7 +58,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                 .setStackable(true)
                 .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.texture.needle.desc")));
 
-        this.addImageResourceChooserContextMenuEntryTo(texturesMenu,
+        this.addImageResourceChooserContextMenuEntryTo(this.rightClickMenu,
                         "death_pointer_texture",
                         CompassEditorElement.class,
                         null,

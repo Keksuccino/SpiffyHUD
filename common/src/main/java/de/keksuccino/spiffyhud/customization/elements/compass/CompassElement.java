@@ -5,6 +5,7 @@ import de.keksuccino.fancymenu.customization.element.AbstractElement;
 import de.keksuccino.fancymenu.customization.element.ElementBuilder;
 import de.keksuccino.fancymenu.customization.placeholder.PlaceholderParser;
 import de.keksuccino.fancymenu.util.rendering.AspectRatio;
+import de.keksuccino.fancymenu.util.rendering.AspectRatio;
 import de.keksuccino.fancymenu.util.rendering.DrawableColor;
 import de.keksuccino.fancymenu.util.rendering.RenderingUtils;
 import de.keksuccino.fancymenu.util.resource.ResourceSupplier;
@@ -61,6 +62,8 @@ public class CompassElement extends AbstractElement {
     @NotNull public String deathPointerColor = DEFAULT_DEATH_POINTER_COLOR_STRING;
 
     private final Minecraft minecraft = Minecraft.getInstance();
+    private boolean hasLastDeathPointerRelative = false;
+    private float lastDeathPointerRelative = 0.0F;
 
     public CompassElement(@NotNull ElementBuilder<?, ?> builder) {
         super(builder);
@@ -188,51 +191,69 @@ public class CompassElement extends AbstractElement {
 
     private void drawDeathNeedle(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull CompassReading reading, @Nullable DeathPointerData pointer, @NotNull ResolvedColors colors) {
         if (pointer == null) {
+            this.hasLastDeathPointerRelative = false;
             return;
         }
         float signedHeading = toSigned(reading.headingDegrees());
-        float relative = Mth.wrapDegrees(pointer.signedDegrees() - signedHeading);
-        float x = this.computeScreenX(layout, relative);
-        int needleWidth = Math.max(1, Mth.floor(layout.width() * 0.006F));
-        int half = Math.max(0, needleWidth / 2);
-        int xi = Mth.clamp(Mth.floor(x) - half, layout.x(), layout.x() + layout.width() - needleWidth);
-        if (this.drawNeedleTexture(graphics, layout, xi + (needleWidth / 2.0F), this.deathPointerTexture)) {
-            return;
+        float relative = pointer.signedDegrees() - signedHeading;
+        relative = this.adjustDeathPointerRelative(relative);
+        float centerX = this.computeScreenXUnbounded(layout, relative);
+        graphics.enableScissor(layout.x(), layout.y(), layout.x() + layout.width(), layout.y() + layout.height());
+        try {
+            boolean textured = this.drawNeedleTexture(graphics, layout, centerX, this.deathPointerTexture, false, true);
+            if (!textured) {
+                this.drawDeathNeedleStrips(graphics, layout, centerX, colors.deathNeedleColor());
+            }
+        } finally {
+            graphics.disableScissor();
         }
-        graphics.fill(xi, layout.y(), xi + needleWidth, layout.y() + layout.height(), colors.deathNeedleColor());
     }
 
     private boolean drawNeedleTexture(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float centerX, @Nullable ResourceSupplier<ITexture> supplier) {
+        return this.drawNeedleTexture(graphics, layout, centerX, supplier, true, false);
+    }
+
+    private boolean drawNeedleTexture(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float centerX, @Nullable ResourceSupplier<ITexture> supplier, boolean clampCenter, boolean wrapAcross) {
         TextureHandle handle = this.resolveTexture(supplier);
         if (handle == null) {
             return false;
         }
-        float availableWidth = Math.max(1, layout.width());
-        float availableHeight = Math.max(1, layout.height());
-        if (handle.width() <= 0 || handle.height() <= 0) {
-            return false;
+        if (wrapAcross) {
+            this.drawNeedleTextureInstance(graphics, layout, centerX - layout.width(), handle, clampCenter);
+            this.drawNeedleTextureInstance(graphics, layout, centerX, handle, clampCenter);
+            this.drawNeedleTextureInstance(graphics, layout, centerX + layout.width(), handle, clampCenter);
+        } else {
+            this.drawNeedleTextureInstance(graphics, layout, centerX, handle, clampCenter);
         }
-        float scale = Math.min(availableWidth / handle.width(), availableHeight / handle.height());
-        float renderWidth = Math.max(1.0F, handle.width() * scale);
-        float renderHeight = Math.max(1.0F, handle.height() * scale);
-        float clampedCenterX = Mth.clamp(centerX, layout.x(), layout.x() + layout.width());
+        return true;
+    }
+
+    private void drawNeedleTextureInstance(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float centerX, @NotNull TextureHandle handle, boolean clampCenter) {
+        int availableWidth = Math.max(1, layout.width());
+        int availableHeight = Math.max(1, layout.height());
+        if (handle.width() <= 0 || handle.height() <= 0) {
+            return;
+        }
+        int[] scaled = handle.aspectRatio().getAspectRatioSizeByMaximumSize(availableWidth, availableHeight);
+        int destWidth = Math.max(1, Math.min(scaled[0], availableWidth));
+        int destHeight = Math.max(1, Math.min(scaled[1], availableHeight));
+        float targetCenterX = clampCenter ? Mth.clamp(centerX, layout.x(), layout.x() + layout.width()) : centerX;
         float centerY = layout.y() + layout.height() / 2.0F;
-        float drawX = clampedCenterX - (renderWidth / 2.0F);
-        float drawY = centerY - (renderHeight / 2.0F);
-        float minX = layout.x();
-        float maxX = layout.x() + layout.width();
+        float drawX = targetCenterX - ((float) destWidth / 2.0F);
+        float drawY = centerY - ((float) destHeight / 2.0F);
+        if (clampCenter) {
+            float minX = layout.x();
+            float maxX = layout.x() + layout.width();
+            drawX = Mth.clamp(drawX, minX, maxX - (float) destWidth);
+        }
         float minY = layout.y();
         float maxY = layout.y() + layout.height();
-        drawX = Mth.clamp(drawX, minX, maxX - renderWidth);
-        drawY = Mth.clamp(drawY, minY, maxY - renderHeight);
-        int destWidth = Math.max(1, Math.round(renderWidth));
-        int destHeight = Math.max(1, Math.round(renderHeight));
+        drawY = Mth.clamp(drawY, minY, maxY - (float) destHeight);
         int drawXi = Mth.floor(drawX);
         int drawYi = Mth.floor(drawY);
         graphics.setColor(1.0F, 1.0F, 1.0F, this.opacity);
-        graphics.blit(handle.location(), drawXi, drawYi, 0.0F, 0.0F, destWidth, destHeight, handle.width(), handle.height());
+        graphics.blit(handle.location(), drawXi, drawYi, 0.0F, 0.0F, destWidth, destHeight, destWidth, destHeight);
         graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
-        return true;
     }
 
     @Nullable
@@ -265,6 +286,11 @@ public class CompassElement extends AbstractElement {
         float normalized = (clamped / 360.0F) + 0.5F;
         float px = layout.x() + normalized * layout.width();
         return Mth.clamp(px, layout.x(), layout.x() + layout.width() - 1);
+    }
+
+    private float computeScreenXUnbounded(@NotNull CompassLayout layout, float signedDegrees) {
+        float normalized = (signedDegrees / 360.0F) + 0.5F;
+        return layout.x() + normalized * layout.width();
     }
 
     private void drawScaledCenteredString(@NotNull GuiGraphics graphics, @NotNull String text, float centerX, float centerY, float scale, int color, boolean outline) {
@@ -435,6 +461,36 @@ public class CompassElement extends AbstractElement {
     }
 
     private record TextureHandle(ResourceLocation location, int width, int height, @NotNull AspectRatio aspectRatio) {
+    }
+
+    private void drawDeathNeedleStrips(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float centerX, int color) {
+        int needleWidth = Math.max(1, Mth.floor(layout.width() * 0.006F));
+        int half = Math.max(0, needleWidth / 2);
+        this.drawNeedleStrip(graphics, layout, centerX - layout.width(), needleWidth, half, color);
+        this.drawNeedleStrip(graphics, layout, centerX, needleWidth, half, color);
+        this.drawNeedleStrip(graphics, layout, centerX + layout.width(), needleWidth, half, color);
+    }
+
+    private void drawNeedleStrip(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float centerX, int width, int halfWidth, int color) {
+        int xi = Mth.floor(centerX) - halfWidth;
+        graphics.fill(xi, layout.y(), xi + width, layout.y() + layout.height(), color);
+    }
+
+    private float adjustDeathPointerRelative(float relative) {
+        if (!this.hasLastDeathPointerRelative) {
+            this.hasLastDeathPointerRelative = true;
+            this.lastDeathPointerRelative = relative;
+            return relative;
+        }
+        float adjusted = relative;
+        while (adjusted - this.lastDeathPointerRelative > 180.0F) {
+            adjusted -= 360.0F;
+        }
+        while (adjusted - this.lastDeathPointerRelative < -180.0F) {
+            adjusted += 360.0F;
+        }
+        this.lastDeathPointerRelative = adjusted;
+        return adjusted;
     }
 
 }

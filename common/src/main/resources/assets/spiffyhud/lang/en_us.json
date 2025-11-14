@@ -233,8 +233,6 @@
   "spiffyhud.requirements.is_player_in_structure.key": "Structure key to check for:",
   "spiffyhud.requirements.is_player_using_item": "Is Player Using Item",
   "spiffyhud.requirements.is_player_using_item.desc": "Returns true when the player is using an item.\nUsing an item means, for example, eating food, drinking a potion, drawing a bow, etc.",
-  "spiffyhud.elements.player_compass.textures": "Compass Textures",
-  "spiffyhud.elements.player_compass.textures.desc": "Select replacement images for the compass needle and death pointer.",
   "spiffyhud.elements.player_compass.texture.needle": "Needle Texture",
   "spiffyhud.elements.player_compass.texture.needle.desc": "Overrides the center needle with a custom image. Leave empty to use the colored bar.",
   "spiffyhud.elements.player_compass.texture.death_pointer": "Death Pointer Texture",
