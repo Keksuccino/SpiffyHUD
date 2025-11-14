@@ -44,6 +44,7 @@ public final class EntityHeadRenderUtils {
         float height = Math.max(renderMob.getBbHeight(), 0.001F);
         float scale = (size / Math.max(width, height)) * HEAD_SCALE_BIAS;
         pose.scale(scale, scale, -scale);
+        pose.mulPose(Axis.YP.rotationDegrees(180.0F));
         pose.mulPose(Axis.ZP.rotationDegrees(180.0F));
         pose.translate(0.0F, -height * HEAD_VERTICAL_FACTOR, 0.0F);
 
