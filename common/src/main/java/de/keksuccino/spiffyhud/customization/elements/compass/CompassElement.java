@@ -4,12 +4,16 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import de.keksuccino.fancymenu.customization.element.AbstractElement;
 import de.keksuccino.fancymenu.customization.element.ElementBuilder;
 import de.keksuccino.fancymenu.customization.placeholder.PlaceholderParser;
+import de.keksuccino.fancymenu.util.rendering.AspectRatio;
 import de.keksuccino.fancymenu.util.rendering.DrawableColor;
 import de.keksuccino.fancymenu.util.rendering.RenderingUtils;
+import de.keksuccino.fancymenu.util.resource.ResourceSupplier;
+import de.keksuccino.fancymenu.util.resource.resources.texture.ITexture;
 import de.keksuccino.spiffyhud.util.death.DeathPointStorage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
@@ -42,6 +46,8 @@ public class CompassElement extends AbstractElement {
     @NotNull public String cardinalTextColor = DEFAULT_CARDINAL_TEXT_COLOR_STRING;
     @NotNull public String numberTextColor = DEFAULT_NUMBER_TEXT_COLOR_STRING;
     @NotNull public String needleColor = DEFAULT_NEEDLE_COLOR_STRING;
+    @Nullable public ResourceSupplier<ITexture> needleTexture;
+    @Nullable public ResourceSupplier<ITexture> deathPointerTexture;
     public boolean backgroundEnabled = true;
     public boolean barEnabled = true;
     public boolean majorTicksEnabled = true;
@@ -173,6 +179,9 @@ public class CompassElement extends AbstractElement {
         int needleWidth = Math.max(1, Mth.floor(layout.width() * 0.01F));
         int half = Math.max(0, needleWidth / 2);
         int centerX = layout.x() + layout.width() / 2;
+        if (this.drawNeedleTexture(graphics, layout, centerX, this.needleTexture)) {
+            return;
+        }
         int xi = Mth.clamp(centerX - half, layout.x(), layout.x() + layout.width() - needleWidth);
         graphics.fill(xi, layout.y(), xi + needleWidth, layout.y() + layout.height(), colors.needleColor());
     }
@@ -187,7 +196,68 @@ public class CompassElement extends AbstractElement {
         int needleWidth = Math.max(1, Mth.floor(layout.width() * 0.006F));
         int half = Math.max(0, needleWidth / 2);
         int xi = Mth.clamp(Mth.floor(x) - half, layout.x(), layout.x() + layout.width() - needleWidth);
+        if (this.drawNeedleTexture(graphics, layout, xi + (needleWidth / 2.0F), this.deathPointerTexture)) {
+            return;
+        }
         graphics.fill(xi, layout.y(), xi + needleWidth, layout.y() + layout.height(), colors.deathNeedleColor());
+    }
+
+    private boolean drawNeedleTexture(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float centerX, @Nullable ResourceSupplier<ITexture> supplier) {
+        TextureHandle handle = this.resolveTexture(supplier);
+        if (handle == null) {
+            return false;
+        }
+        float availableWidth = Math.max(1, layout.width());
+        float availableHeight = Math.max(1, layout.height());
+        if (handle.width() <= 0 || handle.height() <= 0) {
+            return false;
+        }
+        float scale = Math.min(availableWidth / handle.width(), availableHeight / handle.height());
+        float renderWidth = Math.max(1.0F, handle.width() * scale);
+        float renderHeight = Math.max(1.0F, handle.height() * scale);
+        float clampedCenterX = Mth.clamp(centerX, layout.x(), layout.x() + layout.width());
+        float centerY = layout.y() + layout.height() / 2.0F;
+        float drawX = clampedCenterX - (renderWidth / 2.0F);
+        float drawY = centerY - (renderHeight / 2.0F);
+        float minX = layout.x();
+        float maxX = layout.x() + layout.width();
+        float minY = layout.y();
+        float maxY = layout.y() + layout.height();
+        drawX = Mth.clamp(drawX, minX, maxX - renderWidth);
+        drawY = Mth.clamp(drawY, minY, maxY - renderHeight);
+        int destWidth = Math.max(1, Math.round(renderWidth));
+        int destHeight = Math.max(1, Math.round(renderHeight));
+        int drawXi = Mth.floor(drawX);
+        int drawYi = Mth.floor(drawY);
+        graphics.setColor(1.0F, 1.0F, 1.0F, this.opacity);
+        graphics.blit(handle.location(), drawXi, drawYi, 0.0F, 0.0F, destWidth, destHeight, handle.width(), handle.height());
+        graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+        return true;
+    }
+
+    @Nullable
+    private TextureHandle resolveTexture(@Nullable ResourceSupplier<ITexture> supplier) {
+        if (supplier == null) {
+            return null;
+        }
+        try {
+            ITexture texture = supplier.get();
+            if (texture == null || !texture.isReady()) {
+                return null;
+            }
+            ResourceLocation location = texture.getResourceLocation();
+            if (location == null) {
+                return null;
+            }
+            int width = texture.getWidth();
+            int height = texture.getHeight();
+            if (width <= 0 || height <= 0) {
+                return null;
+            }
+            return new TextureHandle(location, width, height, texture.getAspectRatio());
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 
     private float computeScreenX(@NotNull CompassLayout layout, float signedDegrees) {
@@ -363,4 +433,8 @@ public class CompassElement extends AbstractElement {
 
     private record DeathPointerData(float signedDegrees) {
     }
+
+    private record TextureHandle(ResourceLocation location, int width, int height, @NotNull AspectRatio aspectRatio) {
+    }
+
 }

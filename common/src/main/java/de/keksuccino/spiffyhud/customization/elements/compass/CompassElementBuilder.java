@@ -5,8 +5,9 @@ import de.keksuccino.fancymenu.customization.element.ElementBuilder;
 import de.keksuccino.fancymenu.customization.element.SerializedElement;
 import de.keksuccino.fancymenu.customization.layout.editor.LayoutEditorScreen;
 import de.keksuccino.fancymenu.util.LocalizationUtils;
+import de.keksuccino.fancymenu.util.resource.ResourceSupplier;
+import de.keksuccino.fancymenu.util.resource.resources.texture.ITexture;
 import de.keksuccino.spiffyhud.customization.SpiffyOverlayScreen;
-import de.keksuccino.spiffyhud.customization.elements.playerairbar.PlayerAirBubbleBarElement;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -39,6 +40,8 @@ public class CompassElementBuilder extends ElementBuilder<CompassElement, Compas
         element.numberTextColor = Objects.requireNonNullElse(serialized.getValue("number_text_color"), element.numberTextColor);
         element.needleColor = Objects.requireNonNullElse(serialized.getValue("needle_color"), element.needleColor);
         element.deathPointerColor = Objects.requireNonNullElse(serialized.getValue("death_pointer_color"), element.deathPointerColor);
+        element.needleTexture = deserializeImageResourceSupplier(serialized.getValue("needle_texture"));
+        element.deathPointerTexture = deserializeImageResourceSupplier(serialized.getValue("death_pointer_texture"));
         element.backgroundEnabled = deserializeBoolean(element.backgroundEnabled, serialized.getValue("background_enabled"));
         element.barEnabled = deserializeBoolean(element.barEnabled, serialized.getValue("bar_enabled"));
         element.majorTicksEnabled = deserializeBoolean(element.majorTicksEnabled, serialized.getValue("major_ticks_enabled"));
@@ -73,6 +76,14 @@ public class CompassElementBuilder extends ElementBuilder<CompassElement, Compas
         serializeTo.putProperty("number_text_color", element.numberTextColor);
         serializeTo.putProperty("needle_color", element.needleColor);
         serializeTo.putProperty("death_pointer_color", element.deathPointerColor);
+        ResourceSupplier<ITexture> needleTexture = element.needleTexture;
+        if (needleTexture != null) {
+            serializeTo.putProperty("needle_texture", needleTexture.getSourceWithPrefix());
+        }
+        ResourceSupplier<ITexture> deathTexture = element.deathPointerTexture;
+        if (deathTexture != null) {
+            serializeTo.putProperty("death_pointer_texture", deathTexture.getSourceWithPrefix());
+        }
         serializeTo.putProperty("background_enabled", "" + element.backgroundEnabled);
         serializeTo.putProperty("bar_enabled", "" + element.barEnabled);
         serializeTo.putProperty("major_ticks_enabled", "" + element.majorTicksEnabled);
