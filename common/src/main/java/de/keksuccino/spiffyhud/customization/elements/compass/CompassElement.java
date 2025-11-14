@@ -93,6 +93,7 @@ public class CompassElement extends AbstractElement {
 
     @Override
     public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partial) {
+
         if (!this.shouldRender()) {
             return;
         }
@@ -108,6 +109,9 @@ public class CompassElement extends AbstractElement {
         ResolvedColors colors = this.resolveColors();
         Font font = this.minecraft.font;
         CompassLayout layout = this.computeLayout(font, x, y, width, height);
+
+        RenderSystem.disableDepthTest();
+        RenderingUtils.setDepthTestLocked(true);
 
         RenderSystem.enableBlend();
         if (this.backgroundEnabled) {
@@ -131,6 +135,10 @@ public class CompassElement extends AbstractElement {
         }
         this.drawDeathNeedle(graphics, layout, reading, deathPointer, colors);
         RenderingUtils.resetShaderColor(graphics);
+
+        RenderingUtils.setDepthTestLocked(false);
+        RenderSystem.enableDepthTest();
+
     }
 
     private void drawBackground(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, int color) {
@@ -235,6 +243,7 @@ public class CompassElement extends AbstractElement {
         if (this.drawDotTexture(graphics, bounds, texture)) {
             return;
         }
+        RenderSystem.enableBlend();
         graphics.fill(bounds.left(), bounds.top(), bounds.left() + bounds.size(), bounds.top() + bounds.size(), color);
     }
 
@@ -252,11 +261,13 @@ public class CompassElement extends AbstractElement {
 
     private boolean drawDotTexture(@NotNull GuiGraphics graphics, @NotNull DotBounds bounds, @Nullable ResourceSupplier<ITexture> supplier) {
         TextureHandle handle = this.resolveTexture(supplier);
-        if (handle == null || !this.isDotTextureSizeValid(handle)) {
+        if (handle == null) {
             return false;
         }
+        RenderSystem.enableBlend();
         graphics.setColor(1.0F, 1.0F, 1.0F, this.opacity);
-        graphics.blit(handle.location(), bounds.left(), bounds.top(), 0.0F, 0.0F, bounds.size(), bounds.size(), handle.width(), handle.height());
+        int size = bounds.size();
+        graphics.blit(handle.location(), bounds.left(), bounds.top(), 0.0F, 0.0F, size, size, size, size);
         graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
         return true;
     }
@@ -269,6 +280,7 @@ public class CompassElement extends AbstractElement {
             return;
         }
         int xi = Mth.clamp(centerX - half, layout.x(), layout.x() + layout.width() - needleWidth);
+        RenderSystem.enableBlend();
         graphics.fill(xi, layout.y(), xi + needleWidth, layout.y() + layout.height(), colors.needleColor());
     }
 
@@ -343,6 +355,7 @@ public class CompassElement extends AbstractElement {
         }
         int drawXi = Mth.floor(drawX);
         int drawYi = Mth.floor(drawY);
+        RenderSystem.enableBlend();
         graphics.setColor(1.0F, 1.0F, 1.0F, this.opacity);
         graphics.blit(handle.location(), drawXi, drawYi, 0.0F, 0.0F, destWidth, destHeight, destWidth, destHeight);
         graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -386,8 +399,6 @@ public class CompassElement extends AbstractElement {
     }
 
     private void drawScaledCenteredString(@NotNull GuiGraphics graphics, @NotNull String text, float centerX, float centerY, float scale, int color, boolean outline) {
-        RenderSystem.disableDepthTest();
-        RenderingUtils.setDepthTestLocked(true);
         if (text.isEmpty() || scale <= 0.0F) {
             return;
         }
@@ -414,8 +425,6 @@ public class CompassElement extends AbstractElement {
         }
         graphics.drawString(font, text, 0, 0, color, false);
         pose.popPose();
-        RenderingUtils.setDepthTestLocked(false);
-        RenderSystem.enableDepthTest();
     }
 
     private ResolvedColors resolveColors() {
@@ -688,12 +697,6 @@ public class CompassElement extends AbstractElement {
     }
 
     private record TextureHandle(ResourceLocation location, int width, int height, @NotNull AspectRatio aspectRatio) {
-    }
-
-    private boolean isDotTextureSizeValid(@NotNull TextureHandle handle) {
-        int width = handle.width();
-        int height = handle.height();
-        return width == height && width >= 2 && (width % 2 == 0);
     }
 
     private void drawDeathNeedleStrips(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float centerX, int color) {
