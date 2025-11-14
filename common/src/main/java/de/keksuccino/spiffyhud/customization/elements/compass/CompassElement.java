@@ -42,6 +42,13 @@ public class CompassElement extends AbstractElement {
     @NotNull public String cardinalTextColor = DEFAULT_CARDINAL_TEXT_COLOR_STRING;
     @NotNull public String numberTextColor = DEFAULT_NUMBER_TEXT_COLOR_STRING;
     @NotNull public String needleColor = DEFAULT_NEEDLE_COLOR_STRING;
+    public boolean backgroundEnabled = true;
+    public boolean barEnabled = true;
+    public boolean majorTicksEnabled = true;
+    public boolean minorTicksEnabled = true;
+    public boolean needleEnabled = true;
+    public boolean cardinalTextEnabled = true;
+    public boolean degreeNumbersEnabled = true;
     public boolean cardinalOutlineEnabled = true;
     public boolean degreeOutlineEnabled = true;
     public boolean deathPointerEnabled = true;
@@ -74,12 +81,22 @@ public class CompassElement extends AbstractElement {
         CompassLayout layout = this.computeLayout(font, x, y, width, height);
 
         RenderSystem.enableBlend();
-        this.drawBackground(graphics, layout, colors.backgroundColor());
-        this.drawBar(graphics, layout, colors.barColor());
+        if (this.backgroundEnabled) {
+            this.drawBackground(graphics, layout, colors.backgroundColor());
+        }
+        if (this.barEnabled) {
+            this.drawBar(graphics, layout, colors.barColor());
+        }
         this.drawGradeLines(graphics, layout, colors, reading);
-        this.drawCardinalLabels(graphics, layout, colors, reading);
-        this.drawDegreeNumbers(graphics, layout, colors, reading);
-        this.drawNeedle(graphics, layout, colors);
+        if (this.cardinalTextEnabled) {
+            this.drawCardinalLabels(graphics, layout, colors, reading);
+        }
+        if (this.degreeNumbersEnabled) {
+            this.drawDegreeNumbers(graphics, layout, colors, reading);
+        }
+        if (this.needleEnabled) {
+            this.drawNeedle(graphics, layout, colors);
+        }
         this.drawDeathNeedle(graphics, layout, reading, deathPointer, colors);
         RenderingUtils.resetShaderColor(graphics);
     }
@@ -93,8 +110,19 @@ public class CompassElement extends AbstractElement {
     }
 
     private void drawGradeLines(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull ResolvedColors colors, @NotNull CompassReading reading) {
+        boolean drawMajor = this.majorTicksEnabled;
+        boolean drawMinor = this.minorTicksEnabled;
+        if (!drawMajor && !drawMinor) {
+            return;
+        }
         for (int degrees = -180; degrees <= 180; degrees += 10) {
             boolean major = (degrees % 30) == 0;
+            if (major && !drawMajor) {
+                continue;
+            }
+            if (!major && !drawMinor) {
+                continue;
+            }
             int color = major ? colors.majorTickColor() : colors.minorTickColor();
             int halfHeight = major ? layout.majorTickHalfHeight() : layout.minorTickHalfHeight();
             int absolute = toAbsoluteDegrees(degrees);

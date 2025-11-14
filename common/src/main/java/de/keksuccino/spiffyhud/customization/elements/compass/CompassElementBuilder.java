@@ -39,6 +39,13 @@ public class CompassElementBuilder extends ElementBuilder<CompassElement, Compas
         element.numberTextColor = Objects.requireNonNullElse(serialized.getValue("number_text_color"), element.numberTextColor);
         element.needleColor = Objects.requireNonNullElse(serialized.getValue("needle_color"), element.needleColor);
         element.deathPointerColor = Objects.requireNonNullElse(serialized.getValue("death_pointer_color"), element.deathPointerColor);
+        element.backgroundEnabled = deserializeBoolean(element.backgroundEnabled, serialized.getValue("background_enabled"));
+        element.barEnabled = deserializeBoolean(element.barEnabled, serialized.getValue("bar_enabled"));
+        element.majorTicksEnabled = deserializeBoolean(element.majorTicksEnabled, serialized.getValue("major_ticks_enabled"));
+        element.minorTicksEnabled = deserializeBoolean(element.minorTicksEnabled, serialized.getValue("minor_ticks_enabled"));
+        element.needleEnabled = deserializeBoolean(element.needleEnabled, serialized.getValue("needle_enabled"));
+        element.cardinalTextEnabled = deserializeBoolean(element.cardinalTextEnabled, serialized.getValue("cardinal_text_enabled"));
+        element.degreeNumbersEnabled = deserializeBoolean(element.degreeNumbersEnabled, serialized.getValue("degree_numbers_enabled"));
         element.cardinalOutlineEnabled = deserializeBoolean(element.cardinalOutlineEnabled, serialized.getValue("cardinal_outline"));
         element.degreeOutlineEnabled = deserializeBoolean(element.degreeOutlineEnabled, serialized.getValue("degree_outline"));
         element.deathPointerEnabled = deserializeBoolean(element.deathPointerEnabled, serialized.getValue("death_pointer_enabled"));
@@ -66,6 +73,13 @@ public class CompassElementBuilder extends ElementBuilder<CompassElement, Compas
         serializeTo.putProperty("number_text_color", element.numberTextColor);
         serializeTo.putProperty("needle_color", element.needleColor);
         serializeTo.putProperty("death_pointer_color", element.deathPointerColor);
+        serializeTo.putProperty("background_enabled", "" + element.backgroundEnabled);
+        serializeTo.putProperty("bar_enabled", "" + element.barEnabled);
+        serializeTo.putProperty("major_ticks_enabled", "" + element.majorTicksEnabled);
+        serializeTo.putProperty("minor_ticks_enabled", "" + element.minorTicksEnabled);
+        serializeTo.putProperty("needle_enabled", "" + element.needleEnabled);
+        serializeTo.putProperty("cardinal_text_enabled", "" + element.cardinalTextEnabled);
+        serializeTo.putProperty("degree_numbers_enabled", "" + element.degreeNumbersEnabled);
         serializeTo.putProperty("cardinal_outline", "" + element.cardinalOutlineEnabled);
         serializeTo.putProperty("degree_outline", "" + element.degreeOutlineEnabled);
         serializeTo.putProperty("death_pointer_enabled", "" + element.deathPointerEnabled);

@@ -225,5 +225,12 @@
   "spiffyhud.requirements.is_player_in_structure.desc": "Checks if the player is currently in a specific structure type.\n§xSpiffy needs to be installed on the server for this to work!",
   "spiffyhud.requirements.is_player_in_structure.key": "Structure key to check for:",
   "spiffyhud.requirements.is_player_using_item": "Is Player Using Item",
-  "spiffyhud.requirements.is_player_using_item.desc": "Returns true when the player is using an item.\nUsing an item means, for example, eating food, drinking a potion, drawing a bow, etc."
+  "spiffyhud.requirements.is_player_using_item.desc": "Returns true when the player is using an item.\nUsing an item means, for example, eating food, drinking a potion, drawing a bow, etc.",
+  "spiffyhud.elements.player_compass.cardinal_text_enabled": "Show Cardinal Letters: %s",
+  "spiffyhud.elements.player_compass.degree_numbers_enabled": "Show Degree Numbers: %s",
+  "spiffyhud.elements.player_compass.background_enabled": "Show Background: %s",
+  "spiffyhud.elements.player_compass.bar_enabled": "Show Compass Bar: %s",
+  "spiffyhud.elements.player_compass.major_ticks_enabled": "Show Major Tick Lines: %s",
+  "spiffyhud.elements.player_compass.minor_ticks_enabled": "Show Minor Tick Lines: %s",
+  "spiffyhud.elements.player_compass.needle_enabled": "Show Main Needle: %s"
 }
