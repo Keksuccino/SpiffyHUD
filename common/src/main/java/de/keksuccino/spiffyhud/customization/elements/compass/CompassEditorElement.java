@@ -148,6 +148,74 @@ public class CompassEditorElement extends AbstractEditorElement {
                 .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.texture.death_pointer.desc")))
                 .setIcon(ContextMenu.IconFactory.getIcon("image"));
 
+        this.rightClickMenu.addSeparatorEntry("separator_after_death_pointer");
+
+        this.addToggleContextMenuEntryTo(this.rightClickMenu, "hostile_dots_enabled",
+                        CompassEditorElement.class,
+                        consumes -> consumes.getElement().hostileDotsEnabled,
+                        (editorElement, value) -> editorElement.getElement().hostileDotsEnabled = value,
+                        "spiffyhud.elements.player_compass.hostile_dots")
+                .setStackable(true)
+                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.hostile_dots.desc")));
+
+        this.addColorInput("hostile_dots_color", Component.translatable("spiffyhud.elements.player_compass.color.hostile_dots"), CompassElement.DEFAULT_HOSTILE_DOT_COLOR_STRING)
+                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.color.hostile_dots.desc")));
+
+        this.addIntegerInputContextMenuEntryTo(this.rightClickMenu, "hostile_dots_range",
+                        CompassEditorElement.class,
+                        consumes -> consumes.getElement().hostileDotsRange,
+                        (editorElement, value) -> editorElement.getElement().hostileDotsRange = Math.max(0, value),
+                        Component.translatable("spiffyhud.elements.player_compass.hostile_dots.range"),
+                        true, 200, null, null)
+                .setStackable(true)
+                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.hostile_dots.range.desc")));
+
+        this.addImageResourceChooserContextMenuEntryTo(this.rightClickMenu,
+                        "hostile_dots_texture",
+                        CompassEditorElement.class,
+                        null,
+                        consumes -> consumes.getElement().hostileDotTexture,
+                        (editorElement, supplier) -> editorElement.getElement().hostileDotTexture = supplier,
+                        Component.translatable("spiffyhud.elements.player_compass.texture.hostile_dots"),
+                        true, null, true, true, true)
+                .setStackable(true)
+                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.texture.hostile_dots.desc")))
+                .setIcon(ContextMenu.IconFactory.getIcon("image"));
+
+        this.rightClickMenu.addSeparatorEntry("separator_after_hostile_dots");
+
+        this.addToggleContextMenuEntryTo(this.rightClickMenu, "passive_dots_enabled",
+                        CompassEditorElement.class,
+                        consumes -> consumes.getElement().passiveDotsEnabled,
+                        (editorElement, value) -> editorElement.getElement().passiveDotsEnabled = value,
+                        "spiffyhud.elements.player_compass.passive_dots")
+                .setStackable(true)
+                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.passive_dots.desc")));
+
+        this.addColorInput("passive_dots_color", Component.translatable("spiffyhud.elements.player_compass.color.passive_dots"), CompassElement.DEFAULT_PASSIVE_DOT_COLOR_STRING)
+                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.color.passive_dots.desc")));
+
+        this.addIntegerInputContextMenuEntryTo(this.rightClickMenu, "passive_dots_range",
+                        CompassEditorElement.class,
+                        consumes -> consumes.getElement().passiveDotsRange,
+                        (editorElement, value) -> editorElement.getElement().passiveDotsRange = Math.max(0, value),
+                        Component.translatable("spiffyhud.elements.player_compass.passive_dots.range"),
+                        true, 200, null, null)
+                .setStackable(true)
+                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.passive_dots.range.desc")));
+
+        this.addImageResourceChooserContextMenuEntryTo(this.rightClickMenu,
+                        "passive_dots_texture",
+                        CompassEditorElement.class,
+                        null,
+                        consumes -> consumes.getElement().passiveDotTexture,
+                        (editorElement, supplier) -> editorElement.getElement().passiveDotTexture = supplier,
+                        Component.translatable("spiffyhud.elements.player_compass.texture.passive_dots"),
+                        true, null, true, true, true)
+                .setStackable(true)
+                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.texture.passive_dots.desc")))
+                .setIcon(ContextMenu.IconFactory.getIcon("image"));
+
     }
 
     private ContextMenu.ClickableContextMenuEntry<?> addColorInput(String id, Component label, String defaultValue) {
@@ -169,6 +237,8 @@ public class CompassEditorElement extends AbstractEditorElement {
             case "number_text_color" -> element.numberTextColor;
             case "needle_color" -> element.needleColor;
             case "death_pointer_color" -> element.deathPointerColor;
+            case "hostile_dots_color" -> element.hostileDotsColor;
+            case "passive_dots_color" -> element.passiveDotsColor;
             default -> null;
         };
     }
@@ -184,6 +254,8 @@ public class CompassEditorElement extends AbstractEditorElement {
             case "number_text_color" -> element.numberTextColor = value;
             case "needle_color" -> element.needleColor = value;
             case "death_pointer_color" -> element.deathPointerColor = value;
+            case "hostile_dots_color" -> element.hostileDotsColor = value;
+            case "passive_dots_color" -> element.passiveDotsColor = value;
             default -> {
             }
         }

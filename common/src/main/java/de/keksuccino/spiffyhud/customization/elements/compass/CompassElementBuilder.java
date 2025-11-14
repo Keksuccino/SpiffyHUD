@@ -40,8 +40,12 @@ public class CompassElementBuilder extends ElementBuilder<CompassElement, Compas
         element.numberTextColor = Objects.requireNonNullElse(serialized.getValue("number_text_color"), element.numberTextColor);
         element.needleColor = Objects.requireNonNullElse(serialized.getValue("needle_color"), element.needleColor);
         element.deathPointerColor = Objects.requireNonNullElse(serialized.getValue("death_pointer_color"), element.deathPointerColor);
+        element.hostileDotsColor = Objects.requireNonNullElse(serialized.getValue("hostile_dots_color"), element.hostileDotsColor);
+        element.passiveDotsColor = Objects.requireNonNullElse(serialized.getValue("passive_dots_color"), element.passiveDotsColor);
         element.needleTexture = deserializeImageResourceSupplier(serialized.getValue("needle_texture"));
         element.deathPointerTexture = deserializeImageResourceSupplier(serialized.getValue("death_pointer_texture"));
+        element.hostileDotTexture = deserializeImageResourceSupplier(serialized.getValue("hostile_dots_texture"));
+        element.passiveDotTexture = deserializeImageResourceSupplier(serialized.getValue("passive_dots_texture"));
         element.backgroundEnabled = deserializeBoolean(element.backgroundEnabled, serialized.getValue("background_enabled"));
         element.barEnabled = deserializeBoolean(element.barEnabled, serialized.getValue("bar_enabled"));
         element.majorTicksEnabled = deserializeBoolean(element.majorTicksEnabled, serialized.getValue("major_ticks_enabled"));
@@ -52,6 +56,10 @@ public class CompassElementBuilder extends ElementBuilder<CompassElement, Compas
         element.cardinalOutlineEnabled = deserializeBoolean(element.cardinalOutlineEnabled, serialized.getValue("cardinal_outline"));
         element.degreeOutlineEnabled = deserializeBoolean(element.degreeOutlineEnabled, serialized.getValue("degree_outline"));
         element.deathPointerEnabled = deserializeBoolean(element.deathPointerEnabled, serialized.getValue("death_pointer_enabled"));
+        element.hostileDotsEnabled = deserializeBoolean(element.hostileDotsEnabled, serialized.getValue("hostile_dots_enabled"));
+        element.passiveDotsEnabled = deserializeBoolean(element.passiveDotsEnabled, serialized.getValue("passive_dots_enabled"));
+        element.hostileDotsRange = deserializeInteger(element.hostileDotsRange, serialized.getValue("hostile_dots_range"));
+        element.passiveDotsRange = deserializeInteger(element.passiveDotsRange, serialized.getValue("passive_dots_range"));
 
         return element;
     }
@@ -76,6 +84,8 @@ public class CompassElementBuilder extends ElementBuilder<CompassElement, Compas
         serializeTo.putProperty("number_text_color", element.numberTextColor);
         serializeTo.putProperty("needle_color", element.needleColor);
         serializeTo.putProperty("death_pointer_color", element.deathPointerColor);
+        serializeTo.putProperty("hostile_dots_color", element.hostileDotsColor);
+        serializeTo.putProperty("passive_dots_color", element.passiveDotsColor);
         ResourceSupplier<ITexture> needleTexture = element.needleTexture;
         if (needleTexture != null) {
             serializeTo.putProperty("needle_texture", needleTexture.getSourceWithPrefix());
@@ -83,6 +93,14 @@ public class CompassElementBuilder extends ElementBuilder<CompassElement, Compas
         ResourceSupplier<ITexture> deathTexture = element.deathPointerTexture;
         if (deathTexture != null) {
             serializeTo.putProperty("death_pointer_texture", deathTexture.getSourceWithPrefix());
+        }
+        ResourceSupplier<ITexture> hostileDotsTexture = element.hostileDotTexture;
+        if (hostileDotsTexture != null) {
+            serializeTo.putProperty("hostile_dots_texture", hostileDotsTexture.getSourceWithPrefix());
+        }
+        ResourceSupplier<ITexture> passiveDotsTexture = element.passiveDotTexture;
+        if (passiveDotsTexture != null) {
+            serializeTo.putProperty("passive_dots_texture", passiveDotsTexture.getSourceWithPrefix());
         }
         serializeTo.putProperty("background_enabled", "" + element.backgroundEnabled);
         serializeTo.putProperty("bar_enabled", "" + element.barEnabled);
@@ -94,7 +112,22 @@ public class CompassElementBuilder extends ElementBuilder<CompassElement, Compas
         serializeTo.putProperty("cardinal_outline", "" + element.cardinalOutlineEnabled);
         serializeTo.putProperty("degree_outline", "" + element.degreeOutlineEnabled);
         serializeTo.putProperty("death_pointer_enabled", "" + element.deathPointerEnabled);
+        serializeTo.putProperty("hostile_dots_enabled", "" + element.hostileDotsEnabled);
+        serializeTo.putProperty("passive_dots_enabled", "" + element.passiveDotsEnabled);
+        serializeTo.putProperty("hostile_dots_range", Integer.toString(element.hostileDotsRange));
+        serializeTo.putProperty("passive_dots_range", Integer.toString(element.passiveDotsRange));
         return serializeTo;
+    }
+
+    private int deserializeInteger(int fallback, @Nullable String value) {
+        if (value == null || value.isBlank()) {
+            return fallback;
+        }
+        try {
+            return Integer.parseInt(value.trim());
+        } catch (NumberFormatException ignored) {
+            return fallback;
+        }
     }
 
     @Override

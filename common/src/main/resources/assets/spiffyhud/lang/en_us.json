@@ -236,5 +236,21 @@
   "spiffyhud.requirements.is_player_in_structure.desc": "Checks if the player is currently in a specific structure type.\n§xSpiffy needs to be installed on the server for this to work!",
   "spiffyhud.requirements.is_player_in_structure.key": "Structure key to check for:",
   "spiffyhud.requirements.is_player_using_item": "Is Player Using Item",
-  "spiffyhud.requirements.is_player_using_item.desc": "Returns true when the player is using an item.\nUsing an item means, for example, eating food, drinking a potion, drawing a bow, etc."
+  "spiffyhud.requirements.is_player_using_item.desc": "Returns true when the player is using an item.\nUsing an item means, for example, eating food, drinking a potion, drawing a bow, etc.",
+  "spiffyhud.elements.player_compass.hostile_dots": "Show Hostile Mob Dots: %s",
+  "spiffyhud.elements.player_compass.hostile_dots.desc": "Displays nearby monsters as red dots along the lower edge of the compass.",
+  "spiffyhud.elements.player_compass.passive_dots": "Show Other Mob Dots: %s",
+  "spiffyhud.elements.player_compass.passive_dots.desc": "Displays nearby neutral, passive, or ambient mobs as yellow dots along the lower edge of the compass.",
+  "spiffyhud.elements.player_compass.color.hostile_dots": "Hostile Mob Dot Color [HEX]",
+  "spiffyhud.elements.player_compass.color.hostile_dots.desc": "Sets the fallback color for hostile mob dots when no texture is selected.",
+  "spiffyhud.elements.player_compass.color.passive_dots": "Other Mob Dot Color [HEX]",
+  "spiffyhud.elements.player_compass.color.passive_dots.desc": "Sets the fallback color for non-hostile mob dots when no texture is selected.",
+  "spiffyhud.elements.player_compass.texture.hostile_dots": "Hostile Mob Dot Texture",
+  "spiffyhud.elements.player_compass.texture.hostile_dots.desc": "Optional image that replaces the default hostile mob dot. The texture scales to the compass bounds.",
+  "spiffyhud.elements.player_compass.texture.passive_dots": "Other Mob Dot Texture",
+  "spiffyhud.elements.player_compass.texture.passive_dots.desc": "Optional image that replaces the default dot for non-hostile mobs. The texture scales to the compass bounds.",
+  "spiffyhud.elements.player_compass.hostile_dots.range": "Hostile Mob Detection Range (Blocks)",
+  "spiffyhud.elements.player_compass.hostile_dots.range.desc": "Sets how many blocks around the player get scanned for hostile mobs.",
+  "spiffyhud.elements.player_compass.passive_dots.range": "Other Mob Detection Range (Blocks)",
+  "spiffyhud.elements.player_compass.passive_dots.range.desc": "Sets how many blocks around the player get scanned for non-hostile mobs."
 }

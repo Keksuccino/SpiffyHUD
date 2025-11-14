@@ -5,7 +5,6 @@ import de.keksuccino.fancymenu.customization.element.AbstractElement;
 import de.keksuccino.fancymenu.customization.element.ElementBuilder;
 import de.keksuccino.fancymenu.customization.placeholder.PlaceholderParser;
 import de.keksuccino.fancymenu.util.rendering.AspectRatio;
-import de.keksuccino.fancymenu.util.rendering.AspectRatio;
 import de.keksuccino.fancymenu.util.rendering.DrawableColor;
 import de.keksuccino.fancymenu.util.rendering.RenderingUtils;
 import de.keksuccino.fancymenu.util.resource.ResourceSupplier;
@@ -16,9 +15,16 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class CompassElement extends AbstractElement {
 
@@ -30,6 +36,9 @@ public class CompassElement extends AbstractElement {
     private static final int DEFAULT_NUMBER_TEXT_COLOR = 0xFFDCDCDC;
     private static final int DEFAULT_NEEDLE_COLOR = 0xFFFF4545;
     private static final int DEFAULT_DEATH_POINTER_COLOR = 0xFF66C3FF;
+    private static final int DEFAULT_HOSTILE_DOT_COLOR = 0xFFFF4A4A;
+    private static final int DEFAULT_PASSIVE_DOT_COLOR = 0xFFFFE15A;
+    private static final int MAX_MOB_DOTS_PER_TYPE = 64;
 
     public static final String DEFAULT_BACKGROUND_COLOR_STRING = "#B0101010";
     public static final String DEFAULT_BAR_COLOR_STRING = "#C0FFFFFF";
@@ -39,6 +48,8 @@ public class CompassElement extends AbstractElement {
     public static final String DEFAULT_NUMBER_TEXT_COLOR_STRING = "#FFDCDCDC";
     public static final String DEFAULT_NEEDLE_COLOR_STRING = "#FFFF4545";
     public static final String DEFAULT_DEATH_POINTER_COLOR_STRING = "#FF66C3FF";
+    public static final String DEFAULT_HOSTILE_DOT_COLOR_STRING = "#FFFF4A4A";
+    public static final String DEFAULT_PASSIVE_DOT_COLOR_STRING = "#FFFFE15A";
 
     @NotNull public String backgroundColor = DEFAULT_BACKGROUND_COLOR_STRING;
     @NotNull public String barColor = DEFAULT_BAR_COLOR_STRING;
@@ -49,6 +60,8 @@ public class CompassElement extends AbstractElement {
     @NotNull public String needleColor = DEFAULT_NEEDLE_COLOR_STRING;
     @Nullable public ResourceSupplier<ITexture> needleTexture;
     @Nullable public ResourceSupplier<ITexture> deathPointerTexture;
+    @Nullable public ResourceSupplier<ITexture> hostileDotTexture;
+    @Nullable public ResourceSupplier<ITexture> passiveDotTexture;
     public boolean backgroundEnabled = true;
     public boolean barEnabled = true;
     public boolean majorTicksEnabled = true;
@@ -60,6 +73,12 @@ public class CompassElement extends AbstractElement {
     public boolean degreeOutlineEnabled = true;
     public boolean deathPointerEnabled = true;
     @NotNull public String deathPointerColor = DEFAULT_DEATH_POINTER_COLOR_STRING;
+    public boolean hostileDotsEnabled = true;
+    public boolean passiveDotsEnabled = true;
+    @NotNull public String hostileDotsColor = DEFAULT_HOSTILE_DOT_COLOR_STRING;
+    @NotNull public String passiveDotsColor = DEFAULT_PASSIVE_DOT_COLOR_STRING;
+    public int hostileDotsRange = 200;
+    public int passiveDotsRange = 200;
 
     private final Minecraft minecraft = Minecraft.getInstance();
     private boolean hasLastDeathPointerRelative = false;
@@ -85,6 +104,7 @@ public class CompassElement extends AbstractElement {
 
         CompassReading reading = this.collectReading(partial);
         DeathPointerData deathPointer = this.collectDeathPointer();
+        MobDots mobDots = this.collectMobDots(reading);
         ResolvedColors colors = this.resolveColors();
         Font font = this.minecraft.font;
         CompassLayout layout = this.computeLayout(font, x, y, width, height);
@@ -102,6 +122,9 @@ public class CompassElement extends AbstractElement {
         }
         if (this.degreeNumbersEnabled) {
             this.drawDegreeNumbers(graphics, layout, colors, reading);
+        }
+        if (mobDots.hasAny()) {
+            this.drawMobDots(graphics, layout, colors, mobDots);
         }
         if (this.needleEnabled) {
             this.drawNeedle(graphics, layout, colors);
@@ -178,6 +201,50 @@ public class CompassElement extends AbstractElement {
         }
     }
 
+    private void drawMobDots(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull ResolvedColors colors, @NotNull MobDots dots) {
+        if (!dots.hasAny()) {
+            return;
+        }
+        float minY = layout.y() + layout.height() * 0.58F;
+        float maxY = layout.y() + layout.height() * 0.92F;
+        float dotDiameter = Mth.clamp(layout.height() * 0.12F, 2.0F, 18.0F);
+        float radius = dotDiameter / 2.0F;
+        if (!dots.hostileDots().isEmpty()) {
+            for (MobDotData data : dots.hostileDots()) {
+                float centerY = this.computeDotCenterY(minY, maxY, data.distanceRatio());
+                this.drawMobDot(graphics, layout, data.relativeDegrees(), centerY, radius, colors.hostileDotColor(), this.hostileDotTexture);
+            }
+        }
+        if (!dots.passiveDots().isEmpty()) {
+            for (MobDotData data : dots.passiveDots()) {
+                float centerY = this.computeDotCenterY(minY, maxY, data.distanceRatio());
+                this.drawMobDot(graphics, layout, data.relativeDegrees(), centerY, radius, colors.passiveDotColor(), this.passiveDotTexture);
+            }
+        }
+    }
+
+    private float computeDotCenterY(float minY, float maxY, float ratio) {
+        float clampedRatio = Mth.clamp(ratio, 0.0F, 1.0F);
+        return Mth.clamp(Mth.lerp(clampedRatio, minY, maxY), minY, maxY);
+    }
+
+    private void drawMobDot(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float relativeDegrees, float centerY, float radius, int color, @Nullable ResourceSupplier<ITexture> texture) {
+        float centerX = this.computeScreenX(layout, relativeDegrees);
+        if (this.drawNeedleTexture(graphics, layout, centerX, centerY, texture, true, false)) {
+            return;
+        }
+        int size = Math.max(2, Mth.ceil(radius * 2.0F));
+        int maxWidth = Math.max(1, layout.width());
+        int maxHeight = Math.max(1, layout.height());
+        int minX = layout.x();
+        int minY = layout.y();
+        int maxLeft = Math.max(minX, minX + maxWidth - size);
+        int maxTop = Math.max(minY, minY + maxHeight - size);
+        int left = Mth.clamp(Mth.floor(centerX - radius), minX, maxLeft);
+        int top = Mth.clamp(Mth.floor(centerY - radius), minY, maxTop);
+        graphics.fill(left, top, left + size, top + size, color);
+    }
+
     private void drawNeedle(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull ResolvedColors colors) {
         int needleWidth = Math.max(1, Mth.floor(layout.width() * 0.01F));
         int half = Math.max(0, needleWidth / 2);
@@ -210,26 +277,32 @@ public class CompassElement extends AbstractElement {
     }
 
     private boolean drawNeedleTexture(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float centerX, @Nullable ResourceSupplier<ITexture> supplier) {
-        return this.drawNeedleTexture(graphics, layout, centerX, supplier, true, false);
+        float centerY = layout.y() + layout.height() / 2.0F;
+        return this.drawNeedleTexture(graphics, layout, centerX, centerY, supplier, true, false);
     }
 
     private boolean drawNeedleTexture(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float centerX, @Nullable ResourceSupplier<ITexture> supplier, boolean clampCenter, boolean wrapAcross) {
+        float centerY = layout.y() + layout.height() / 2.0F;
+        return this.drawNeedleTexture(graphics, layout, centerX, centerY, supplier, clampCenter, wrapAcross);
+    }
+
+    private boolean drawNeedleTexture(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float centerX, float centerY, @Nullable ResourceSupplier<ITexture> supplier, boolean clampCenter, boolean wrapAcross) {
         TextureHandle handle = this.resolveTexture(supplier);
         if (handle == null) {
             return false;
         }
         if (wrapAcross) {
             float normalizedCenter = this.normalizeCenterForWrap(layout, centerX);
-            this.drawNeedleTextureInstance(graphics, layout, normalizedCenter - layout.width(), handle, clampCenter);
-            this.drawNeedleTextureInstance(graphics, layout, normalizedCenter, handle, clampCenter);
-            this.drawNeedleTextureInstance(graphics, layout, normalizedCenter + layout.width(), handle, clampCenter);
+            this.drawNeedleTextureInstance(graphics, layout, normalizedCenter - layout.width(), centerY, handle, clampCenter);
+            this.drawNeedleTextureInstance(graphics, layout, normalizedCenter, centerY, handle, clampCenter);
+            this.drawNeedleTextureInstance(graphics, layout, normalizedCenter + layout.width(), centerY, handle, clampCenter);
         } else {
-            this.drawNeedleTextureInstance(graphics, layout, centerX, handle, clampCenter);
+            this.drawNeedleTextureInstance(graphics, layout, centerX, centerY, handle, clampCenter);
         }
         return true;
     }
 
-    private void drawNeedleTextureInstance(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float centerX, @NotNull TextureHandle handle, boolean clampCenter) {
+    private void drawNeedleTextureInstance(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float centerX, float centerY, @NotNull TextureHandle handle, boolean clampCenter) {
         int availableWidth = Math.max(1, layout.width());
         int availableHeight = Math.max(1, layout.height());
         if (handle.width() <= 0 || handle.height() <= 0) {
@@ -239,17 +312,19 @@ public class CompassElement extends AbstractElement {
         int destWidth = Math.max(1, Math.min(scaled[0], availableWidth));
         int destHeight = Math.max(1, Math.min(scaled[1], availableHeight));
         float targetCenterX = clampCenter ? Mth.clamp(centerX, layout.x(), layout.x() + layout.width()) : centerX;
-        float centerY = layout.y() + layout.height() / 2.0F;
+        float resolvedCenterY = clampCenter ? Mth.clamp(centerY, layout.y(), layout.y() + layout.height()) : centerY;
         float drawX = targetCenterX - ((float) destWidth / 2.0F);
-        float drawY = centerY - ((float) destHeight / 2.0F);
+        float drawY = resolvedCenterY - ((float) destHeight / 2.0F);
         if (clampCenter) {
             float minX = layout.x();
             float maxX = layout.x() + layout.width();
             drawX = Mth.clamp(drawX, minX, maxX - (float) destWidth);
         }
-        float minY = layout.y();
-        float maxY = layout.y() + layout.height();
-        drawY = Mth.clamp(drawY, minY, maxY - (float) destHeight);
+        if (clampCenter) {
+            float minY = layout.y();
+            float maxY = layout.y() + layout.height();
+            drawY = Mth.clamp(drawY, minY, maxY - (float) destHeight);
+        }
         int drawXi = Mth.floor(drawX);
         int drawYi = Mth.floor(drawY);
         graphics.setColor(1.0F, 1.0F, 1.0F, this.opacity);
@@ -336,7 +411,9 @@ public class CompassElement extends AbstractElement {
                 this.applyOpacity(parseColor(this.cardinalTextColor, DEFAULT_CARDINAL_TEXT_COLOR)),
                 this.applyOpacity(parseColor(this.numberTextColor, DEFAULT_NUMBER_TEXT_COLOR)),
                 this.applyOpacity(parseColor(this.needleColor, DEFAULT_NEEDLE_COLOR)),
-                this.applyOpacity(parseColor(this.deathPointerColor, DEFAULT_DEATH_POINTER_COLOR))
+                this.applyOpacity(parseColor(this.deathPointerColor, DEFAULT_DEATH_POINTER_COLOR)),
+                this.applyOpacity(parseColor(this.hostileDotsColor, DEFAULT_HOSTILE_DOT_COLOR)),
+                this.applyOpacity(parseColor(this.passiveDotsColor, DEFAULT_PASSIVE_DOT_COLOR))
         );
     }
 
@@ -414,6 +491,115 @@ public class CompassElement extends AbstractElement {
         return new DeathPointerData(degrees);
     }
 
+    @NotNull
+    private MobDots collectMobDots(@NotNull CompassReading reading) {
+        boolean hostilesEnabled = this.hostileDotsEnabled;
+        boolean passiveEnabled = this.passiveDotsEnabled;
+        if (!hostilesEnabled && !passiveEnabled) {
+            return MobDots.EMPTY;
+        }
+        if (this.isEditor()) {
+            return this.createEditorMobDots();
+        }
+        Player player = this.minecraft.player;
+        if (player == null) {
+            return MobDots.EMPTY;
+        }
+        double hostileRange = Math.max(0.0D, this.hostileDotsRange);
+        double passiveRange = Math.max(0.0D, this.passiveDotsRange);
+        double maxRange = Math.max(hostileRange, passiveRange);
+        if (maxRange <= 0.0D) {
+            return MobDots.EMPTY;
+        }
+        var level = player.level();
+        if (level == null) {
+            return MobDots.EMPTY;
+        }
+        List<MobDotData> hostileDots = hostilesEnabled ? new ArrayList<>() : Collections.emptyList();
+        List<MobDotData> passiveDots = passiveEnabled ? new ArrayList<>() : Collections.emptyList();
+        AABB bounds = player.getBoundingBox().inflate(maxRange, Math.min(64.0D, maxRange), maxRange);
+        List<Mob> mobs = level.getEntitiesOfClass(Mob.class, bounds, this::shouldIncludeMob);
+        for (Mob mob : mobs) {
+            MobCategory category = mob.getType().getCategory();
+            boolean isHostile = (category == MobCategory.MONSTER);
+            if (isHostile) {
+                if (!hostilesEnabled || hostileDots.size() >= MAX_MOB_DOTS_PER_TYPE) {
+                    continue;
+                }
+                this.appendMobDot(hostileDots, mob, player, reading, hostileRange);
+            } else {
+                if (!passiveEnabled || passiveDots.size() >= MAX_MOB_DOTS_PER_TYPE) {
+                    continue;
+                }
+                this.appendMobDot(passiveDots, mob, player, reading, passiveRange);
+            }
+            if ((!hostilesEnabled || hostileDots.size() >= MAX_MOB_DOTS_PER_TYPE)
+                    && (!passiveEnabled || passiveDots.size() >= MAX_MOB_DOTS_PER_TYPE)) {
+                break;
+            }
+        }
+        boolean hasHostile = hostilesEnabled && !hostileDots.isEmpty();
+        boolean hasPassive = passiveEnabled && !passiveDots.isEmpty();
+        if (!hasHostile && !hasPassive) {
+            return MobDots.EMPTY;
+        }
+        List<MobDotData> hostileOut = hasHostile ? List.copyOf(hostileDots) : Collections.emptyList();
+        List<MobDotData> passiveOut = hasPassive ? List.copyOf(passiveDots) : Collections.emptyList();
+        return new MobDots(hostileOut, passiveOut);
+    }
+
+    @NotNull
+    private MobDots createEditorMobDots() {
+        boolean hostilesEnabled = this.hostileDotsEnabled;
+        boolean passiveEnabled = this.passiveDotsEnabled;
+        if (!hostilesEnabled && !passiveEnabled) {
+            return MobDots.EMPTY;
+        }
+        long now = System.currentTimeMillis();
+        float cycleHostile = (float) ((now % 6000L) / 6000.0D * 360.0D) - 180.0F;
+        float cyclePassive = (float) ((now % 5000L) / 5000.0D * 360.0D) - 180.0F;
+        List<MobDotData> hostileDots = hostilesEnabled ? new ArrayList<>() : Collections.emptyList();
+        List<MobDotData> passiveDots = passiveEnabled ? new ArrayList<>() : Collections.emptyList();
+        if (hostilesEnabled) {
+            hostileDots.add(new MobDotData(Mth.wrapDegrees(cycleHostile - 60.0F), 0.2F));
+            hostileDots.add(new MobDotData(Mth.wrapDegrees(cycleHostile + 10.0F), 0.55F));
+            hostileDots.add(new MobDotData(Mth.wrapDegrees(cycleHostile + 85.0F), 0.85F));
+        }
+        if (passiveEnabled) {
+            passiveDots.add(new MobDotData(Mth.wrapDegrees(cyclePassive - 140.0F), 0.35F));
+            passiveDots.add(new MobDotData(Mth.wrapDegrees(cyclePassive - 20.0F), 0.65F));
+            passiveDots.add(new MobDotData(Mth.wrapDegrees(cyclePassive + 120.0F), 0.9F));
+        }
+        List<MobDotData> hostileOut = hostilesEnabled ? List.copyOf(hostileDots) : Collections.emptyList();
+        List<MobDotData> passiveOut = passiveEnabled ? List.copyOf(passiveDots) : Collections.emptyList();
+        return new MobDots(hostileOut, passiveOut);
+    }
+
+    private boolean shouldIncludeMob(@Nullable Mob mob) {
+        return mob != null && mob.isAlive() && !mob.isRemoved() && !mob.isSpectator();
+    }
+
+    private void appendMobDot(@NotNull List<MobDotData> dots, @NotNull Mob mob, @NotNull Player player, @NotNull CompassReading reading, double maxRange) {
+        if (maxRange <= 0.0D) {
+            return;
+        }
+        double dx = mob.getX() - player.getX();
+        double dz = mob.getZ() - player.getZ();
+        double distanceSq = dx * dx + dz * dz;
+        if (distanceSq <= 1.0E-3D) {
+            return;
+        }
+        double distance = Math.sqrt(distanceSq);
+        if (distance > maxRange) {
+            return;
+        }
+        float signed = (float) (Math.atan2(dx, -dz) * (180.0D / Math.PI));
+        float absolute = normalizeUnsignedDegrees(signed);
+        float relative = this.relativeToHeading(absolute, reading.headingDegrees());
+        float ratio = (float) Mth.clamp(distance / maxRange, 0.0D, 1.0D);
+        dots.add(new MobDotData(relative, ratio));
+    }
+
     private static float toSigned(float headingDegrees) {
         return (headingDegrees > 180.0F) ? (headingDegrees - 360.0F) : headingDegrees;
     }
@@ -422,6 +608,14 @@ public class CompassElement extends AbstractElement {
         int wrapped = signedDegrees % 360;
         if (wrapped < 0) {
             wrapped += 360;
+        }
+        return wrapped;
+    }
+
+    private static float normalizeUnsignedDegrees(float signedDegrees) {
+        float wrapped = signedDegrees % 360.0F;
+        if (wrapped < 0.0F) {
+            wrapped += 360.0F;
         }
         return wrapped;
     }
@@ -452,13 +646,26 @@ public class CompassElement extends AbstractElement {
     }
 
     private record ResolvedColors(int backgroundColor, int barColor, int majorTickColor, int minorTickColor,
-                                  int cardinalTextColor, int numberTextColor, int needleColor, int deathNeedleColor) {
+                                  int cardinalTextColor, int numberTextColor, int needleColor, int deathNeedleColor,
+                                  int hostileDotColor, int passiveDotColor) {
     }
 
     private record CompassReading(float headingDegrees) {
     }
 
     private record DeathPointerData(float signedDegrees) {
+    }
+
+    private record MobDots(@NotNull List<MobDotData> hostileDots, @NotNull List<MobDotData> passiveDots) {
+
+        private static final MobDots EMPTY = new MobDots(Collections.emptyList(), Collections.emptyList());
+
+        private boolean hasAny() {
+            return !this.hostileDots.isEmpty() || !this.passiveDots.isEmpty();
+        }
+    }
+
+    private record MobDotData(float relativeDegrees, float distanceRatio) {
     }
 
     private record TextureHandle(ResourceLocation location, int width, int height, @NotNull AspectRatio aspectRatio) {
