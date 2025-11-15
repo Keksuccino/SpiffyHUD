@@ -5,7 +5,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
@@ -44,7 +43,6 @@ public class FlatMobRenderUtils {
         float scale = computeScale(bounds, size);
         Vector3f offset = new Vector3f(0.0F, bounds.height * HALF, 0.0F);
         Quaternionf baseRotation = Axis.ZP.rotationDegrees(180.0F);
-        Quaternionf cameraRotation = new Quaternionf(); // identity keeps camera straight-on
 
         float originalBody = renderMob.yBodyRot;
         float originalBodyO = renderMob.yBodyRotO;
@@ -66,8 +64,10 @@ public class FlatMobRenderUtils {
 
         RenderSystem.enableBlend();
         graphics.setColor(1.0F, 1.0F, 1.0F, opacity);
-        InventoryScreen.renderEntityInInventory(graphics, centerX, centerY, scale, offset, baseRotation, cameraRotation, renderMob);
+        graphics.pose().pushPose();
+        renderEntity(graphics, centerX, centerY, scale, offset, baseRotation, renderMob);
         graphics.flush();
+        graphics.pose().popPose();
         graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
         Lighting.setupFor3DItems();
 
@@ -82,6 +82,20 @@ public class FlatMobRenderUtils {
 
         graphics.disableScissor();
         return true;
+    }
+
+    private static void renderEntity(@NotNull GuiGraphics graphics, float centerX, float centerY, float scale, @NotNull Vector3f offset,
+                                     @NotNull Quaternionf modelRotation, @NotNull Mob mob) {
+        graphics.pose().translate(centerX, centerY, 50.0);
+        graphics.pose().scale(scale, scale, -scale);
+        graphics.pose().translate(offset.x, offset.y, offset.z);
+        graphics.pose().mulPose(modelRotation);
+        Lighting.setupForEntityInInventory();
+        var dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
+        dispatcher.setRenderShadow(false);
+        RenderSystem.runAsFancy(() -> dispatcher.render(mob, 0.0, 0.0, 0.0, 0.0F, 1.0F, graphics.pose(), graphics.bufferSource(), 15728880));
+        dispatcher.setRenderShadow(true);
+        Lighting.setupFor3DItems();
     }
 
     @NotNull
