@@ -10,7 +10,7 @@ import de.keksuccino.fancymenu.util.rendering.RenderingUtils;
 import de.keksuccino.fancymenu.util.resource.ResourceSupplier;
 import de.keksuccino.fancymenu.util.resource.resources.texture.ITexture;
 import de.keksuccino.spiffyhud.util.death.DeathPointStorage;
-import de.keksuccino.spiffyhud.util.rendering.entity.mobheads.EntityHeadRenderUtils;
+import de.keksuccino.spiffyhud.util.rendering.FlatMobRenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -289,7 +289,7 @@ public class CompassElement extends AbstractElement {
         if (mob == null) {
             return false;
         }
-        return EntityHeadRenderUtils.renderMobHead(graphics, bounds.left(), bounds.top(), bounds.size(), mob, this.opacity);
+        return FlatMobRenderUtils.renderFlatMob(graphics, bounds.left(), bounds.top(), bounds.size(), mob, this.opacity);
     }
 
     private void drawNeedle(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull ResolvedColors colors) {

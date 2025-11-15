@@ -1,4 +1,4 @@
-package de.keksuccino.spiffyhud.util.rendering.entity.mobheads;
+package de.keksuccino.spiffyhud.util.rendering;
 
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -17,9 +17,9 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 /**
- * Utility for rendering a mob's head (or a centered bust) inside a GUI square.
+ * Utility for rendering a mob's flat front view inside a GUI square.
  */
-public class EntityHeadRenderUtils {
+public class FlatMobRenderUtils {
 
     private static final Minecraft MC = Minecraft.getInstance();
     private static final float BASE_DEPTH = 150.0F;
@@ -28,10 +28,10 @@ public class EntityHeadRenderUtils {
     private static final int CLONE_REFRESH_INTERVAL_TICKS = 40;
     private static final Map<Mob, CachedMob> RENDER_CLONES = new WeakHashMap<>();
 
-    private EntityHeadRenderUtils() {
+    private FlatMobRenderUtils() {
     }
 
-    public static boolean renderMobHead(@NotNull GuiGraphics graphics, int left, int top, int size, @Nullable Mob mob, float opacity) {
+    public static boolean renderFlatMob(@NotNull GuiGraphics graphics, int left, int top, int size, @Nullable Mob mob, float opacity) {
         Mob renderMob = prepareRenderMob(mob);
         if (renderMob == null) {
             return false;
@@ -160,4 +160,5 @@ public class EntityHeadRenderUtils {
             this.lastSyncedTick = lastSyncedTick;
         }
     }
+
 }
