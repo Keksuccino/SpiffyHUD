@@ -2,13 +2,9 @@ package de.keksuccino.spiffyhud.util.rendering;
 
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.inventory.InventoryScreen;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
@@ -18,7 +14,6 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -30,12 +25,6 @@ public class FlatMobRenderUtils {
     private static final Minecraft MC = Minecraft.getInstance();
     private static final float VIEWPORT_FILL_RATIO = 0.92F; // keep a little padding so tall mobs don't clip
     private static final float HALF = 0.5F;
-    // Strong forward-facing lights keep GUI mobs at full brightness.
-    private static final Vector3f FULLBRIGHT_KEY_LIGHT = new Vector3f(0.0F, 0.0F, 1.0F);
-    private static final Vector3f FULLBRIGHT_FILL_LIGHT = new Vector3f(0.0F, 0.0F, 1.0F);
-    private static final float FULLBRIGHT_NORMAL_X = 0.0F;
-    private static final float FULLBRIGHT_NORMAL_Y = 0.0F;
-    private static final float FULLBRIGHT_NORMAL_Z = 1.0F;
     private static final Map<Mob, Mob> RENDER_CLONES = new WeakHashMap<>();
 
     private FlatMobRenderUtils() {
@@ -75,18 +64,7 @@ public class FlatMobRenderUtils {
         RenderSystem.enableBlend();
         graphics.setColor(1.0F, 1.0F, 1.0F, opacity);
         graphics.pose().pushPose();
-//        renderEntity(graphics, centerX, centerY, scale, offset, baseRotation, renderMob);
-        net.minecraft.client.gui.screens.inventory.InventoryScreen.renderEntityInInventory(
-            graphics,
-            centerX,
-            centerY,
-            scale,
-            offset,
-            baseRotation,
-            null,
-            renderMob
-        );
-        graphics.flush();
+        renderEntity(graphics, centerX, centerY, scale, offset, baseRotation, renderMob);
         graphics.pose().popPose();
         graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
         Lighting.setupFor3DItems();
@@ -109,78 +87,13 @@ public class FlatMobRenderUtils {
         graphics.pose().scale(scale, scale, -scale);
         graphics.pose().translate(offset.x, offset.y, offset.z);
         graphics.pose().mulPose(modelRotation);
-        setupGuiFullbrightLighting();
+        Lighting.setupForEntityInInventory();
         var dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
         dispatcher.setRenderShadow(false);
-        MultiBufferSource fullbrightBuffers = new FullbrightBufferSource(graphics.bufferSource());
-        RenderSystem.runAsFancy(() -> dispatcher.render(mob, 0.0, 0.0, 0.0, 0.0F, 1.0F, graphics.pose(), fullbrightBuffers, 15728880));
+        RenderSystem.runAsFancy(() -> dispatcher.render(mob, 0.0, 0.0, 0.0, 0.0F, 1.0F, graphics.pose(), graphics.bufferSource(), 15728880));
+        graphics.flush();
         dispatcher.setRenderShadow(true);
         Lighting.setupFor3DItems();
-    }
-
-    private static void setupGuiFullbrightLighting() {
-        Lighting.setupForEntityInInventory();
-        RenderSystem.setShaderLights(FULLBRIGHT_KEY_LIGHT, FULLBRIGHT_FILL_LIGHT);
-    }
-
-    private static final class FullbrightBufferSource implements MultiBufferSource {
-
-        private final MultiBufferSource delegate;
-        private final Map<RenderType, FullbrightVertexConsumer> cache = new IdentityHashMap<>();
-
-        private FullbrightBufferSource(MultiBufferSource delegate) {
-            this.delegate = delegate;
-        }
-
-        @Override
-        public @NotNull VertexConsumer getBuffer(@NotNull RenderType renderType) {
-            return this.cache.computeIfAbsent(renderType, type -> new FullbrightVertexConsumer(this.delegate.getBuffer(type)));
-        }
-    }
-
-    private static final class FullbrightVertexConsumer implements VertexConsumer {
-
-        private final VertexConsumer delegate;
-
-        private FullbrightVertexConsumer(VertexConsumer delegate) {
-            this.delegate = delegate;
-        }
-
-        @Override
-        public VertexConsumer addVertex(float f, float g, float h) {
-            this.delegate.addVertex(f, g, h);
-            return this;
-        }
-
-        @Override
-        public VertexConsumer setColor(int i, int j, int k, int l) {
-            this.delegate.setColor(i, j, k, l);
-            return this;
-        }
-
-        @Override
-        public VertexConsumer setUv(float f, float g) {
-            this.delegate.setUv(f, g);
-            return this;
-        }
-
-        @Override
-        public VertexConsumer setUv1(int i, int j) {
-            this.delegate.setUv1(i, j);
-            return this;
-        }
-
-        @Override
-        public VertexConsumer setUv2(int i, int j) {
-            this.delegate.setUv2(i, j);
-            return this;
-        }
-
-        @Override
-        public VertexConsumer setNormal(float f, float g, float h) {
-            this.delegate.setNormal(FULLBRIGHT_NORMAL_X, FULLBRIGHT_NORMAL_Y, FULLBRIGHT_NORMAL_Z);
-            return this;
-        }
     }
 
     @NotNull
