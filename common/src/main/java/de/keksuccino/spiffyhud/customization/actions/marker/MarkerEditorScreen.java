@@ -2,7 +2,6 @@ package de.keksuccino.spiffyhud.customization.actions.marker;
 
 import de.keksuccino.fancymenu.util.LocalizationUtils;
 import de.keksuccino.fancymenu.util.cycle.CommonCycles;
-import de.keksuccino.fancymenu.util.input.CharacterFilter;
 import de.keksuccino.fancymenu.util.rendering.ui.screen.CellScreen;
 import de.keksuccino.fancymenu.util.rendering.ui.screen.resource.ResourceChooserScreen;
 import de.keksuccino.fancymenu.util.rendering.ui.tooltip.Tooltip;
@@ -12,9 +11,7 @@ import de.keksuccino.fancymenu.util.resource.resources.texture.ITexture;
 import de.keksuccino.fancymenu.util.file.type.types.ImageFileType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -103,19 +100,18 @@ public class MarkerEditorScreen extends CellScreen {
 
         this.addCellGroupEndSpacerCell();
 
-        CharacterFilter decimalFilter = CharacterFilter.buildDecimalFiler();
         this.addLabelCell(Component.translatable("spiffyhud.actions.marker.position_x"));
-        TextInputCell positionXCell = this.addTextInputCell(decimalFilter, true, true)
-                .setEditListener(s -> this.config.positionX = parseDouble(s, this.config.positionX))
-                .setText(String.valueOf(this.config.positionX));
+        TextInputCell positionXCell = this.addTextInputCell(null, true, true)
+                .setEditListener(s -> this.config.positionX = s.trim())
+                .setText(this.config.positionX);
         positionXCell.editBox.setTooltip(() -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.actions.marker.position_x.desc")));
 
         this.addCellGroupEndSpacerCell();
 
         this.addLabelCell(Component.translatable("spiffyhud.actions.marker.position_z"));
-        TextInputCell positionZCell = this.addTextInputCell(decimalFilter, true, true)
-                .setEditListener(s -> this.config.positionZ = parseDouble(s, this.config.positionZ))
-                .setText(String.valueOf(this.config.positionZ));
+        TextInputCell positionZCell = this.addTextInputCell(null, true, true)
+                .setEditListener(s -> this.config.positionZ = s.trim())
+                .setText(this.config.positionZ);
         positionZCell.editBox.setTooltip(() -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.actions.marker.position_z.desc")));
 
         this.addStartEndSpacerCell();
@@ -157,14 +153,4 @@ public class MarkerEditorScreen extends CellScreen {
         Minecraft.getInstance().setScreen(chooser);
     }
 
-    private static double parseDouble(@Nullable String raw, double fallback) {
-        if (raw == null || raw.isBlank()) {
-            return fallback;
-        }
-        try {
-            return Mth.clamp(Double.parseDouble(raw.trim()), -30000000.0D, 30000000.0D);
-        } catch (NumberFormatException ex) {
-            return fallback;
-        }
-    }
 }

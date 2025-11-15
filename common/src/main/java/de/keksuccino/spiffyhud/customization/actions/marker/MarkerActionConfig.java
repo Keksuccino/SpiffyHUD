@@ -3,6 +3,7 @@ package de.keksuccino.spiffyhud.customization.actions.marker;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
+import de.keksuccino.fancymenu.customization.placeholder.PlaceholderParser;
 import de.keksuccino.spiffyhud.customization.marker.MarkerData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,8 +21,8 @@ public final class MarkerActionConfig {
     public String colorHex = "";
     public String texture = "";
     public boolean showAsNeedle = false;
-    public double positionX = 0.0D;
-    public double positionZ = 0.0D;
+    public String positionX = "0";
+    public String positionZ = "0";
 
     public static @NotNull MarkerActionConfig defaultConfig() {
         MarkerActionConfig config = new MarkerActionConfig();
@@ -66,6 +67,8 @@ public final class MarkerActionConfig {
         this.displayName = normalize(this.displayName);
         this.colorHex = normalize(this.colorHex);
         this.texture = normalize(this.texture);
+        this.positionX = normalize(this.positionX);
+        this.positionZ = normalize(this.positionZ);
     }
 
     public @NotNull String serialize() {
@@ -84,14 +87,14 @@ public final class MarkerActionConfig {
         return this.lookupMarkerName.isBlank() ? this.displayName : this.lookupMarkerName;
     }
 
-    public @NotNull MarkerData toMarkerData() {
+    public @NotNull MarkerData toMarkerData(double parsedX, double parsedZ) {
         return new MarkerData(
                 this.displayName,
                 blankToNull(this.colorHex),
                 blankToNull(this.texture),
                 this.showAsNeedle,
-                this.positionX,
-                this.positionZ
+                parsedX,
+                parsedZ
         );
     }
 
@@ -100,7 +103,8 @@ public final class MarkerActionConfig {
             return "";
         }
         String trimmed = value.trim();
-        return trimmed.replace('\r', ' ').replace('\n', ' ');
+        // Manually replace placeholders here, because the action stringifies placeholders, so we need for after parsing the value
+        return PlaceholderParser.replacePlaceholders(trimmed.replace('\r', ' ').replace('\n', ' '));
     }
 
     private static String blankToNull(@Nullable String value) {

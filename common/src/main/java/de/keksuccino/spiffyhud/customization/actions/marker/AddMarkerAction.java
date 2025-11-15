@@ -3,8 +3,8 @@ package de.keksuccino.spiffyhud.customization.actions.marker;
 import de.keksuccino.fancymenu.customization.action.Action;
 import de.keksuccino.fancymenu.customization.action.ActionInstance;
 import de.keksuccino.fancymenu.util.LocalizationUtils;
-import de.keksuccino.spiffyhud.customization.marker.MarkerData;
 import de.keksuccino.spiffyhud.customization.marker.MarkerStorage;
+import de.keksuccino.konkrete.math.MathUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -34,13 +34,18 @@ public class AddMarkerAction extends Action {
             return;
         }
         if (!config.hasValidTarget() || !config.hasDisplayName()) {
-            LOGGER.warn("[SPIFFYHUD] AddMarkerAction requires a target element identifier and display name.");
+            LOGGER.error("[SPIFFYHUD] AddMarkerAction requires a target element identifier and display name.");
             return;
         }
-        MarkerData marker = config.toMarkerData();
-        boolean success = MarkerStorage.addMarker(config.targetElementIdentifier, marker);
+        if (!MathUtils.isDouble(config.positionX) || !MathUtils.isDouble(config.positionZ)) {
+            LOGGER.error("[SPIFFYHUD] AddMarkerAction requires numeric coordinates but received '{}', '{}'.", config.positionX, config.positionZ);
+            return;
+        }
+        double parsedX = Double.parseDouble(config.positionX.trim());
+        double parsedZ = Double.parseDouble(config.positionZ.trim());
+        boolean success = MarkerStorage.addMarker(config.targetElementIdentifier, config.toMarkerData(parsedX, parsedZ));
         if (!success) {
-            LOGGER.warn("[SPIFFYHUD] Failed to add marker '{}' to group '{}'.", marker.getName(), config.targetElementIdentifier);
+            LOGGER.error("[SPIFFYHUD] Failed to add marker '{}' to group '{}'.", config.displayName, config.targetElementIdentifier);
         }
     }
 
