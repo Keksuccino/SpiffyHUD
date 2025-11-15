@@ -10,7 +10,7 @@ import java.util.Objects;
 /**
  * Represents a single compass/minimap marker entry persisted on disk.
  */
-public final class MarkerData {
+public class MarkerData {
 
     @NotNull
     private String name = "";

@@ -8,7 +8,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class MarkerRemovalConfig {
+public class MarkerRemovalConfig {
 
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();

@@ -28,7 +28,7 @@ import java.util.function.Consumer;
  * Persists and manages named marker groups which can be shared between compass instances and
  * other overlay features (e.g. a future minimap implementation).
  */
-public final class MarkerStorage {
+public class MarkerStorage {
 
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
