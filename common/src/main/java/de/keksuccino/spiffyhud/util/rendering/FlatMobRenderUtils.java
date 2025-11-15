@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,8 +24,8 @@ public class FlatMobRenderUtils {
 
     private static final Minecraft MC = Minecraft.getInstance();
     private static final float BASE_DEPTH = 150.0F;
-    private static final float HEAD_VERTICAL_FACTOR = 0.65F;
-    private static final float HEAD_SCALE_BIAS = 0.7F;
+    private static final float VIEWPORT_FILL_RATIO = 0.92F; // keep a little padding so tall mobs don't clip
+    private static final float HALF = 0.5F;
     private static final int CLONE_REFRESH_INTERVAL_TICKS = 40;
     private static final Map<Mob, CachedMob> RENDER_CLONES = new WeakHashMap<>();
 
@@ -39,14 +40,15 @@ public class FlatMobRenderUtils {
         PoseStack pose = graphics.pose();
         graphics.enableScissor(left, top, left + size, top + size);
         pose.pushPose();
-        pose.translate(left + size / 2.0F, top + size, BASE_DEPTH);
-        float width = Math.max(renderMob.getBbWidth(), 0.001F);
-        float height = Math.max(renderMob.getBbHeight(), 0.001F);
-        float scale = (size / Math.max(width, height)) * HEAD_SCALE_BIAS;
+        float centerX = left + size / 2.0F;
+        float centerY = top + size / 2.0F;
+        pose.translate(centerX, centerY, BASE_DEPTH);
+        MobBounds bounds = captureBounds(renderMob);
+        float scale = computeScale(bounds, size);
         pose.scale(scale, scale, -scale);
+        pose.translate(0.0F, bounds.height * HALF, 0.0F);
         pose.mulPose(Axis.YP.rotationDegrees(180.0F));
         pose.mulPose(Axis.ZP.rotationDegrees(180.0F));
-        pose.translate(0.0F, -height * HEAD_VERTICAL_FACTOR, 0.0F);
 
         float originalBody = renderMob.yBodyRot;
         float originalBodyO = renderMob.yBodyRotO;
@@ -89,6 +91,24 @@ public class FlatMobRenderUtils {
         pose.popPose();
         graphics.disableScissor();
         return true;
+    }
+
+    @NotNull
+    private static MobBounds captureBounds(@NotNull Mob mob) {
+        AABB boundingBox = mob.getBoundingBox();
+        double width = boundingBox.maxX - boundingBox.minX;
+        double height = boundingBox.maxY - boundingBox.minY;
+        double depth = boundingBox.maxZ - boundingBox.minZ;
+        float widthF = (float) Math.max(width, 0.001F);
+        float heightF = (float) Math.max(height, 0.001F);
+        float depthF = (float) Math.max(depth, 0.001F);
+        return new MobBounds(heightF, Math.max(widthF, depthF));
+    }
+
+    private static float computeScale(@NotNull MobBounds bounds, int size) {
+        float dominant = Math.max(bounds.height, bounds.horizontal);
+        float available = Math.max(size * VIEWPORT_FILL_RATIO, 1.0F);
+        return available / dominant;
     }
 
     @Nullable
@@ -149,6 +169,16 @@ public class FlatMobRenderUtils {
         target.setNoAi(true);
         target.noPhysics = true;
         target.setSilent(true);
+    }
+
+    private static final class MobBounds {
+        private final float height;
+        private final float horizontal;
+
+        private MobBounds(float height, float horizontal) {
+            this.height = height;
+            this.horizontal = horizontal;
+        }
     }
 
     private static final class CachedMob {
