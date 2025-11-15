@@ -33,10 +33,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class CompassElement extends AbstractElement {
-
-    //TODO Machen, dass methode stattdessen volles model von vorn rendert
-    //TODO Machen, dass methode automatisch die mob size/bounds checkt, um die render size anzupassen, damit alle mobs in ähnlicher größe gerendert werden (aktuell zu ungenau, Parrots viel zu klein, zum Beispiel)
-
+    
     private static final Minecraft MC = Minecraft.getInstance();
 
     private static final int DEFAULT_BACKGROUND_COLOR = 0xB0101010;
@@ -121,7 +118,7 @@ public class CompassElement extends AbstractElement {
 
         CompassReading reading = this.collectReading(partial);
         DeathPointerData deathPointer = this.collectDeathPointer();
-        MobDots mobDots = this.cachedMobDots;
+        MobDots mobDots = (this.cachedMobDots == null) ? MobDots.EMPTY : this.cachedMobDots;
         long now = System.currentTimeMillis();
         if ((this.cachedMobDots == null) || ((this.lastMobDotsCacheTime + MOB_DOTS_REFRESH_RATE_MS) < now)) {
             this.lastMobDotsCacheTime = now;
@@ -151,18 +148,19 @@ public class CompassElement extends AbstractElement {
             }
         });
 
+        // Draw outside locked depth test to not break entity model rendering
         if (mobDots.hasAny()) {
             this.drawMobDots(graphics, layout, colors, mobDots);
-        }
-        if (!resolvedMarkers.isEmpty()) {
-            this.drawMarkerDots(graphics, layout, resolvedMarkers);
         }
 
         wrapDepthTestLocked(false, () -> {
             if (this.needleEnabled) {
                 this.drawNeedle(graphics, layout, colors);
             }
-            this.drawMarkerNeedles(graphics, layout, resolvedMarkers);
+            if (!resolvedMarkers.isEmpty()) {
+                this.drawMarkerDots(graphics, layout, resolvedMarkers);
+                this.drawMarkerNeedles(graphics, layout, resolvedMarkers);
+            }
             this.drawDeathNeedle(graphics, layout, reading, deathPointer, colors);
             RenderingUtils.resetShaderColor(graphics);
         });
