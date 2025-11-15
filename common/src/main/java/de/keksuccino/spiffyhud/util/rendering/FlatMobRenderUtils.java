@@ -2,17 +2,18 @@ package de.keksuccino.spiffyhud.util.rendering;
 
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -23,7 +24,6 @@ import java.util.WeakHashMap;
 public class FlatMobRenderUtils {
 
     private static final Minecraft MC = Minecraft.getInstance();
-    private static final float BASE_DEPTH = 150.0F;
     private static final float VIEWPORT_FILL_RATIO = 0.92F; // keep a little padding so tall mobs don't clip
     private static final float HALF = 0.5F;
     private static final int CLONE_REFRESH_INTERVAL_TICKS = 40;
@@ -37,18 +37,14 @@ public class FlatMobRenderUtils {
         if (renderMob == null) {
             return false;
         }
-        PoseStack pose = graphics.pose();
         graphics.enableScissor(left, top, left + size, top + size);
-        pose.pushPose();
         float centerX = left + size / 2.0F;
         float centerY = top + size / 2.0F;
-        pose.translate(centerX, centerY, BASE_DEPTH);
         MobBounds bounds = captureBounds(renderMob);
         float scale = computeScale(bounds, size);
-        pose.scale(scale, scale, -scale);
-        pose.translate(0.0F, bounds.height * HALF, 0.0F);
-        pose.mulPose(Axis.YP.rotationDegrees(180.0F));
-        pose.mulPose(Axis.ZP.rotationDegrees(180.0F));
+        Vector3f offset = new Vector3f(0.0F, bounds.height * HALF, 0.0F);
+        Quaternionf baseRotation = Axis.ZP.rotationDegrees(180.0F);
+        Quaternionf cameraRotation = new Quaternionf(); // identity keeps camera straight-on
 
         float originalBody = renderMob.yBodyRot;
         float originalBodyO = renderMob.yBodyRotO;
@@ -68,14 +64,10 @@ public class FlatMobRenderUtils {
         renderMob.setYHeadRot(180.0F);
         renderMob.yHeadRotO = 180.0F;
 
-        Lighting.setupForEntityInInventory();
         RenderSystem.enableBlend();
         graphics.setColor(1.0F, 1.0F, 1.0F, opacity);
-        EntityRenderDispatcher dispatcher = MC.getEntityRenderDispatcher();
-        dispatcher.setRenderShadow(false);
-        RenderSystem.runAsFancy(() -> dispatcher.render(renderMob, 0.0, 0.0, 0.0, 0.0F, 1.0F, pose, graphics.bufferSource(), 15728880));
+        InventoryScreen.renderEntityInInventory(graphics, centerX, centerY, scale, offset, baseRotation, cameraRotation, renderMob);
         graphics.flush();
-        dispatcher.setRenderShadow(true);
         graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
         Lighting.setupFor3DItems();
 
@@ -88,7 +80,6 @@ public class FlatMobRenderUtils {
         renderMob.setYHeadRot(originalHead);
         renderMob.yHeadRotO = originalHeadO;
 
-        pose.popPose();
         graphics.disableScissor();
         return true;
     }

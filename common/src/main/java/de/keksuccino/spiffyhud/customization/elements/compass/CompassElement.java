@@ -119,31 +119,48 @@ public class CompassElement extends AbstractElement {
         Font font = this.minecraft.font;
         CompassLayout layout = this.computeLayout(font, x, y, width, height);
 
-        RenderSystem.disableDepthTest();
-        RenderingUtils.setDepthTestLocked(true);
-
         RenderSystem.enableBlend();
-        if (this.backgroundEnabled) {
-            this.drawBackground(graphics, layout, colors.backgroundColor());
-        }
-        if (this.barEnabled) {
-            this.drawBar(graphics, layout, colors.barColor());
-        }
-        this.drawGradeLines(graphics, layout, colors, reading);
-        if (this.cardinalTextEnabled) {
-            this.drawCardinalLabels(graphics, layout, colors, reading);
-        }
-        if (this.degreeNumbersEnabled) {
-            this.drawDegreeNumbers(graphics, layout, colors, reading);
-        }
+
+        wrapDepthTestLocked(false, () -> {
+            if (this.backgroundEnabled) {
+                this.drawBackground(graphics, layout, colors.backgroundColor());
+            }
+            if (this.barEnabled) {
+                this.drawBar(graphics, layout, colors.barColor());
+            }
+            this.drawGradeLines(graphics, layout, colors, reading);
+            if (this.cardinalTextEnabled) {
+                this.drawCardinalLabels(graphics, layout, colors, reading);
+            }
+            if (this.degreeNumbersEnabled) {
+                this.drawDegreeNumbers(graphics, layout, colors, reading);
+            }
+        });
+
         if (mobDots.hasAny()) {
             this.drawMobDots(graphics, layout, colors, mobDots);
         }
-        if (this.needleEnabled) {
-            this.drawNeedle(graphics, layout, colors);
+
+        wrapDepthTestLocked(false, () -> {
+            if (this.needleEnabled) {
+                this.drawNeedle(graphics, layout, colors);
+            }
+            this.drawDeathNeedle(graphics, layout, reading, deathPointer, colors);
+            RenderingUtils.resetShaderColor(graphics);
+        });
+
+    }
+
+    private static void wrapDepthTestLocked(boolean enableDepthTest, Runnable wrapped) {
+
+        if (enableDepthTest) {
+            RenderSystem.enableDepthTest();
+        } else {
+            RenderSystem.disableDepthTest();
         }
-        this.drawDeathNeedle(graphics, layout, reading, deathPointer, colors);
-        RenderingUtils.resetShaderColor(graphics);
+        RenderingUtils.setDepthTestLocked(true);
+
+        wrapped.run();
 
         RenderingUtils.setDepthTestLocked(false);
         RenderSystem.enableDepthTest();
