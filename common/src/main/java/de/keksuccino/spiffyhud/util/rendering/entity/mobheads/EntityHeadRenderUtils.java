@@ -1,4 +1,4 @@
-package de.keksuccino.spiffyhud.util.rendering;
+package de.keksuccino.spiffyhud.util.rendering.entity.mobheads;
 
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -20,9 +20,6 @@ import java.util.WeakHashMap;
  * Utility for rendering a mob's head (or a centered bust) inside a GUI square.
  */
 public class EntityHeadRenderUtils {
-
-    //TODO Machen, dass methode stattdessen volles model von vorn rendert
-    //TODO Machen, dass methode automatisch die mob size/bounds checkt, um die render size anzupassen, damit alle mobs in ähnlicher größe gerendert werden (aktuell zu ungenau, Parrots viel zu klein, zum Beispiel)
 
     private static final Minecraft MC = Minecraft.getInstance();
     private static final float BASE_DEPTH = 150.0F;

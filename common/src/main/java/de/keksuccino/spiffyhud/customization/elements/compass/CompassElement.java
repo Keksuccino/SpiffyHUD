@@ -10,7 +10,7 @@ import de.keksuccino.fancymenu.util.rendering.RenderingUtils;
 import de.keksuccino.fancymenu.util.resource.ResourceSupplier;
 import de.keksuccino.fancymenu.util.resource.resources.texture.ITexture;
 import de.keksuccino.spiffyhud.util.death.DeathPointStorage;
-import de.keksuccino.spiffyhud.util.rendering.EntityHeadRenderUtils;
+import de.keksuccino.spiffyhud.util.rendering.entity.mobheads.EntityHeadRenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -29,6 +29,9 @@ import java.util.Collections;
 import java.util.List;
 
 public class CompassElement extends AbstractElement {
+
+    //TODO Machen, dass methode stattdessen volles model von vorn rendert
+    //TODO Machen, dass methode automatisch die mob size/bounds checkt, um die render size anzupassen, damit alle mobs in ähnlicher größe gerendert werden (aktuell zu ungenau, Parrots viel zu klein, zum Beispiel)
 
     private static final int DEFAULT_BACKGROUND_COLOR = 0xB0101010;
     private static final int DEFAULT_BAR_COLOR = 0xC0FFFFFF;
