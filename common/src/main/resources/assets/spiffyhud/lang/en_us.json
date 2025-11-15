@@ -296,5 +296,10 @@
   "spiffyhud.actions.marker.needle_texture.clear": "Clear Needle Texture",
   "spiffyhud.actions.marker.needle_texture.clear.desc": "Remove the needle texture so the marker uses the fallback color (or dot texture) instead.",
   "spiffyhud.placeholders.marker_list": "World Marker List [Spiffy]",
-  "spiffyhud.placeholders.marker_list.desc": "Returns every marker display name stored for the provided target element identifier.\nUse the 'separator' value to control how the names are joined."
+  "spiffyhud.placeholders.marker_list.desc": "Returns every marker display name stored for the provided target element identifier.\nUse the 'separator' value to control how the names are joined.",
+  "spiffyhud.elements.player_compass.world_markers": "Show World Markers: %s",
+  "spiffyhud.elements.player_compass.world_markers.desc": "Toggles rendering of stored world markers on this compass while keeping the marker data accessible for actions.",
+  "spiffyhud.elements.player_compass.world_markers.clear": "Clear World Markers",
+  "spiffyhud.elements.player_compass.world_markers.clear.desc": "Deletes every stored world marker tied to this element identifier. This action cannot be undone.",
+  "spiffyhud.elements.player_compass.world_markers.clear.confirm": "Remove all world markers for this compass?\n\nThis §xpermanently deletes§r all markers of this compass. You can re-create markers later with actions."
 }

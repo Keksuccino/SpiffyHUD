@@ -59,6 +59,7 @@ public class CompassElementBuilder extends ElementBuilder<CompassElement, Compas
         element.cardinalOutlineEnabled = deserializeBoolean(element.cardinalOutlineEnabled, serialized.getValue("cardinal_outline"));
         element.degreeOutlineEnabled = deserializeBoolean(element.degreeOutlineEnabled, serialized.getValue("degree_outline"));
         element.deathPointerEnabled = deserializeBoolean(element.deathPointerEnabled, serialized.getValue("death_pointer_enabled"));
+        element.worldMarkersEnabled = deserializeBoolean(element.worldMarkersEnabled, serialized.getValue("world_markers_enabled"));
         element.hostileDotsEnabled = deserializeBoolean(element.hostileDotsEnabled, serialized.getValue("hostile_dots_enabled"));
         element.passiveDotsEnabled = deserializeBoolean(element.passiveDotsEnabled, serialized.getValue("passive_dots_enabled"));
         element.hostileDotsRange = deserializeInteger(element.hostileDotsRange, serialized.getValue("hostile_dots_range"));
@@ -117,6 +118,7 @@ public class CompassElementBuilder extends ElementBuilder<CompassElement, Compas
         serializeTo.putProperty("cardinal_outline", "" + element.cardinalOutlineEnabled);
         serializeTo.putProperty("degree_outline", "" + element.degreeOutlineEnabled);
         serializeTo.putProperty("death_pointer_enabled", "" + element.deathPointerEnabled);
+        serializeTo.putProperty("world_markers_enabled", Boolean.toString(element.worldMarkersEnabled));
         serializeTo.putProperty("hostile_dots_enabled", "" + element.hostileDotsEnabled);
         serializeTo.putProperty("passive_dots_enabled", "" + element.passiveDotsEnabled);
         serializeTo.putProperty("hostile_dots_range", Integer.toString(element.hostileDotsRange));

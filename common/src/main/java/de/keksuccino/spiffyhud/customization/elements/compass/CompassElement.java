@@ -81,6 +81,7 @@ public class CompassElement extends AbstractElement {
     public boolean cardinalOutlineEnabled = true;
     public boolean degreeOutlineEnabled = true;
     public boolean deathPointerEnabled = true;
+    public boolean worldMarkersEnabled = true;
     @NotNull public String deathPointerColor = DEFAULT_DEATH_POINTER_COLOR_STRING;
     public boolean hostileDotsEnabled = true;
     public boolean passiveDotsEnabled = true;
@@ -582,6 +583,10 @@ public class CompassElement extends AbstractElement {
         return MarkerStorage.removeMarker(this.getMarkerGroupKey(), markerName);
     }
 
+    public void clearMarkers() {
+        MarkerStorage.clearGroup(this.getMarkerGroupKey());
+    }
+
     public @NotNull String getMarkerGroupKey() {
         return this.getInstanceIdentifier();
     }
@@ -727,6 +732,9 @@ public class CompassElement extends AbstractElement {
     }
 
     private List<ResolvedMarker> collectMarkers(@NotNull CompassReading reading) {
+        if (!this.worldMarkersEnabled) {
+            return Collections.emptyList();
+        }
         List<MarkerData> markers = MarkerStorage.getMarkers(this.getMarkerGroupKey());
         if (markers.isEmpty()) {
             return Collections.emptyList();
