@@ -25,6 +25,9 @@ public class FlatMobRenderUtils {
     private static final Minecraft MC = Minecraft.getInstance();
     private static final float VIEWPORT_FILL_RATIO = 0.92F; // keep a little padding so tall mobs don't clip
     private static final float HALF = 0.5F;
+    // Strong front-facing lights keep GUI mobs at full brightness.
+    private static final Vector3f FULLBRIGHT_KEY_LIGHT = new Vector3f(3.0F, 3.0F, 6.0F);
+    private static final Vector3f FULLBRIGHT_FILL_LIGHT = new Vector3f(-3.0F, 3.0F, 6.0F);
     private static final Map<Mob, Mob> RENDER_CLONES = new WeakHashMap<>();
 
     private FlatMobRenderUtils() {
@@ -83,18 +86,22 @@ public class FlatMobRenderUtils {
         return true;
     }
 
-    private static void renderEntity(@NotNull GuiGraphics graphics, float centerX, float centerY, float scale, @NotNull Vector3f offset,
-                                     @NotNull Quaternionf modelRotation, @NotNull Mob mob) {
+    private static void renderEntity(@NotNull GuiGraphics graphics, float centerX, float centerY, float scale, @NotNull Vector3f offset, @NotNull Quaternionf modelRotation, @NotNull Mob mob) {
         graphics.pose().translate(centerX, centerY, 50.0);
         graphics.pose().scale(scale, scale, -scale);
         graphics.pose().translate(offset.x, offset.y, offset.z);
         graphics.pose().mulPose(modelRotation);
-        Lighting.setupForEntityInInventory();
+        setupGuiFullbrightLighting();
         var dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
         dispatcher.setRenderShadow(false);
         RenderSystem.runAsFancy(() -> dispatcher.render(mob, 0.0, 0.0, 0.0, 0.0F, 1.0F, graphics.pose(), graphics.bufferSource(), 15728880));
         dispatcher.setRenderShadow(true);
         Lighting.setupFor3DItems();
+    }
+
+    private static void setupGuiFullbrightLighting() {
+        Lighting.setupForEntityInInventory();
+        RenderSystem.setShaderLights(FULLBRIGHT_KEY_LIGHT, FULLBRIGHT_FILL_LIGHT);
     }
 
     @NotNull
