@@ -33,6 +33,8 @@ public class CompassElement extends AbstractElement {
     //TODO Machen, dass methode stattdessen volles model von vorn rendert
     //TODO Machen, dass methode automatisch die mob size/bounds checkt, um die render size anzupassen, damit alle mobs in ähnlicher größe gerendert werden (aktuell zu ungenau, Parrots viel zu klein, zum Beispiel)
 
+    private static final Minecraft MC = Minecraft.getInstance();
+
     private static final int DEFAULT_BACKGROUND_COLOR = 0xB0101010;
     private static final int DEFAULT_BAR_COLOR = 0xC0FFFFFF;
     private static final int DEFAULT_MAJOR_TICK_COLOR = 0xFFFFFFFF;
@@ -44,6 +46,7 @@ public class CompassElement extends AbstractElement {
     private static final int DEFAULT_HOSTILE_DOT_COLOR = 0xFFFF4A4A;
     private static final int DEFAULT_PASSIVE_DOT_COLOR = 0xFFFFE15A;
     private static final int MAX_MOB_DOTS_PER_TYPE = 64;
+    private static final long MOB_DOTS_REFRESH_RATE_MS = 10L;
 
     public static final String DEFAULT_BACKGROUND_COLOR_STRING = "#B0101010";
     public static final String DEFAULT_BAR_COLOR_STRING = "#C0FFFFFF";
@@ -86,12 +89,12 @@ public class CompassElement extends AbstractElement {
     public int passiveDotsRange = 200;
     public boolean hostileDotsShowHeads = false;
     public boolean passiveDotsShowHeads = false;
-
-    private final Minecraft minecraft = Minecraft.getInstance();
     private boolean hasLastDeathPointerRelative = false;
     private float lastDeathPointerRelative = 0.0F;
     @Nullable private Mob previewHostileMob;
     @Nullable private Mob previewPassiveMob;
+    @Nullable private MobDots cachedMobDots;
+    private long lastMobDotsCacheTime = -1L;
 
     public CompassElement(@NotNull ElementBuilder<?, ?> builder) {
         super(builder);
@@ -114,9 +117,15 @@ public class CompassElement extends AbstractElement {
 
         CompassReading reading = this.collectReading(partial);
         DeathPointerData deathPointer = this.collectDeathPointer();
-        MobDots mobDots = this.collectMobDots(reading);
+        MobDots mobDots = this.cachedMobDots;
+        long now = System.currentTimeMillis();
+        if ((this.cachedMobDots == null) || ((this.lastMobDotsCacheTime + MOB_DOTS_REFRESH_RATE_MS) < now)) {
+            this.lastMobDotsCacheTime = now;
+            this.cachedMobDots = this.collectMobDots(reading);
+            mobDots = this.cachedMobDots;
+        }
         ResolvedColors colors = this.resolveColors();
-        Font font = this.minecraft.font;
+        Font font = MC.font;
         CompassLayout layout = this.computeLayout(font, x, y, width, height);
 
         RenderSystem.enableBlend();
@@ -439,7 +448,7 @@ public class CompassElement extends AbstractElement {
         if (text.isEmpty() || scale <= 0.0F) {
             return;
         }
-        Font font = this.minecraft.font;
+        Font font = MC.font;
         float textWidth = font.width(text) * scale;
         float textHeight = font.lineHeight * scale;
         float drawX = centerX - (textWidth / 2.0F);
@@ -504,7 +513,7 @@ public class CompassElement extends AbstractElement {
             float simulated = (float) ((System.currentTimeMillis() % 12000L) / 12000.0D * 360.0D);
             return new CompassReading(simulated);
         }
-        Player player = this.minecraft.player;
+        Player player = MC.player;
         if (player == null) {
             float fallback = (float) ((System.currentTimeMillis() % 8000L) / 8000.0D * 360.0D);
             return new CompassReading(fallback);
@@ -531,7 +540,7 @@ public class CompassElement extends AbstractElement {
         if (this.isEditor()) {
             return new DeathPointerData(60.0F);
         }
-        Player player = this.minecraft.player;
+        Player player = MC.player;
         if (player == null) {
             return null;
         }
@@ -563,7 +572,7 @@ public class CompassElement extends AbstractElement {
         if (this.isEditor()) {
             return this.createEditorMobDots();
         }
-        Player player = this.minecraft.player;
+        Player player = MC.player;
         if (player == null) {
             return MobDots.EMPTY;
         }
@@ -647,18 +656,18 @@ public class CompassElement extends AbstractElement {
     private Mob ensurePreviewMob(boolean hostile) {
         Mob cached = hostile ? this.previewHostileMob : this.previewPassiveMob;
         if (cached != null) {
-            if (cached.isRemoved() || cached.level() != this.minecraft.level) {
+            if (cached.isRemoved() || cached.level() != MC.level) {
                 cached = null;
             }
         }
         if (cached != null) {
             return cached;
         }
-        if (this.minecraft.level == null) {
+        if (MC.level == null) {
             return null;
         }
         EntityType<? extends Mob> type = hostile ? EntityType.ZOMBIE : EntityType.COW;
-        Mob created = type.create(this.minecraft.level);
+        Mob created = type.create(MC.level);
         if (created == null) {
             return null;
         }

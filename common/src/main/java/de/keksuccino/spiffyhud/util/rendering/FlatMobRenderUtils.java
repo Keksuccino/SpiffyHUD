@@ -25,8 +25,7 @@ public class FlatMobRenderUtils {
     private static final Minecraft MC = Minecraft.getInstance();
     private static final float VIEWPORT_FILL_RATIO = 0.92F; // keep a little padding so tall mobs don't clip
     private static final float HALF = 0.5F;
-    private static final int CLONE_REFRESH_INTERVAL_TICKS = 40;
-    private static final Map<Mob, CachedMob> RENDER_CLONES = new WeakHashMap<>();
+    private static final Map<Mob, Mob> RENDER_CLONES = new WeakHashMap<>();
 
     private FlatMobRenderUtils() {
     }
@@ -118,30 +117,35 @@ public class FlatMobRenderUtils {
 
     @Nullable
     private static Mob prepareRenderMob(@Nullable Mob source) {
-        if (source == null || source.isRemoved()) {
+        if (!isRenderableSource(source)) {
+            evict(source);
             return null;
         }
         Level level = source.level();
         if (level == null) {
+            evict(source);
             return null;
         }
-        CachedMob cached = RENDER_CLONES.get(source);
-        if (cached == null || cached.clone.isRemoved() || cached.clone.level() != level) {
-            Mob created = createClone(source);
-            if (created == null) {
+        Mob clone = RENDER_CLONES.get(source);
+        if (clone == null || clone.isRemoved() || clone.level() != level) {
+            clone = createClone(source);
+            if (clone == null) {
+                evict(source);
                 return null;
             }
-            cached = new CachedMob(created, source.tickCount);
-            RENDER_CLONES.put(source, cached);
-        } else if (shouldRefresh(source, cached)) {
-            copyMobData(source, cached.clone);
-            cached.lastSyncedTick = source.tickCount;
+            RENDER_CLONES.put(source, clone);
         }
-        return cached.clone;
+        return clone;
     }
 
-    private static boolean shouldRefresh(@NotNull Mob source, @NotNull CachedMob cached) {
-        return Math.abs(source.tickCount - cached.lastSyncedTick) >= CLONE_REFRESH_INTERVAL_TICKS;
+    private static boolean isRenderableSource(@Nullable Mob source) {
+        return source != null && source.isAlive() && !source.isRemoved();
+    }
+
+    private static void evict(@Nullable Mob source) {
+        if (source != null) {
+            RENDER_CLONES.remove(source);
+        }
     }
 
     @Nullable
@@ -183,16 +187,6 @@ public class FlatMobRenderUtils {
         private MobBounds(float height, float horizontal) {
             this.height = height;
             this.horizontal = horizontal;
-        }
-    }
-
-    private static final class CachedMob {
-        private final @NotNull Mob clone;
-        private int lastSyncedTick;
-
-        private CachedMob(@NotNull Mob clone, int lastSyncedTick) {
-            this.clone = clone;
-            this.lastSyncedTick = lastSyncedTick;
         }
     }
 
