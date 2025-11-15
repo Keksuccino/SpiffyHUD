@@ -4,11 +4,14 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import de.keksuccino.fancymenu.customization.element.AbstractElement;
 import de.keksuccino.fancymenu.customization.element.ElementBuilder;
 import de.keksuccino.fancymenu.customization.placeholder.PlaceholderParser;
+import de.keksuccino.fancymenu.util.SerializationUtils;
 import de.keksuccino.fancymenu.util.rendering.AspectRatio;
 import de.keksuccino.fancymenu.util.rendering.DrawableColor;
 import de.keksuccino.fancymenu.util.rendering.RenderingUtils;
 import de.keksuccino.fancymenu.util.resource.ResourceSupplier;
 import de.keksuccino.fancymenu.util.resource.resources.texture.ITexture;
+import de.keksuccino.spiffyhud.customization.marker.MarkerData;
+import de.keksuccino.spiffyhud.customization.marker.MarkerStorage;
 import de.keksuccino.spiffyhud.util.death.DeathPointStorage;
 import de.keksuccino.spiffyhud.util.rendering.FlatMobRenderUtils;
 import net.minecraft.client.Minecraft;
@@ -27,6 +30,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class CompassElement extends AbstractElement {
 
@@ -124,6 +128,7 @@ public class CompassElement extends AbstractElement {
             this.cachedMobDots = this.collectMobDots(reading);
             mobDots = this.cachedMobDots;
         }
+        List<ResolvedMarker> resolvedMarkers = this.collectMarkers(reading);
         ResolvedColors colors = this.resolveColors();
         Font font = MC.font;
         CompassLayout layout = this.computeLayout(font, x, y, width, height);
@@ -149,11 +154,15 @@ public class CompassElement extends AbstractElement {
         if (mobDots.hasAny()) {
             this.drawMobDots(graphics, layout, colors, mobDots);
         }
+        if (!resolvedMarkers.isEmpty()) {
+            this.drawMarkerDots(graphics, layout, resolvedMarkers);
+        }
 
         wrapDepthTestLocked(false, () -> {
             if (this.needleEnabled) {
                 this.drawNeedle(graphics, layout, colors);
             }
+            this.drawMarkerNeedles(graphics, layout, resolvedMarkers);
             this.drawDeathNeedle(graphics, layout, reading, deathPointer, colors);
             RenderingUtils.resetShaderColor(graphics);
         });
@@ -284,6 +293,49 @@ public class CompassElement extends AbstractElement {
             return;
         }
         graphics.fill(bounds.left(), bounds.top(), bounds.left() + bounds.size(), bounds.top() + bounds.size(), color);
+    }
+
+    private void drawMarkerDots(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull List<ResolvedMarker> markers) {
+        float dotDiameter = Mth.clamp(layout.height() * 0.12F, 2.0F, 18.0F);
+        float radius = dotDiameter / 2.0F;
+        float centerY = layout.y() + layout.height() / 2.0F;
+        for (ResolvedMarker marker : markers) {
+            if (marker.showAsNeedle()) {
+                continue;
+            }
+            this.drawMarkerDot(graphics, layout, marker, centerY, radius);
+        }
+    }
+
+    private void drawMarkerDot(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull ResolvedMarker marker, float centerY, float radius) {
+        float centerX = this.computeScreenX(layout, marker.relativeDegrees());
+        int size = Math.max(2, Mth.ceil(radius * 2.0F));
+        DotBounds bounds = this.computeDotBounds(layout, centerX, centerY, radius, size);
+        if ((marker.texture() != null) && this.drawDotTexture(graphics, bounds, marker.texture())) {
+            return;
+        }
+        graphics.fill(bounds.left(), bounds.top(), bounds.left() + bounds.size(), bounds.top() + bounds.size(), marker.color());
+    }
+
+    private void drawMarkerNeedles(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull List<ResolvedMarker> markers) {
+        for (ResolvedMarker marker : markers) {
+            if (!marker.showAsNeedle()) {
+                continue;
+            }
+            this.drawMarkerNeedle(graphics, layout, marker);
+        }
+    }
+
+    private void drawMarkerNeedle(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull ResolvedMarker marker) {
+        float centerX = this.computeScreenX(layout, marker.relativeDegrees());
+        if ((marker.texture() != null) && this.drawNeedleTexture(graphics, layout, centerX, marker.texture())) {
+            return;
+        }
+        int needleWidth = Math.max(1, Mth.floor(layout.width() * 0.008F));
+        int half = Math.max(0, needleWidth / 2);
+        int xi = Mth.clamp(Mth.floor(centerX) - half, layout.x(), layout.x() + layout.width() - needleWidth);
+        RenderSystem.enableBlend();
+        graphics.fill(xi, layout.y(), xi + needleWidth, layout.y() + layout.height(), marker.color());
     }
 
     private DotBounds computeDotBounds(@NotNull CompassLayout layout, float centerX, float centerY, float radius, int size) {
@@ -508,6 +560,26 @@ public class CompassElement extends AbstractElement {
         return fallback;
     }
 
+    public @NotNull List<MarkerData> getMarkers() {
+        return MarkerStorage.getMarkers(this.getMarkerGroupKey());
+    }
+
+    public boolean addMarker(@NotNull MarkerData marker) {
+        return MarkerStorage.addMarker(this.getMarkerGroupKey(), marker);
+    }
+
+    public boolean editMarker(@NotNull String markerName, @NotNull Consumer<MarkerData> editor) {
+        return MarkerStorage.editMarker(this.getMarkerGroupKey(), markerName, editor);
+    }
+
+    public boolean removeMarker(@NotNull String markerName) {
+        return MarkerStorage.removeMarker(this.getMarkerGroupKey(), markerName);
+    }
+
+    public @NotNull String getMarkerGroupKey() {
+        return this.getInstanceIdentifier();
+    }
+
     private CompassReading collectReading(float partialTick) {
         if (this.isEditor()) {
             float simulated = (float) ((System.currentTimeMillis() % 12000L) / 12000.0D * 360.0D);
@@ -648,6 +720,26 @@ public class CompassElement extends AbstractElement {
         return new MobDots(hostileOut, passiveOut);
     }
 
+    private List<ResolvedMarker> collectMarkers(@NotNull CompassReading reading) {
+        List<MarkerData> markers = MarkerStorage.getMarkers(this.getMarkerGroupKey());
+        if (markers.isEmpty()) {
+            return Collections.emptyList();
+        }
+        Player player = MC.player;
+        if (player == null) {
+            return Collections.emptyList();
+        }
+        List<ResolvedMarker> resolved = new ArrayList<>(markers.size());
+        float heading = reading.headingDegrees();
+        for (MarkerData marker : markers) {
+            float relative = this.computeMarkerRelativeDegrees(player, marker, heading);
+            ResourceSupplier<ITexture> texture = SerializationUtils.deserializeImageResourceSupplier(marker.getTexture());
+            int color = this.applyOpacity(this.parseColor(marker.getColor(), DEFAULT_NEEDLE_COLOR));
+            resolved.add(new ResolvedMarker(marker.getName(), relative, marker.isShowAsNeedle(), color, texture));
+        }
+        return resolved;
+    }
+
     private boolean shouldIncludeMob(@Nullable Mob mob) {
         return mob != null && mob.isAlive() && !mob.isRemoved() && !mob.isSpectator();
     }
@@ -700,6 +792,17 @@ public class CompassElement extends AbstractElement {
         float relative = this.relativeToHeading(absolute, reading.headingDegrees());
         float ratio = (float) Mth.clamp(distance / maxRange, 0.0D, 1.0D);
         dots.add(new MobDotData(relative, ratio, mob));
+    }
+
+    private float computeMarkerRelativeDegrees(@NotNull Player player, @NotNull MarkerData marker, float headingDegrees) {
+        double dx = marker.getMarkerPosX() - player.getX();
+        double dz = marker.getMarkerPosZ() - player.getZ();
+        if (Math.abs(dx) <= 1.0E-4D && Math.abs(dz) <= 1.0E-4D) {
+            return 0.0F;
+        }
+        float signed = (float) (Math.atan2(dx, -dz) * (180.0D / Math.PI));
+        float absolute = normalizeUnsignedDegrees(signed);
+        return this.relativeToHeading(absolute, headingDegrees);
     }
 
     private static float toSigned(float headingDegrees) {
@@ -768,6 +871,10 @@ public class CompassElement extends AbstractElement {
     }
 
     private record MobDotData(float relativeDegrees, float distanceRatio, @Nullable Mob mob) {
+    }
+
+    private record ResolvedMarker(@NotNull String name, float relativeDegrees, boolean showAsNeedle, int color,
+                                  @Nullable ResourceSupplier<ITexture> texture) {
     }
 
     private record DotBounds(int left, int top, int size) {

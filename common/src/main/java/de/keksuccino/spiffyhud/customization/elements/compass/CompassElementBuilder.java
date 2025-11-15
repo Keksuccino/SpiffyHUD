@@ -8,11 +8,14 @@ import de.keksuccino.fancymenu.util.LocalizationUtils;
 import de.keksuccino.fancymenu.util.resource.ResourceSupplier;
 import de.keksuccino.fancymenu.util.resource.resources.texture.ITexture;
 import de.keksuccino.spiffyhud.customization.SpiffyOverlayScreen;
+import de.keksuccino.spiffyhud.customization.marker.MarkerData;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class CompassElementBuilder extends ElementBuilder<CompassElement, CompassEditorElement> {
 
@@ -152,5 +155,25 @@ public class CompassElementBuilder extends ElementBuilder<CompassElement, Compas
     @Override
     public boolean shouldShowUpInEditorElementMenu(@NotNull LayoutEditorScreen editor) {
         return (editor.layoutTargetScreen instanceof SpiffyOverlayScreen);
+    }
+
+    public @NotNull List<MarkerData> getMarkers(@NotNull CompassElement element) {
+        return element.getMarkers();
+    }
+
+    public boolean addMarker(@NotNull CompassElement element, @NotNull MarkerData marker) {
+        return element.addMarker(marker);
+    }
+
+    public boolean editMarker(@NotNull CompassElement element, @NotNull String markerName, @NotNull Consumer<MarkerData> editor) {
+        return element.editMarker(markerName, editor);
+    }
+
+    public boolean removeMarker(@NotNull CompassElement element, @NotNull String markerName) {
+        return element.removeMarker(markerName);
+    }
+
+    public @NotNull String getMarkerGroupKey(@NotNull CompassElement element) {
+        return element.getMarkerGroupKey();
     }
 }
