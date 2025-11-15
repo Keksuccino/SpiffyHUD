@@ -213,6 +213,7 @@ public final class MarkerStorage {
                         if (marker == null || !marker.hasValidName()) {
                             continue;
                         }
+                        marker.applyLegacyTextureFallback();
                         cleaned.add(marker);
                     }
                 }

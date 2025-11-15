@@ -55,4 +55,5 @@ public class MarkerRemovalScreen extends CellScreen {
     public boolean allowDone() {
         return this.config.isValid();
     }
+
 }

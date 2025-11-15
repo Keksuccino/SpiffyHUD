@@ -1,8 +1,10 @@
 package de.keksuccino.spiffyhud.customization.marker;
 
+import com.google.gson.annotations.SerializedName;
+import de.keksuccino.fancymenu.customization.placeholder.PlaceholderParser;
+import de.keksuccino.fancymenu.util.SerializationUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import java.util.Objects;
 
 /**
@@ -15,19 +17,27 @@ public final class MarkerData {
     @Nullable
     private String color;
     @Nullable
-    private String texture;
+    private String dotTexture;
+    @Nullable
+    private String needleTexture;
+    @SerializedName("texture")
+    @Nullable
+    private String legacyTexture;
     private boolean showAsNeedle;
-    private double markerPosX;
-    private double markerPosZ;
+    @NotNull
+    private String markerPosX = "0";
+    @NotNull
+    private String markerPosZ = "0";
 
     public MarkerData() {
     }
 
-    public MarkerData(@NotNull String name, @Nullable String color, @Nullable String texture,
-                      boolean showAsNeedle, double markerPosX, double markerPosZ) {
+    public MarkerData(@NotNull String name, @Nullable String color, @Nullable String dotTexture, @Nullable String needleTexture, boolean showAsNeedle, @NotNull String markerPosX, @NotNull String markerPosZ) {
         this.name = normalizeName(name);
         this.color = normalizeString(color);
-        this.texture = normalizeString(texture);
+        this.dotTexture = normalizeString(dotTexture);
+        this.needleTexture = normalizeString(needleTexture);
+        this.legacyTexture = null;
         this.showAsNeedle = showAsNeedle;
         this.markerPosX = markerPosX;
         this.markerPosZ = markerPosZ;
@@ -36,7 +46,9 @@ public final class MarkerData {
     public MarkerData(@NotNull MarkerData source) {
         this.name = source.name;
         this.color = source.color;
-        this.texture = source.texture;
+        this.dotTexture = source.dotTexture;
+        this.needleTexture = source.needleTexture;
+        this.legacyTexture = null;
         this.showAsNeedle = source.showAsNeedle;
         this.markerPosX = source.markerPosX;
         this.markerPosZ = source.markerPosZ;
@@ -51,6 +63,9 @@ public final class MarkerData {
         this.name = normalizeName(name);
     }
 
+    /**
+     * The default fill color for the dot/needle. Can contain raw placeholders.
+     */
     @Nullable
     public String getColor() {
         return this.color;
@@ -60,13 +75,28 @@ public final class MarkerData {
         this.color = normalizeString(color);
     }
 
+    /**
+     * The resource source for the dot texture. Can contain raw placeholders.
+     */
     @Nullable
-    public String getTexture() {
-        return this.texture;
+    public String getDotTexture() {
+        return this.dotTexture;
     }
 
-    public void setTexture(@Nullable String texture) {
-        this.texture = normalizeString(texture);
+    public void setDotTexture(@Nullable String texture) {
+        this.dotTexture = normalizeString(texture);
+    }
+
+    /**
+     * The resource source for the needle texture. Can contain raw placeholders.
+     */
+    @Nullable
+    public String getNeedleTexture() {
+        return this.needleTexture;
+    }
+
+    public void setNeedleTexture(@Nullable String texture) {
+        this.needleTexture = normalizeString(texture);
     }
 
     public boolean isShowAsNeedle() {
@@ -77,19 +107,41 @@ public final class MarkerData {
         this.showAsNeedle = showAsNeedle;
     }
 
-    public double getMarkerPosX() {
-        return this.markerPosX;
+    /**
+     * Replaces placeholders in the position and parses it to a number, if possible. Returns 0 if parsing failed.
+     */
+    public double getResolvedMarkerPosX() {
+        return SerializationUtils.deserializeNumber(Double.class, 0D, PlaceholderParser.replacePlaceholders(this.markerPosX));
     }
 
-    public void setMarkerPosX(double markerPosX) {
+    /**
+     * This returns the raw String value that can contain raw placeholders.
+     */
+    @NotNull
+    public String getMarkerPosX() {
+        return markerPosX;
+    }
+
+    public void setMarkerPosX(@NotNull String markerPosX) {
         this.markerPosX = markerPosX;
     }
 
-    public double getMarkerPosZ() {
-        return this.markerPosZ;
+    /**
+     * Replaces placeholders in the position and parses it to a number, if possible. Returns 0 if parsing failed.
+     */
+    public double getResolvedMarkerPosZ() {
+        return SerializationUtils.deserializeNumber(Double.class, 0D, PlaceholderParser.replacePlaceholders(this.markerPosZ));
     }
 
-    public void setMarkerPosZ(double markerPosZ) {
+    /**
+     * This returns the raw String value that can contain raw placeholders.
+     */
+    @NotNull
+    public String getMarkerPosZ() {
+        return markerPosZ;
+    }
+
+    public void setMarkerPosZ(@NotNull String markerPosZ) {
         this.markerPosZ = markerPosZ;
     }
 
@@ -98,7 +150,8 @@ public final class MarkerData {
     }
 
     public boolean hasTexture() {
-        return this.texture != null && !this.texture.isBlank();
+        return (this.dotTexture != null && !this.dotTexture.isBlank())
+                || (this.needleTexture != null && !this.needleTexture.isBlank());
     }
 
     @NotNull
@@ -109,16 +162,31 @@ public final class MarkerData {
     public void copyFrom(@NotNull MarkerData source) {
         this.name = source.name;
         this.color = source.color;
-        this.texture = source.texture;
+        this.dotTexture = source.dotTexture;
+        this.needleTexture = source.needleTexture;
+        this.legacyTexture = null;
         this.showAsNeedle = source.showAsNeedle;
         this.markerPosX = source.markerPosX;
         this.markerPosZ = source.markerPosZ;
     }
 
+    void applyLegacyTextureFallback() {
+        String normalized = normalizeString(this.legacyTexture);
+        if (normalized != null) {
+            if (this.dotTexture == null) {
+                this.dotTexture = normalized;
+            }
+            if (this.needleTexture == null) {
+                this.needleTexture = normalized;
+            }
+        }
+        this.legacyTexture = null;
+    }
+
     @NotNull
     private static String normalizeName(@NotNull String name) {
         Objects.requireNonNull(name, "name");
-        return name.trim();
+        return PlaceholderParser.replacePlaceholders(name.trim());
     }
 
     @Nullable
@@ -129,4 +197,5 @@ public final class MarkerData {
         String trimmed = value.trim();
         return trimmed.isEmpty() ? null : trimmed;
     }
+
 }

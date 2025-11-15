@@ -35,25 +35,20 @@ public class EditMarkerAction extends Action {
         }
         String lookupName = config.getLookupName();
         if (!config.hasValidTarget() || lookupName.isBlank() || !config.hasDisplayName()) {
-            LOGGER.warn("[SPIFFYHUD] EditMarkerAction is missing required data.");
+            LOGGER.error("[SPIFFYHUD] EditMarkerAction is missing required data.");
             return;
         }
-        if (!MathUtils.isDouble(config.positionX) || !MathUtils.isDouble(config.positionZ)) {
-            LOGGER.warn("[SPIFFYHUD] EditMarkerAction requires numeric coordinates but received '{}', '{}'.", config.positionX, config.positionZ);
-            return;
-        }
-        double parsedX = Double.parseDouble(config.positionX.trim());
-        double parsedZ = Double.parseDouble(config.positionZ.trim());
         boolean success = MarkerStorage.editMarker(config.targetElementIdentifier, lookupName, marker -> {
             marker.setName(config.displayName);
             marker.setColor(config.colorHex);
-            marker.setTexture(config.texture);
+            marker.setDotTexture(config.dotTexture);
+            marker.setNeedleTexture(config.needleTexture);
             marker.setShowAsNeedle(config.showAsNeedle);
-            marker.setMarkerPosX(parsedX);
-            marker.setMarkerPosZ(parsedZ);
+            marker.setMarkerPosX(config.positionX);
+            marker.setMarkerPosZ(config.positionZ);
         });
         if (!success) {
-            LOGGER.warn("[SPIFFYHUD] Failed to edit marker '{}' in group '{}'.", lookupName, config.targetElementIdentifier);
+            LOGGER.error("[SPIFFYHUD] Failed to edit marker '{}' in group '{}'.", lookupName, config.targetElementIdentifier);
         }
     }
 
@@ -96,4 +91,5 @@ public class EditMarkerAction extends Action {
         );
         Minecraft.getInstance().setScreen(screen);
     }
+
 }

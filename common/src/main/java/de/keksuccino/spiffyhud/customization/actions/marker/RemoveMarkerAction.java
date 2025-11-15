@@ -33,12 +33,12 @@ public class RemoveMarkerAction extends Action {
             return;
         }
         if (!config.isValid()) {
-            LOGGER.warn("[SPIFFYHUD] RemoveMarkerAction is missing required data.");
+            LOGGER.error("[SPIFFYHUD] RemoveMarkerAction is missing required data.");
             return;
         }
         boolean success = MarkerStorage.removeMarker(config.targetElementIdentifier, config.markerName);
         if (!success) {
-            LOGGER.warn("[SPIFFYHUD] Failed to remove marker '{}' from group '{}'.", config.markerName, config.targetElementIdentifier);
+            LOGGER.error("[SPIFFYHUD] Failed to remove marker '{}' from group '{}'.", config.markerName, config.targetElementIdentifier);
         }
     }
 
@@ -80,4 +80,5 @@ public class RemoveMarkerAction extends Action {
         );
         Minecraft.getInstance().setScreen(screen);
     }
+
 }

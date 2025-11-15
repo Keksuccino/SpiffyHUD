@@ -1,5 +1,6 @@
 package de.keksuccino.spiffyhud.customization.actions.marker;
 
+import de.keksuccino.fancymenu.customization.placeholder.PlaceholderParser;
 import de.keksuccino.fancymenu.util.LocalizationUtils;
 import de.keksuccino.fancymenu.util.cycle.CommonCycles;
 import de.keksuccino.fancymenu.util.rendering.ui.screen.CellScreen;
@@ -22,7 +23,8 @@ public class MarkerEditorScreen extends CellScreen {
     private final Consumer<String> callback;
     private final boolean includeLookupField;
 
-    private TextInputCell textureCell;
+    private TextInputCell dotTextureCell;
+    private TextInputCell needleTextureCell;
 
     public MarkerEditorScreen(@NotNull Component title, @NotNull MarkerActionConfig config, boolean includeLookupField, @NotNull Consumer<String> callback) {
         super(title);
@@ -38,7 +40,7 @@ public class MarkerEditorScreen extends CellScreen {
 
         // Target element identifier (group)
         this.addLabelCell(Component.translatable("spiffyhud.actions.marker.target_element"));
-        TextInputCell targetElementCell = this.addTextInputCell(null, true, true)
+        TextInputCell targetElementCell = this.addTextInputCell(null, false, true)
                 .setEditListener(s -> this.config.targetElementIdentifier = s.trim())
                 .setText(this.config.targetElementIdentifier);
         targetElementCell.editBox.setTooltip(() -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.actions.marker.target_element.desc")));
@@ -47,7 +49,7 @@ public class MarkerEditorScreen extends CellScreen {
 
         if (this.includeLookupField) {
             this.addLabelCell(Component.translatable("spiffyhud.actions.marker.lookup_name"));
-            TextInputCell lookupCell = this.addTextInputCell(null, true, true)
+            TextInputCell lookupCell = this.addTextInputCell(null, false, true)
                     .setEditListener(s -> this.config.lookupMarkerName = s.trim())
                     .setText(this.config.getLookupName());
             lookupCell.editBox.setTooltip(() -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.actions.marker.lookup_name.desc")));
@@ -55,7 +57,7 @@ public class MarkerEditorScreen extends CellScreen {
         }
 
         this.addLabelCell(Component.translatable("spiffyhud.actions.marker.display_name"));
-        TextInputCell displayNameCell = this.addTextInputCell(null, true, true)
+        TextInputCell displayNameCell = this.addTextInputCell(null, false, true)
                 .setEditListener(s -> this.config.displayName = s.trim())
                 .setText(this.config.displayName);
         displayNameCell.editBox.setTooltip(() -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.actions.marker.display_name.desc")));
@@ -70,26 +72,8 @@ public class MarkerEditorScreen extends CellScreen {
 
         this.addCellGroupEndSpacerCell();
 
-        this.addLabelCell(Component.translatable("spiffyhud.actions.marker.texture"));
-        this.textureCell = this.addTextInputCell(null, true, true)
-                .setEditListener(s -> this.config.texture = s.trim())
-                .setText(this.config.texture);
-        if (this.textureCell != null) {
-            this.textureCell.editBox.setTooltip(() -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.actions.marker.texture.desc")));
-        }
-        ExtendedButton pickButton = new ExtendedButton(0, 0, 20, 20, Component.translatable("spiffyhud.actions.marker.texture.pick"), button -> this.openTexturePicker());
-        pickButton.setTooltip(Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.actions.marker.texture.pick.desc")));
-        this.addWidgetCell(pickButton, true);
-        ExtendedButton clearButton = new ExtendedButton(0, 0, 20, 20, Component.translatable("spiffyhud.actions.marker.texture.clear"), button -> {
-            this.config.texture = "";
-            if (this.textureCell != null) {
-                this.textureCell.setText("");
-            }
-        });
-        clearButton.setTooltip(Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.actions.marker.texture.clear.desc")));
-        this.addWidgetCell(clearButton, true);
-
-        this.addCellGroupEndSpacerCell();
+        this.addTextureRow(TextureField.DOT);
+        this.addTextureRow(TextureField.NEEDLE);
 
         this.addLabelCell(Component.translatable("spiffyhud.actions.marker.show_as_needle"));
         CycleButton<CommonCycles.CycleEnabledDisabled> showNeedleButton = new CycleButton<>(0, 0, 80, 20,
@@ -124,6 +108,7 @@ public class MarkerEditorScreen extends CellScreen {
 
     @Override
     protected void onDone() {
+        this.config.displayName = PlaceholderParser.replacePlaceholders(this.config.displayName);
         this.config.normalize();
         this.callback.accept(this.config.serialize());
     }
@@ -139,18 +124,73 @@ public class MarkerEditorScreen extends CellScreen {
         return true;
     }
 
-    private void openTexturePicker() {
-        ResourceChooserScreen<ITexture, ImageFileType> chooser = ResourceChooserScreen.image(null, source -> {
-            if (source != null) {
-                this.config.texture = source;
-                if (this.textureCell != null) {
-                    this.textureCell.setText(source);
+    private void addTextureRow(@NotNull TextureField field) {
+        boolean needle = field == TextureField.NEEDLE;
+        String baseKey = needle ? "spiffyhud.actions.marker.needle_texture" : "spiffyhud.actions.marker.dot_texture";
+        this.addLabelCell(Component.translatable(baseKey));
+        TextInputCell cell = this.addTextInputCell(null, true, true);
+        if (needle) {
+            this.needleTextureCell = cell;
+            cell.setEditListener(s -> this.config.needleTexture = s.trim());
+            cell.setText(this.config.needleTexture == null ? "" : this.config.needleTexture);
+        } else {
+            this.dotTextureCell = cell;
+            cell.setEditListener(s -> this.config.dotTexture = s.trim());
+            cell.setText(this.config.dotTexture == null ? "" : this.config.dotTexture);
+        }
+        cell.editBox.setTooltip(() -> Tooltip.of(LocalizationUtils.splitLocalizedLines(baseKey + ".desc")));
+
+        ExtendedButton pickButton = new ExtendedButton(0, 0, 20, 20, Component.translatable(baseKey + ".pick"), button -> this.openTexturePicker(field));
+        pickButton.setTooltip(Tooltip.of(LocalizationUtils.splitLocalizedLines(baseKey + ".pick.desc")));
+        this.addWidgetCell(pickButton, true);
+
+        ExtendedButton clearButton = new ExtendedButton(0, 0, 20, 20, Component.translatable(baseKey + ".clear"), button -> this.clearTexture(field));
+        clearButton.setTooltip(Tooltip.of(LocalizationUtils.splitLocalizedLines(baseKey + ".clear.desc")));
+        this.addWidgetCell(clearButton, true);
+
+        this.addCellGroupEndSpacerCell();
+    }
+
+    private void clearTexture(@NotNull TextureField field) {
+        if (field == TextureField.NEEDLE) {
+            this.config.needleTexture = "";
+            if (this.needleTextureCell != null) {
+                this.needleTextureCell.setText("");
+            }
+        } else {
+            this.config.dotTexture = "";
+            if (this.dotTextureCell != null) {
+                this.dotTextureCell.setText("");
+            }
+        }
+    }
+
+    private void openTexturePicker(@NotNull TextureField field) {
+        String stored = (field == TextureField.NEEDLE) ? this.config.needleTexture : this.config.dotTexture;
+        String source = stored == null ? "" : stored;
+        ResourceChooserScreen<ITexture, ImageFileType> chooser = ResourceChooserScreen.image(null, selection -> {
+            if (selection != null) {
+                if (field == TextureField.NEEDLE) {
+                    this.config.needleTexture = selection;
+                    if (this.needleTextureCell != null) {
+                        this.needleTextureCell.setText(selection);
+                    }
+                } else {
+                    this.config.dotTexture = selection;
+                    if (this.dotTextureCell != null) {
+                        this.dotTextureCell.setText(selection);
+                    }
                 }
             }
             Minecraft.getInstance().setScreen(this);
         });
-        chooser.setSource(this.config.texture.isBlank() ? null : this.config.texture, false);
+        chooser.setSource(source.isBlank() ? null : source, false);
         Minecraft.getInstance().setScreen(chooser);
+    }
+
+    private enum TextureField {
+        DOT,
+        NEEDLE
     }
 
 }

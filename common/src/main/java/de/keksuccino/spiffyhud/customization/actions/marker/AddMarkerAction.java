@@ -37,13 +37,7 @@ public class AddMarkerAction extends Action {
             LOGGER.error("[SPIFFYHUD] AddMarkerAction requires a target element identifier and display name.");
             return;
         }
-        if (!MathUtils.isDouble(config.positionX) || !MathUtils.isDouble(config.positionZ)) {
-            LOGGER.error("[SPIFFYHUD] AddMarkerAction requires numeric coordinates but received '{}', '{}'.", config.positionX, config.positionZ);
-            return;
-        }
-        double parsedX = Double.parseDouble(config.positionX.trim());
-        double parsedZ = Double.parseDouble(config.positionZ.trim());
-        boolean success = MarkerStorage.addMarker(config.targetElementIdentifier, config.toMarkerData(parsedX, parsedZ));
+        boolean success = MarkerStorage.addMarker(config.targetElementIdentifier, config.toMarkerData());
         if (!success) {
             LOGGER.error("[SPIFFYHUD] Failed to add marker '{}' to group '{}'.", config.displayName, config.targetElementIdentifier);
         }

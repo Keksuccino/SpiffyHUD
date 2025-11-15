@@ -3,7 +3,6 @@ package de.keksuccino.spiffyhud.customization.actions.marker;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
-import de.keksuccino.fancymenu.customization.placeholder.PlaceholderParser;
 import de.keksuccino.spiffyhud.customization.marker.MarkerData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,6 +18,9 @@ public final class MarkerActionConfig {
     public String lookupMarkerName = "";
     public String displayName = "";
     public String colorHex = "";
+    public String dotTexture = "";
+    public String needleTexture = "";
+    @Deprecated
     public String texture = "";
     public boolean showAsNeedle = false;
     public String positionX = "0";
@@ -36,6 +38,8 @@ public final class MarkerActionConfig {
         copy.lookupMarkerName = this.lookupMarkerName;
         copy.displayName = this.displayName;
         copy.colorHex = this.colorHex;
+        copy.dotTexture = this.dotTexture;
+        copy.needleTexture = this.needleTexture;
         copy.texture = this.texture;
         copy.showAsNeedle = this.showAsNeedle;
         copy.positionX = this.positionX;
@@ -66,9 +70,12 @@ public final class MarkerActionConfig {
         this.lookupMarkerName = normalize(this.lookupMarkerName);
         this.displayName = normalize(this.displayName);
         this.colorHex = normalize(this.colorHex);
+        this.dotTexture = normalize(this.dotTexture);
+        this.needleTexture = normalize(this.needleTexture);
         this.texture = normalize(this.texture);
         this.positionX = normalize(this.positionX);
         this.positionZ = normalize(this.positionZ);
+        this.applyLegacyTextureFallback();
     }
 
     public @NotNull String serialize() {
@@ -87,14 +94,15 @@ public final class MarkerActionConfig {
         return this.lookupMarkerName.isBlank() ? this.displayName : this.lookupMarkerName;
     }
 
-    public @NotNull MarkerData toMarkerData(double parsedX, double parsedZ) {
+    public @NotNull MarkerData toMarkerData() {
         return new MarkerData(
                 this.displayName,
                 blankToNull(this.colorHex),
-                blankToNull(this.texture),
+                blankToNull(this.dotTexture),
+                blankToNull(this.needleTexture),
                 this.showAsNeedle,
-                parsedX,
-                parsedZ
+                this.positionX,
+                this.positionZ
         );
     }
 
@@ -103,8 +111,19 @@ public final class MarkerActionConfig {
             return "";
         }
         String trimmed = value.trim();
-        // Manually replace placeholders here, because the action stringifies placeholders, so we need for after parsing the value
-        return PlaceholderParser.replacePlaceholders(trimmed.replace('\r', ' ').replace('\n', ' '));
+        return trimmed.replace('\r', ' ').replace('\n', ' ');
+    }
+
+    private void applyLegacyTextureFallback() {
+        if (this.texture != null && !this.texture.isBlank()) {
+            if (this.dotTexture.isBlank()) {
+                this.dotTexture = this.texture;
+            }
+            if (this.needleTexture.isBlank()) {
+                this.needleTexture = this.texture;
+            }
+        }
+        this.texture = null;
     }
 
     private static String blankToNull(@Nullable String value) {

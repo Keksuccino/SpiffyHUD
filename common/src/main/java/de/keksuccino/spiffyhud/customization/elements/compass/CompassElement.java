@@ -309,7 +309,11 @@ public class CompassElement extends AbstractElement {
         float centerX = this.computeScreenX(layout, marker.relativeDegrees());
         int size = Math.max(2, Mth.ceil(radius * 2.0F));
         DotBounds bounds = this.computeDotBounds(layout, centerX, centerY, radius, size);
-        if ((marker.texture() != null) && this.drawDotTexture(graphics, bounds, marker.texture())) {
+        ResourceSupplier<ITexture> texture = marker.dotTexture();
+        if (texture == null) {
+            texture = marker.needleTexture();
+        }
+        if (texture != null && this.drawDotTexture(graphics, bounds, texture)) {
             return;
         }
         graphics.fill(bounds.left(), bounds.top(), bounds.left() + bounds.size(), bounds.top() + bounds.size(), marker.color());
@@ -326,7 +330,11 @@ public class CompassElement extends AbstractElement {
 
     private void drawMarkerNeedle(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull ResolvedMarker marker) {
         float centerX = this.computeScreenX(layout, marker.relativeDegrees());
-        if ((marker.texture() != null) && this.drawNeedleTexture(graphics, layout, centerX, marker.texture())) {
+        ResourceSupplier<ITexture> texture = marker.needleTexture();
+        if (texture == null) {
+            texture = marker.dotTexture();
+        }
+        if (texture != null && this.drawNeedleTexture(graphics, layout, centerX, texture)) {
             return;
         }
         int needleWidth = Math.max(1, Mth.floor(layout.width() * 0.008F));
@@ -731,9 +739,10 @@ public class CompassElement extends AbstractElement {
         float heading = reading.headingDegrees();
         for (MarkerData marker : markers) {
             float relative = this.computeMarkerRelativeDegrees(player, marker, heading);
-            ResourceSupplier<ITexture> texture = SerializationUtils.deserializeImageResourceSupplier(marker.getTexture());
+            ResourceSupplier<ITexture> dotTexture = SerializationUtils.deserializeImageResourceSupplier(marker.getDotTexture());
+            ResourceSupplier<ITexture> needleTexture = SerializationUtils.deserializeImageResourceSupplier(marker.getNeedleTexture());
             int color = this.applyOpacity(this.parseColor(marker.getColor(), DEFAULT_NEEDLE_COLOR));
-            resolved.add(new ResolvedMarker(marker.getName(), relative, marker.isShowAsNeedle(), color, texture));
+            resolved.add(new ResolvedMarker(marker.getName(), relative, marker.isShowAsNeedle(), color, dotTexture, needleTexture));
         }
         return resolved;
     }
@@ -793,8 +802,8 @@ public class CompassElement extends AbstractElement {
     }
 
     private float computeMarkerRelativeDegrees(@NotNull Player player, @NotNull MarkerData marker, float headingDegrees) {
-        double dx = marker.getMarkerPosX() - player.getX();
-        double dz = marker.getMarkerPosZ() - player.getZ();
+        double dx = marker.getResolvedMarkerPosX() - player.getX();
+        double dz = marker.getResolvedMarkerPosZ() - player.getZ();
         if (Math.abs(dx) <= 1.0E-4D && Math.abs(dz) <= 1.0E-4D) {
             return 0.0F;
         }
@@ -872,7 +881,8 @@ public class CompassElement extends AbstractElement {
     }
 
     private record ResolvedMarker(@NotNull String name, float relativeDegrees, boolean showAsNeedle, int color,
-                                  @Nullable ResourceSupplier<ITexture> texture) {
+                                  @Nullable ResourceSupplier<ITexture> dotTexture,
+                                  @Nullable ResourceSupplier<ITexture> needleTexture) {
     }
 
     private record DotBounds(int left, int top, int size) {
