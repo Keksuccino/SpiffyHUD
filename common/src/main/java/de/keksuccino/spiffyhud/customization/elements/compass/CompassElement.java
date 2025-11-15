@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class CompassElement extends AbstractElement {
-    
+
     private static final Minecraft MC = Minecraft.getInstance();
 
     private static final int DEFAULT_BACKGROUND_COLOR = 0xB0101010;
