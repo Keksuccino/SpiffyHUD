@@ -357,5 +357,7 @@
   "spiffyhud.elements.player_compass.texture.cardinal.south": "South Cardinal Texture",
   "spiffyhud.elements.player_compass.texture.cardinal.south.desc": "Replaces the \"S\" letter with a texture. The texture respects its aspect ratio and the configured cardinal letter scale.",
   "spiffyhud.elements.player_compass.texture.cardinal.west": "West Cardinal Texture",
-  "spiffyhud.elements.player_compass.texture.cardinal.west.desc": "Replaces the \"W\" letter with a texture that is centered on the tick, keeps its aspect ratio, and honors the cardinal letter scale."
+  "spiffyhud.elements.player_compass.texture.cardinal.west.desc": "Replaces the \"W\" letter with a texture that is centered on the tick, keeps its aspect ratio, and honors the cardinal letter scale.",
+  "spiffyhud.actions.clear_markers": "Clear World Markers [Spiffy]",
+  "spiffyhud.actions.clear_markers.desc": "Removes every stored marker entry for the selected target element identifier so you can rebuild the marker group from scratch."
 }
