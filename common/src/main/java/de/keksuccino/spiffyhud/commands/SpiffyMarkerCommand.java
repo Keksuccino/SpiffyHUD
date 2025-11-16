@@ -1,5 +1,6 @@
 package de.keksuccino.spiffyhud.commands;
 
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
@@ -15,6 +16,8 @@ import de.keksuccino.spiffyhud.customization.actions.marker.MarkerActionConfig;
 import de.keksuccino.spiffyhud.customization.actions.marker.MarkerRemovalConfig;
 import de.keksuccino.spiffyhud.networking.packets.markercommand.MarkerCommandOperation;
 import de.keksuccino.spiffyhud.networking.packets.markercommand.command.MarkerCommandPacket;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,8 +26,10 @@ import java.util.Objects;
 import java.util.UUID;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.coordinates.Vec2Argument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.phys.Vec2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,6 +47,7 @@ public final class SpiffyMarkerCommand {
             new SimpleCommandExceptionType(Component.translatable("spiffyhud.commands.marker.self_not_supported"));
 
     private static final Map<String, List<String>> CACHED_GROUP_SUGGESTIONS = java.util.Collections.synchronizedMap(new HashMap<>());
+    private static final DecimalFormat POSITION_FORMAT = buildPositionFormat();
 
     private SpiffyMarkerCommand() {
     }
@@ -77,26 +83,14 @@ public final class SpiffyMarkerCommand {
         return Commands.literal("add")
                 .then(targetElementArgument()
                         .then(Commands.argument("marker_name", StringArgumentType.string())
-                                .then(Commands.argument("pos_x", StringArgumentType.string())
-                                        .then(Commands.argument("pos_z", StringArgumentType.string())
-                                                .executes(SpiffyMarkerCommand::executeAdd)
-                                                .then(optionalColorArgument().executes(SpiffyMarkerCommand::executeAdd)
-                                                        .then(optionalNeedleArgument().executes(SpiffyMarkerCommand::executeAdd)
-                                                                .then(optionalDotTextureArgument().executes(SpiffyMarkerCommand::executeAdd)
-                                                                        .then(optionalNeedleTextureArgument().executes(SpiffyMarkerCommand::executeAdd)))))))));
+                                .then(positionAndOptionals(SpiffyMarkerCommand::executeAdd))));
     }
 
     private static LiteralArgumentBuilder<CommandSourceStack> buildEditCommand() {
         return Commands.literal("edit")
                 .then(targetElementArgument()
                         .then(Commands.argument("marker_name", StringArgumentType.string())
-                                .then(Commands.argument("pos_x", StringArgumentType.string())
-                                        .then(Commands.argument("pos_z", StringArgumentType.string())
-                                                .executes(SpiffyMarkerCommand::executeEdit)
-                                                .then(optionalColorArgument().executes(SpiffyMarkerCommand::executeEdit)
-                                                        .then(optionalNeedleArgument().executes(SpiffyMarkerCommand::executeEdit)
-                                                                .then(optionalDotTextureArgument().executes(SpiffyMarkerCommand::executeEdit)
-                                                                        .then(optionalNeedleTextureArgument().executes(SpiffyMarkerCommand::executeEdit)))))))));
+                                .then(positionAndOptionals(SpiffyMarkerCommand::executeEdit))));
     }
 
     private static LiteralArgumentBuilder<CommandSourceStack> buildRemoveCommand() {
@@ -122,12 +116,22 @@ public final class SpiffyMarkerCommand {
         return Commands.argument("needle_texture", StringArgumentType.string());
     }
 
+    private static RequiredArgumentBuilder<CommandSourceStack, ?> positionAndOptionals(Command<CommandSourceStack> executor) {
+        return positionArgument()
+                .executes(executor)
+                .then(optionalColorArgument().executes(executor)
+                        .then(optionalNeedleArgument().executes(executor)
+                                .then(optionalDotTextureArgument().executes(executor)
+                                        .then(optionalNeedleTextureArgument().executes(executor)))));
+    }
+
     private static int executeAdd(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = getCommandPlayer(context);
         String targetElement = sanitizeTarget(StringArgumentType.getString(context, "target_element"));
         String markerName = sanitizeMarkerName(StringArgumentType.getString(context, "marker_name"));
-        String posX = sanitizePosition(StringArgumentType.getString(context, "pos_x"));
-        String posZ = sanitizePosition(StringArgumentType.getString(context, "pos_z"));
+        Vec2 pos = Vec2Argument.getVec2(context, "position");
+        String posX = formatPosition(pos.x);
+        String posZ = formatPosition(pos.y);
         String color = sanitizeOptional(getOptionalString(context, "color"));
         Boolean showAsNeedle = getOptionalBool(context, "show_as_needle");
         String dotTexture = sanitizeOptional(getOptionalString(context, "dot_texture"));
@@ -139,8 +143,9 @@ public final class SpiffyMarkerCommand {
         ServerPlayer player = getCommandPlayer(context);
         String targetElement = sanitizeTarget(StringArgumentType.getString(context, "target_element"));
         String markerName = sanitizeMarkerName(StringArgumentType.getString(context, "marker_name"));
-        String posX = sanitizePosition(StringArgumentType.getString(context, "pos_x"));
-        String posZ = sanitizePosition(StringArgumentType.getString(context, "pos_z"));
+        Vec2 pos = Vec2Argument.getVec2(context, "position");
+        String posX = formatPosition(pos.x);
+        String posZ = formatPosition(pos.y);
         String color = sanitizeOptional(getOptionalString(context, "color"));
         Boolean showAsNeedle = getOptionalBool(context, "show_as_needle");
         String dotTexture = sanitizeOptional(getOptionalString(context, "dot_texture"));
@@ -262,13 +267,8 @@ public final class SpiffyMarkerCommand {
         return trimmed;
     }
 
-    @NotNull
-    private static String sanitizePosition(@Nullable String value) throws CommandSyntaxException {
-        String trimmed = value == null ? "" : value.trim();
-        if (trimmed.isEmpty()) {
-            throw INVALID_POSITION.create();
-        }
-        return trimmed;
+    private static String formatPosition(double value) {
+        return POSITION_FORMAT.format(value);
     }
 
     @Nullable
@@ -300,4 +300,16 @@ public final class SpiffyMarkerCommand {
             return null;
         }
     }
+
+    private static RequiredArgumentBuilder<CommandSourceStack, ?> positionArgument() {
+        return Commands.argument("position", Vec2Argument.vec2());
+    }
+
+    private static DecimalFormat buildPositionFormat() {
+        DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance(java.util.Locale.ROOT);
+        DecimalFormat format = new DecimalFormat("0.########", symbols);
+        format.setGroupingUsed(false);
+        return format;
+    }
+
 }
