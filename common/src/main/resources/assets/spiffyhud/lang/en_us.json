@@ -359,5 +359,22 @@
   "spiffyhud.elements.player_compass.texture.cardinal.west": "West Cardinal Texture",
   "spiffyhud.elements.player_compass.texture.cardinal.west.desc": "Replaces the \"W\" letter with a texture that is centered on the tick, keeps its aspect ratio, and honors the cardinal letter scale.",
   "spiffyhud.actions.clear_markers": "Clear World Markers [Spiffy]",
-  "spiffyhud.actions.clear_markers.desc": "Removes every stored marker entry for the selected target element identifier so you can rebuild the marker group from scratch."
+  "spiffyhud.actions.clear_markers.desc": "Removes every stored marker entry for the selected target element identifier so you can rebuild the marker group from scratch.",
+  "spiffyhud.commands.marker.add.sent": "Queued marker add \"%s\" on \"%s\" for %s player(s).",
+  "spiffyhud.commands.marker.edit.sent": "Queued marker edit \"%s\" on \"%s\" for %s player(s).",
+  "spiffyhud.commands.marker.remove.sent": "Queued marker removal \"%s\" on \"%s\" for %s player(s).",
+  "spiffyhud.commands.marker.target_not_supported": "Skipping %s because FancyMenu with SpiffyHUD is not active for that player.",
+  "spiffyhud.commands.marker.requires_player": "This command must target a player when executed from non-player sources.",
+  "spiffyhud.commands.marker.error.invalid_target": "Target element identifier cannot be blank.",
+  "spiffyhud.commands.marker.error.invalid_marker": "Marker name cannot be blank.",
+  "spiffyhud.commands.marker.error.position_required": "Marker position values (x/z) cannot be blank.",
+  "spiffyhud.commands.marker.error.options_required": "Provide marker data using key=value pairs (for example: name=Home x=0 z=0).",
+  "spiffyhud.commands.marker.error.target_admin_only": "Selecting other players requires operator permission.",
+  "spiffyhud.commands.marker.error.no_targets": "No valid FancyMenu players matched the request.",
+  "spiffyhud.commands.marker.client.add.success": "Added marker \"%s\" to \"%s\".",
+  "spiffyhud.commands.marker.client.add.failure": "Failed to add marker \"%s\" to \"%s\".",
+  "spiffyhud.commands.marker.client.edit.success": "Updated marker \"%s\" in \"%s\".",
+  "spiffyhud.commands.marker.client.edit.failure": "Failed to update marker \"%s\" in \"%s\".",
+  "spiffyhud.commands.marker.client.remove.success": "Removed marker \"%s\" from \"%s\".",
+  "spiffyhud.commands.marker.client.remove.failure": "Failed to remove marker \"%s\" from \"%s\"."
 }

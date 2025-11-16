@@ -54,6 +54,11 @@ public class MarkerStorage {
         return Collections.unmodifiableList(copies);
     }
 
+    public static synchronized @NotNull List<String> getAllGroupIds() {
+        ensureLoaded();
+        return cachedData.listGroupIds();
+    }
+
     public static synchronized @Nullable MarkerData getMarker(@NotNull String groupId, @NotNull String markerName) {
         String normalized = normalizeGroupId(groupId);
         ensureLoaded();
@@ -228,6 +233,10 @@ public class MarkerStorage {
                 return new ArrayList<>();
             }
             return markers;
+        }
+
+        private List<String> listGroupIds() {
+            return new ArrayList<>(this.groups.keySet());
         }
 
         private List<MarkerData> getOrCreateGroup(@NotNull String groupId) {
