@@ -132,6 +132,7 @@ public class CompassElement extends AbstractElement {
     public int passiveDotsRange = 200;
     public boolean hostileDotsShowHeads = false;
     public boolean passiveDotsShowHeads = false;
+    public boolean mobDotsMoveUpDown = true;
     private boolean hasLastDeathPointerRelative = false;
     private float lastDeathPointerRelative = 0.0F;
     @Nullable private Mob previewHostileMob;
@@ -378,22 +379,26 @@ public class CompassElement extends AbstractElement {
         }
         float minY = layout.y();
         float maxY = layout.y() + layout.height();
+        float markerCenter = layout.y() + layout.height() / 2.0F + this.resolveMarkerYOffset();
         float baseDiameter = this.computeBaseDotDiameter(layout);
         float hostileRadius = this.computeScaledRadius(baseDiameter, this.resolveHostileDotScale());
         float passiveRadius = this.computeScaledRadius(baseDiameter, this.resolvePassiveDotScale());
         float hostileOffset = this.resolveHostileDotsYOffset();
         float passiveOffset = this.resolvePassiveDotsYOffset();
         boolean drawHostileHeads = this.hostileDotsShowHeads;
+        boolean moveWithDistance = this.mobDotsMoveUpDown;
         if (!dots.hostileDots().isEmpty()) {
             for (MobDotData data : dots.hostileDots()) {
-                float centerY = this.computeDotCenterY(minY, maxY, data.distanceRatio()) + hostileOffset;
+                float animatedCenter = moveWithDistance ? this.computeDotCenterY(minY, maxY, data.distanceRatio()) : markerCenter;
+                float centerY = animatedCenter + hostileOffset;
                 this.drawMobDot(graphics, layout, data, centerY, hostileRadius, drawHostileHeads, colors.hostileDotColor(), this.hostileDotTexture);
             }
         }
         boolean drawPassiveHeads = this.passiveDotsShowHeads;
         if (!dots.passiveDots().isEmpty()) {
             for (MobDotData data : dots.passiveDots()) {
-                float centerY = this.computeDotCenterY(minY, maxY, data.distanceRatio()) + passiveOffset;
+                float animatedCenter = moveWithDistance ? this.computeDotCenterY(minY, maxY, data.distanceRatio()) : markerCenter;
+                float centerY = animatedCenter + passiveOffset;
                 this.drawMobDot(graphics, layout, data, centerY, passiveRadius, drawPassiveHeads, colors.passiveDotColor(), this.passiveDotTexture);
             }
         }

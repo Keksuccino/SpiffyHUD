@@ -347,5 +347,7 @@
   "spiffyhud.elements.player_compass.hostile_dots.y_offset": "Hostile Mob Dot Y-Offset",
   "spiffyhud.elements.player_compass.hostile_dots.y_offset.desc": "Adds a base vertical shift to hostile mob dots before the distance-based movement is applied. Accepts placeholders.",
   "spiffyhud.elements.player_compass.passive_dots.y_offset": "Other Mob Dot Y-Offset",
-  "spiffyhud.elements.player_compass.passive_dots.y_offset.desc": "Offsets other mob dots up or down while keeping their near/far animation intact. Supports placeholders."
+  "spiffyhud.elements.player_compass.passive_dots.y_offset.desc": "Offsets other mob dots up or down while keeping their near/far animation intact. Supports placeholders.",
+  "spiffyhud.elements.player_compass.mob_dots.move": "Mob Dots Move Up/Down: %s",
+  "spiffyhud.elements.player_compass.mob_dots.move.desc": "When enabled, mob dots shift vertically to visualize how near each mob is. Disable this to lock every mob dot to the marker height while still applying the mob dot Y-Offset."
 }

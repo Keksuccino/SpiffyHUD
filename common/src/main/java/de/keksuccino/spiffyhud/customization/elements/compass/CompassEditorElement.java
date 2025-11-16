@@ -347,6 +347,14 @@ public class CompassEditorElement extends AbstractEditorElement {
 
         this.rightClickMenu.addSeparatorEntry("separator_after_marker_dots_scale");
 
+        this.addToggleContextMenuEntryTo(this.rightClickMenu, "mob_dots_move_up_down",
+                        CompassEditorElement.class,
+                        consumes -> consumes.getElement().mobDotsMoveUpDown,
+                        (editorElement, value) -> editorElement.getElement().mobDotsMoveUpDown = value,
+                        "spiffyhud.elements.player_compass.mob_dots.move")
+                .setStackable(false)
+                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.mob_dots.move.desc")));
+
         this.addToggleContextMenuEntryTo(this.rightClickMenu, "hostile_dots_enabled",
                         CompassEditorElement.class,
                         consumes -> consumes.getElement().hostileDotsEnabled,
