@@ -243,25 +243,27 @@ public class CompassElement extends AbstractElement {
             return false;
         }
         int width = Math.max(1, layout.width());
-        int height = Math.max(1, layout.barHeight());
+        int barHeight = Math.max(1, layout.barHeight());
         int textureWidth = handle.width();
         int textureHeight = handle.height();
-        if (width <= 0 || height <= 0 || textureWidth <= 0 || textureHeight <= 0) {
+        if (textureWidth <= 0 || textureHeight <= 0) {
             return false;
         }
+        int destHeight = Math.max(1, Math.min(barHeight, textureHeight));
+        int destWidth = Math.max(1, handle.aspectRatio().getAspectRatioWidth(destHeight));
         float normalizedHeading = Mth.positiveModulo(reading.headingDegrees(), 360.0F) / 360.0F;
         float pixelShift = normalizedHeading * width;
-        float offset = Mth.positiveModulo(pixelShift, textureWidth);
-        float startX = layout.x() - offset - textureWidth;
-        int maxX = layout.x() + width + textureWidth;
-        int drawY = layout.barTop() + (layout.barHeight() - textureHeight) / 2;
+        float offset = Mth.positiveModulo(pixelShift, destWidth);
+        float startX = layout.x() - offset - destWidth;
+        int maxX = layout.x() + width + destWidth;
+        int drawY = layout.barTop() + (layout.barHeight() - destHeight) / 2;
         RenderSystem.enableBlend();
-        graphics.enableScissor(layout.x(), layout.barTop(), layout.x() + width, layout.barTop() + height);
+        graphics.enableScissor(layout.x(), layout.barTop(), layout.x() + width, layout.barTop() + barHeight);
         graphics.setColor(1.0F, 1.0F, 1.0F, this.opacity);
         try {
-            for (float drawX = startX; drawX < maxX; drawX += textureWidth) {
+            for (float drawX = startX; drawX < maxX; drawX += destWidth) {
                 int drawXi = Mth.floor(drawX);
-                this.blitBarTextureTile(graphics, handle, drawXi, drawY);
+                this.blitBarTextureTile(graphics, handle, drawXi, drawY, destWidth, destHeight);
             }
         } finally {
             graphics.disableScissor();
@@ -270,8 +272,8 @@ public class CompassElement extends AbstractElement {
         return true;
     }
 
-    private void blitBarTextureTile(@NotNull GuiGraphics graphics, @NotNull TextureHandle handle, int drawX, int drawY) {
-        graphics.blit(handle.location(), drawX, drawY, 0.0F, 0.0F, handle.width(), handle.height(), handle.width(), handle.height());
+    private void blitBarTextureTile(@NotNull GuiGraphics graphics, @NotNull TextureHandle handle, int drawX, int drawY, int destWidth, int destHeight) {
+        graphics.blit(handle.location(), drawX, drawY, 0.0F, 0.0F, destWidth, destHeight, destWidth, destHeight);
     }
 
     private void drawGradeLines(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull ResolvedColors colors, @NotNull CompassReading reading) {
