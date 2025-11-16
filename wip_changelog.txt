@@ -24,7 +24,7 @@ CHANGELOG | SPIFFYHUD v3.1.0 [ !!  WIP !! NOT FINISHED YET !! WIP !! ]
   - Customizable appearance (shaking, popping, icons per row, etc.)
   - Supports scaling
 - Added "Compass" element that renders an RPG-like compass bar
-- Added actions to add/edit/remove markers for Compass elements (support placeholders to also dynamically update them)
+- Added actions to add/edit/remove/clear markers for Compass elements (support placeholders to also dynamically update them)
 - Added "World Marker List" placeholder to get the names of all markers of a Compass element
 - The "Single-Line Text" element now has an option to set its text scale
 - Fixed Vanilla-like hotbar renders items twice (#31)
