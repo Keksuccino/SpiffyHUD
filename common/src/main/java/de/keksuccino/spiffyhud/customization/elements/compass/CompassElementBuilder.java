@@ -61,6 +61,27 @@ public class CompassElementBuilder extends ElementBuilder<CompassElement, Compas
         element.hostileDotScale = Objects.requireNonNullElse(serialized.getValue("hostile_dots_scale"), element.hostileDotScale);
         element.passiveDotScale = Objects.requireNonNullElse(serialized.getValue("passive_dots_scale"), element.passiveDotScale);
         element.markerDotScale = Objects.requireNonNullElse(serialized.getValue("marker_dots_scale"), element.markerDotScale);
+        String legacyTickOffset = serialized.getValue("tick_y_offset");
+        String cardinalTickOffset = serialized.getValue("cardinal_tick_y_offset");
+        if (cardinalTickOffset != null) {
+            element.cardinalTickYOffset = cardinalTickOffset;
+        } else if (legacyTickOffset != null) {
+            element.cardinalTickYOffset = legacyTickOffset;
+        }
+        String degreeTickOffset = serialized.getValue("degree_tick_y_offset");
+        if (degreeTickOffset != null) {
+            element.degreeTickYOffset = degreeTickOffset;
+        } else if (legacyTickOffset != null) {
+            element.degreeTickYOffset = legacyTickOffset;
+        }
+        String minorTickOffset = serialized.getValue("minor_tick_y_offset");
+        if (minorTickOffset != null) {
+            element.minorTickYOffset = minorTickOffset;
+        } else if (legacyTickOffset != null) {
+            element.minorTickYOffset = legacyTickOffset;
+        }
+        element.cardinalTextYOffset = Objects.requireNonNullElse(serialized.getValue("cardinal_text_y_offset"), element.cardinalTextYOffset);
+        element.degreeTextYOffset = Objects.requireNonNullElse(serialized.getValue("degree_text_y_offset"), element.degreeTextYOffset);
         element.backgroundEnabled = deserializeBoolean(element.backgroundEnabled, serialized.getValue("background_enabled"));
         element.barEnabled = deserializeBoolean(element.barEnabled, serialized.getValue("bar_enabled"));
         element.cardinalTicksEnabled = deserializeBoolean(element.cardinalTicksEnabled, serialized.getValue("cardinal_ticks_enabled"));
@@ -116,6 +137,11 @@ public class CompassElementBuilder extends ElementBuilder<CompassElement, Compas
         serializeTo.putProperty("hostile_dots_scale", element.hostileDotScale);
         serializeTo.putProperty("passive_dots_scale", element.passiveDotScale);
         serializeTo.putProperty("marker_dots_scale", element.markerDotScale);
+        serializeTo.putProperty("cardinal_tick_y_offset", element.cardinalTickYOffset);
+        serializeTo.putProperty("degree_tick_y_offset", element.degreeTickYOffset);
+        serializeTo.putProperty("minor_tick_y_offset", element.minorTickYOffset);
+        serializeTo.putProperty("cardinal_text_y_offset", element.cardinalTextYOffset);
+        serializeTo.putProperty("degree_text_y_offset", element.degreeTextYOffset);
         ResourceSupplier<ITexture> barTexture = element.barTexture;
         if (barTexture != null) {
             serializeTo.putProperty("bar_texture", barTexture.getSourceWithPrefix());

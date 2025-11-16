@@ -95,6 +95,16 @@ public class CompassEditorElement extends AbstractEditorElement {
 
         this.addColorInput("cardinal_tick_color", Component.translatable("spiffyhud.elements.player_compass.color.cardinal_tick"), CompassElement.DEFAULT_CARDINAL_TICK_COLOR_STRING);
 
+        this.addStringInputContextMenuEntryTo(this.rightClickMenu, "cardinal_tick_y_offset",
+                        CompassEditorElement.class,
+                        consumes -> consumes.getElement().cardinalTickYOffset,
+                        (editorElement, value) -> editorElement.getElement().cardinalTickYOffset = (value == null || value.isBlank()) ? CompassElement.DEFAULT_TICK_OFFSET_STRING : value,
+                        null, false, true,
+                        Component.translatable("spiffyhud.elements.player_compass.cardinal_ticks.y_offset"),
+                        true, CompassElement.DEFAULT_TICK_OFFSET_STRING, null, null)
+                .setStackable(false)
+                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.cardinal_ticks.y_offset.desc")));
+
         this.addImageResourceChooserContextMenuEntryTo(this.rightClickMenu,
                         "cardinal_tick_texture",
                         CompassEditorElement.class,
@@ -117,6 +127,16 @@ public class CompassEditorElement extends AbstractEditorElement {
                 .setStackable(false);
 
         this.addColorInput("degree_tick_color", Component.translatable("spiffyhud.elements.player_compass.color.degree_tick"), CompassElement.DEFAULT_DEGREE_TICK_COLOR_STRING);
+
+        this.addStringInputContextMenuEntryTo(this.rightClickMenu, "degree_tick_y_offset",
+                        CompassEditorElement.class,
+                        consumes -> consumes.getElement().degreeTickYOffset,
+                        (editorElement, value) -> editorElement.getElement().degreeTickYOffset = (value == null || value.isBlank()) ? CompassElement.DEFAULT_TICK_OFFSET_STRING : value,
+                        null, false, true,
+                        Component.translatable("spiffyhud.elements.player_compass.degree_ticks.y_offset"),
+                        true, CompassElement.DEFAULT_TICK_OFFSET_STRING, null, null)
+                .setStackable(false)
+                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.degree_ticks.y_offset.desc")));
 
         this.addImageResourceChooserContextMenuEntryTo(this.rightClickMenu,
                         "degree_tick_texture",
@@ -141,6 +161,16 @@ public class CompassEditorElement extends AbstractEditorElement {
 
         this.addColorInput("minor_tick_color", Component.translatable("spiffyhud.elements.player_compass.color.minor_tick"), CompassElement.DEFAULT_MINOR_TICK_COLOR_STRING);
 
+        this.addStringInputContextMenuEntryTo(this.rightClickMenu, "minor_tick_y_offset",
+                        CompassEditorElement.class,
+                        consumes -> consumes.getElement().minorTickYOffset,
+                        (editorElement, value) -> editorElement.getElement().minorTickYOffset = (value == null || value.isBlank()) ? CompassElement.DEFAULT_TICK_OFFSET_STRING : value,
+                        null, false, true,
+                        Component.translatable("spiffyhud.elements.player_compass.minor_ticks.y_offset"),
+                        true, CompassElement.DEFAULT_TICK_OFFSET_STRING, null, null)
+                .setStackable(false)
+                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.minor_ticks.y_offset.desc")));
+
         this.addImageResourceChooserContextMenuEntryTo(this.rightClickMenu,
                         "minor_tick_texture",
                         CompassEditorElement.class,
@@ -164,6 +194,16 @@ public class CompassEditorElement extends AbstractEditorElement {
 
         this.addColorInput("cardinal_text_color", Component.translatable("spiffyhud.elements.player_compass.color.cardinal_text"), CompassElement.DEFAULT_CARDINAL_TEXT_COLOR_STRING);
 
+        this.addStringInputContextMenuEntryTo(this.rightClickMenu, "cardinal_text_y_offset",
+                        CompassEditorElement.class,
+                        consumes -> consumes.getElement().cardinalTextYOffset,
+                        (editorElement, value) -> editorElement.getElement().cardinalTextYOffset = (value == null || value.isBlank()) ? CompassElement.DEFAULT_TEXT_OFFSET_STRING : value,
+                        null, false, true,
+                        Component.translatable("spiffyhud.elements.player_compass.cardinal_text.y_offset"),
+                        true, CompassElement.DEFAULT_TEXT_OFFSET_STRING, null, null)
+                .setStackable(false)
+                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.cardinal_text.y_offset.desc")));
+
         this.addToggleContextMenuEntryTo(this.rightClickMenu, "cardinal_outline",
                         CompassEditorElement.class,
                         consumes -> consumes.getElement().cardinalOutlineEnabled,
@@ -181,6 +221,16 @@ public class CompassEditorElement extends AbstractEditorElement {
                 .setStackable(false);
 
         this.addColorInput("degree_text_color", Component.translatable("spiffyhud.elements.player_compass.color.number_text"), CompassElement.DEFAULT_NUMBER_TEXT_COLOR_STRING);
+
+        this.addStringInputContextMenuEntryTo(this.rightClickMenu, "degree_text_y_offset",
+                        CompassEditorElement.class,
+                        consumes -> consumes.getElement().degreeTextYOffset,
+                        (editorElement, value) -> editorElement.getElement().degreeTextYOffset = (value == null || value.isBlank()) ? CompassElement.DEFAULT_TEXT_OFFSET_STRING : value,
+                        null, false, true,
+                        Component.translatable("spiffyhud.elements.player_compass.degree_text.y_offset"),
+                        true, CompassElement.DEFAULT_TEXT_OFFSET_STRING, null, null)
+                .setStackable(false)
+                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.degree_text.y_offset.desc")));
 
         this.addToggleContextMenuEntryTo(this.rightClickMenu, "degree_outline",
                         CompassEditorElement.class,

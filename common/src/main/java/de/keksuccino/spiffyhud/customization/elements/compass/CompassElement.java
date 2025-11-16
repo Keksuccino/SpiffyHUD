@@ -57,6 +57,9 @@ public class CompassElement extends AbstractElement {
     private static final float BASE_DOT_DIAMETER_MAX = 18.0F;
     private static final float MIN_SCALED_DOT_DIAMETER = 1.0F;
     private static final float MAX_SCALED_DOT_DIAMETER = 64.0F;
+    private static final float DEFAULT_TICK_OFFSET = 0.0F;
+    private static final float MIN_TICK_OFFSET = -200.0F;
+    private static final float MAX_TICK_OFFSET = 200.0F;
 
     public static final String DEFAULT_BACKGROUND_COLOR_STRING = "#B0101010";
     public static final String DEFAULT_BAR_COLOR_STRING = "#C0FFFFFF";
@@ -70,6 +73,8 @@ public class CompassElement extends AbstractElement {
     public static final String DEFAULT_HOSTILE_DOT_COLOR_STRING = "#FFFF4A4A";
     public static final String DEFAULT_PASSIVE_DOT_COLOR_STRING = "#FFFFE15A";
     public static final String DEFAULT_DOT_SCALE_STRING = "1.0";
+    public static final String DEFAULT_TICK_OFFSET_STRING = "0";
+    public static final String DEFAULT_TEXT_OFFSET_STRING = "0";
 
     @NotNull public String backgroundColor = DEFAULT_BACKGROUND_COLOR_STRING;
     @NotNull public String barColor = DEFAULT_BAR_COLOR_STRING;
@@ -90,6 +95,11 @@ public class CompassElement extends AbstractElement {
     @NotNull public String hostileDotScale = DEFAULT_DOT_SCALE_STRING;
     @NotNull public String passiveDotScale = DEFAULT_DOT_SCALE_STRING;
     @NotNull public String markerDotScale = DEFAULT_DOT_SCALE_STRING;
+    @NotNull public String cardinalTickYOffset = DEFAULT_TICK_OFFSET_STRING;
+    @NotNull public String degreeTickYOffset = DEFAULT_TICK_OFFSET_STRING;
+    @NotNull public String minorTickYOffset = DEFAULT_TICK_OFFSET_STRING;
+    @NotNull public String cardinalTextYOffset = DEFAULT_TEXT_OFFSET_STRING;
+    @NotNull public String degreeTextYOffset = DEFAULT_TEXT_OFFSET_STRING;
     public boolean backgroundEnabled = true;
     public boolean barEnabled = true;
     public boolean cardinalTicksEnabled = true;
@@ -259,6 +269,9 @@ public class CompassElement extends AbstractElement {
         if (!drawCardinal && !drawDegree && !drawMinor) {
             return;
         }
+        float cardinalTickOffset = this.resolveCardinalTickYOffset();
+        float degreeTickOffset = this.resolveDegreeTickYOffset();
+        float minorTickOffset = this.resolveMinorTickYOffset();
         for (int degrees = -180; degrees <= 180; degrees += 10) {
             int absolute = toAbsoluteDegrees(degrees);
             boolean majorCandidate = (absolute % 30) == 0;
@@ -269,34 +282,35 @@ public class CompassElement extends AbstractElement {
                     if (!drawCardinal) {
                         continue;
                     }
-                    this.drawTick(graphics, layout, relative, layout.majorTickHalfHeight(), colors.cardinalTickColor(), this.cardinalTickTexture);
+                    this.drawTick(graphics, layout, relative, layout.majorTickHalfHeight(), colors.cardinalTickColor(), this.cardinalTickTexture, cardinalTickOffset);
                 } else {
                     if (!drawDegree) {
                         continue;
                     }
-                    this.drawTick(graphics, layout, relative, layout.majorTickHalfHeight(), colors.degreeTickColor(), this.degreeTickTexture);
+                    this.drawTick(graphics, layout, relative, layout.majorTickHalfHeight(), colors.degreeTickColor(), this.degreeTickTexture, degreeTickOffset);
                 }
             } else {
                 if (!drawMinor) {
                     continue;
                 }
-                this.drawTick(graphics, layout, relative, layout.minorTickHalfHeight(), colors.minorTickColor(), this.minorTickTexture);
+                this.drawTick(graphics, layout, relative, layout.minorTickHalfHeight(), colors.minorTickColor(), this.minorTickTexture, minorTickOffset);
             }
         }
     }
 
-    private void drawTick(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float relativeDegrees, int halfHeight, int color, @Nullable ResourceSupplier<ITexture> texture) {
+    private void drawTick(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float relativeDegrees, int halfHeight, int color, @Nullable ResourceSupplier<ITexture> texture, float offsetY) {
         float x = this.computeScreenX(layout, relativeDegrees);
-        if (this.drawTickTexture(graphics, layout, x, texture)) {
+        if (this.drawTickTexture(graphics, layout, x, texture, offsetY)) {
             return;
         }
         int xi = Mth.clamp(Mth.floor(x), layout.x(), layout.x() + layout.width() - 1);
-        int top = layout.barCenterY() - halfHeight;
-        int bottom = layout.barCenterY() + halfHeight;
+        int offset = Mth.floor(offsetY);
+        int top = layout.barCenterY() - halfHeight + offset;
+        int bottom = layout.barCenterY() + halfHeight + offset;
         graphics.fill(xi, top, xi + 1, bottom, color);
     }
 
-    private boolean drawTickTexture(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float centerX, @Nullable ResourceSupplier<ITexture> supplier) {
+    private boolean drawTickTexture(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float centerX, @Nullable ResourceSupplier<ITexture> supplier, float offsetY) {
         TextureHandle handle = this.resolveTexture(supplier);
         if (handle == null) {
             return false;
@@ -307,7 +321,7 @@ public class CompassElement extends AbstractElement {
         int destWidth = Math.max(1, Math.min(computedWidth, availableWidth));
         float drawX = centerX - destWidth / 2.0F;
         int drawXi = Mth.floor(drawX);
-        int drawYi = layout.y();
+        int drawYi = layout.y() + Mth.floor(offsetY);
         RenderSystem.enableBlend();
         graphics.setColor(1.0F, 1.0F, 1.0F, this.opacity);
         graphics.blit(handle.location(), drawXi, drawYi, 0.0F, 0.0F, destWidth, destHeight, destWidth, destHeight);
@@ -318,18 +332,20 @@ public class CompassElement extends AbstractElement {
     private void drawCardinalLabels(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull ResolvedColors colors, @NotNull CompassReading reading) {
         String[] labels = {"N", "E", "S", "W"};
         float[] angles = {0F, 90F, 180F, 270F};
+        float offset = this.resolveCardinalTextYOffset();
         for (int i = 0; i < labels.length; i++) {
-            this.drawCardinal(graphics, layout, angles[i], labels[i], colors.cardinalTextColor(), reading);
+            this.drawCardinal(graphics, layout, angles[i], labels[i], colors.cardinalTextColor(), reading, offset);
         }
     }
 
-    private void drawCardinal(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float absoluteDegrees, @NotNull String text, int color, @NotNull CompassReading reading) {
+    private void drawCardinal(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float absoluteDegrees, @NotNull String text, int color, @NotNull CompassReading reading, float offsetY) {
         float relative = this.relativeToHeading(absoluteDegrees, reading.headingDegrees());
         float centerX = this.computeScreenX(layout, relative);
-        this.drawScaledCenteredString(graphics, text, centerX, layout.cardinalCenterY(), layout.cardinalScale(), color, this.cardinalOutlineEnabled);
+        this.drawScaledCenteredString(graphics, text, centerX, layout.cardinalCenterY() + offsetY, layout.cardinalScale(), color, this.cardinalOutlineEnabled);
     }
 
     private void drawDegreeNumbers(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull ResolvedColors colors, @NotNull CompassReading reading) {
+        float offset = this.resolveDegreeTextYOffset();
         for (int degrees = -150; degrees <= 150; degrees += 30) {
             if (degrees == 0) {
                 continue;
@@ -341,7 +357,7 @@ public class CompassElement extends AbstractElement {
             String label = Integer.toString(absolute);
             float relative = this.relativeToHeading(absolute, reading.headingDegrees());
             float centerX = this.computeScreenX(layout, relative);
-            this.drawScaledCenteredString(graphics, label, centerX, layout.numberCenterY(), layout.numberScale(), colors.numberTextColor(), this.degreeOutlineEnabled);
+            this.drawScaledCenteredString(graphics, label, centerX, layout.numberCenterY() + offset, layout.numberScale(), colors.numberTextColor(), this.degreeOutlineEnabled);
         }
     }
 
@@ -683,22 +699,46 @@ public class CompassElement extends AbstractElement {
         return this.resolveDotScale(this.markerDotScale);
     }
 
+    private float resolveCardinalTickYOffset() {
+        return this.resolveClampedFloat(this.cardinalTickYOffset, DEFAULT_TICK_OFFSET, MIN_TICK_OFFSET, MAX_TICK_OFFSET);
+    }
+
+    private float resolveDegreeTickYOffset() {
+        return this.resolveClampedFloat(this.degreeTickYOffset, DEFAULT_TICK_OFFSET, MIN_TICK_OFFSET, MAX_TICK_OFFSET);
+    }
+
+    private float resolveMinorTickYOffset() {
+        return this.resolveClampedFloat(this.minorTickYOffset, DEFAULT_TICK_OFFSET, MIN_TICK_OFFSET, MAX_TICK_OFFSET);
+    }
+
+    private float resolveCardinalTextYOffset() {
+        return this.resolveClampedFloat(this.cardinalTextYOffset, DEFAULT_TICK_OFFSET, MIN_TICK_OFFSET, MAX_TICK_OFFSET);
+    }
+
+    private float resolveDegreeTextYOffset() {
+        return this.resolveClampedFloat(this.degreeTextYOffset, DEFAULT_TICK_OFFSET, MIN_TICK_OFFSET, MAX_TICK_OFFSET);
+    }
+
     private float resolveDotScale(@Nullable String configured) {
+        return this.resolveClampedFloat(configured, DEFAULT_DOT_SCALE, MIN_DOT_SCALE, MAX_DOT_SCALE);
+    }
+
+    private float resolveClampedFloat(@Nullable String configured, float fallback, float min, float max) {
         if (configured == null || configured.isBlank()) {
-            return DEFAULT_DOT_SCALE;
+            return fallback;
         }
         String replaced = PlaceholderParser.replacePlaceholders(configured).trim();
         if (!replaced.isEmpty() && MathUtils.isFloat(replaced)) {
             try {
                 float parsed = Float.parseFloat(replaced);
                 if (!Float.isFinite(parsed)) {
-                    return DEFAULT_DOT_SCALE;
+                    return fallback;
                 }
-                return Mth.clamp(parsed, MIN_DOT_SCALE, MAX_DOT_SCALE);
+                return Mth.clamp(parsed, min, max);
             } catch (NumberFormatException ignored) {
             }
         }
-        return DEFAULT_DOT_SCALE;
+        return fallback;
     }
 
     public @NotNull List<MarkerData> getMarkers() {
