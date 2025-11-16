@@ -12,6 +12,7 @@ import de.keksuccino.spiffyhud.customization.actions.marker.MarkerActionConfig;
 import de.keksuccino.spiffyhud.customization.actions.marker.MarkerRemovalConfig;
 import de.keksuccino.spiffyhud.networking.packets.markercommand.MarkerCommandOperation;
 import de.keksuccino.spiffyhud.networking.packets.markercommand.command.MarkerCommandPacket;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -33,7 +34,7 @@ import org.jetbrains.annotations.Nullable;
 
 public final class SpiffyMarkerCommand {
 
-    private static final int REMOTE_PERMISSION_LEVEL = 2;
+    private static final int REMOTE_PERMISSION_LEVEL = 4;
 
     private static final SimpleCommandExceptionType MUST_BE_PLAYER_EXCEPTION =
             new SimpleCommandExceptionType(Component.translatable("spiffyhud.commands.marker.requires_player"));
@@ -64,7 +65,7 @@ public final class SpiffyMarkerCommand {
         CACHED_GROUP_SUGGESTIONS.put(playerUuid.toString(), new ArrayList<>(groups));
     }
 
-    private static net.minecraft.commands.arguments.RequiredArgumentBuilder<CommandSourceStack, String> targetElementArgument() {
+    private static RequiredArgumentBuilder<CommandSourceStack, String> targetElementArgument() {
         return Commands.argument("target_element", StringArgumentType.string())
                 .suggests((context, builder) -> {
                     try {
@@ -80,7 +81,7 @@ public final class SpiffyMarkerCommand {
                 });
     }
 
-    private static net.minecraft.commands.arguments.RequiredArgumentBuilder<CommandSourceStack, String> optionsArgument() {
+    private static RequiredArgumentBuilder<CommandSourceStack, String> optionsArgument() {
         return Commands.argument("options", StringArgumentType.greedyString());
     }
 
