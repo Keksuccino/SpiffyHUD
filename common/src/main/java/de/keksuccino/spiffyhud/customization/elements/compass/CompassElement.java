@@ -51,8 +51,11 @@ public class CompassElement extends AbstractElement {
     private static final int MAX_MOB_DOTS_PER_TYPE = 64;
     private static final long MOB_DOTS_REFRESH_RATE_MS = 10L;
     private static final float DEFAULT_DOT_SCALE = 1.0F;
+    private static final float DEFAULT_TEXT_SCALE = 1.0F;
     private static final float MIN_DOT_SCALE = 0.2F;
     private static final float MAX_DOT_SCALE = 8.0F;
+    private static final float MIN_TEXT_SCALE = 0.2F;
+    private static final float MAX_TEXT_SCALE = 8.0F;
     private static final float BASE_DOT_DIAMETER_MIN = 2.0F;
     private static final float BASE_DOT_DIAMETER_MAX = 18.0F;
     private static final float MIN_SCALED_DOT_DIAMETER = 1.0F;
@@ -73,6 +76,7 @@ public class CompassElement extends AbstractElement {
     public static final String DEFAULT_HOSTILE_DOT_COLOR_STRING = "#FFFF4A4A";
     public static final String DEFAULT_PASSIVE_DOT_COLOR_STRING = "#FFFFE15A";
     public static final String DEFAULT_DOT_SCALE_STRING = "1.0";
+    public static final String DEFAULT_TEXT_SCALE_STRING = "1.0";
     public static final String DEFAULT_TICK_OFFSET_STRING = "0";
     public static final String DEFAULT_TEXT_OFFSET_STRING = "0";
 
@@ -95,11 +99,18 @@ public class CompassElement extends AbstractElement {
     @NotNull public String hostileDotScale = DEFAULT_DOT_SCALE_STRING;
     @NotNull public String passiveDotScale = DEFAULT_DOT_SCALE_STRING;
     @NotNull public String markerDotScale = DEFAULT_DOT_SCALE_STRING;
+    @NotNull public String needleYOffset = DEFAULT_TEXT_OFFSET_STRING;
+    @NotNull public String markerYOffset = DEFAULT_TEXT_OFFSET_STRING;
+    @NotNull public String deathPointerYOffset = DEFAULT_TEXT_OFFSET_STRING;
+    @NotNull public String hostileDotsYOffset = DEFAULT_TEXT_OFFSET_STRING;
+    @NotNull public String passiveDotsYOffset = DEFAULT_TEXT_OFFSET_STRING;
     @NotNull public String cardinalTickYOffset = DEFAULT_TICK_OFFSET_STRING;
     @NotNull public String degreeTickYOffset = DEFAULT_TICK_OFFSET_STRING;
     @NotNull public String minorTickYOffset = DEFAULT_TICK_OFFSET_STRING;
     @NotNull public String cardinalTextYOffset = DEFAULT_TEXT_OFFSET_STRING;
     @NotNull public String degreeTextYOffset = DEFAULT_TEXT_OFFSET_STRING;
+    @NotNull public String cardinalTextScale = DEFAULT_TEXT_SCALE_STRING;
+    @NotNull public String degreeTextScale = DEFAULT_TEXT_SCALE_STRING;
     public boolean backgroundEnabled = true;
     public boolean barEnabled = true;
     public boolean cardinalTicksEnabled = true;
@@ -370,17 +381,19 @@ public class CompassElement extends AbstractElement {
         float baseDiameter = this.computeBaseDotDiameter(layout);
         float hostileRadius = this.computeScaledRadius(baseDiameter, this.resolveHostileDotScale());
         float passiveRadius = this.computeScaledRadius(baseDiameter, this.resolvePassiveDotScale());
+        float hostileOffset = this.resolveHostileDotsYOffset();
+        float passiveOffset = this.resolvePassiveDotsYOffset();
         boolean drawHostileHeads = this.hostileDotsShowHeads;
         if (!dots.hostileDots().isEmpty()) {
             for (MobDotData data : dots.hostileDots()) {
-                float centerY = this.computeDotCenterY(minY, maxY, data.distanceRatio());
+                float centerY = this.computeDotCenterY(minY, maxY, data.distanceRatio()) + hostileOffset;
                 this.drawMobDot(graphics, layout, data, centerY, hostileRadius, drawHostileHeads, colors.hostileDotColor(), this.hostileDotTexture);
             }
         }
         boolean drawPassiveHeads = this.passiveDotsShowHeads;
         if (!dots.passiveDots().isEmpty()) {
             for (MobDotData data : dots.passiveDots()) {
-                float centerY = this.computeDotCenterY(minY, maxY, data.distanceRatio());
+                float centerY = this.computeDotCenterY(minY, maxY, data.distanceRatio()) + passiveOffset;
                 this.drawMobDot(graphics, layout, data, centerY, passiveRadius, drawPassiveHeads, colors.passiveDotColor(), this.passiveDotTexture);
             }
         }
@@ -416,7 +429,7 @@ public class CompassElement extends AbstractElement {
     private void drawMarkerDots(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull List<ResolvedMarker> markers) {
         float baseDiameter = this.computeBaseDotDiameter(layout);
         float radius = this.computeScaledRadius(baseDiameter, this.resolveMarkerDotScale());
-        float centerY = layout.y() + layout.height() / 2.0F;
+        float centerY = layout.y() + layout.height() / 2.0F + this.resolveMarkerYOffset();
         for (ResolvedMarker marker : markers) {
             if (marker.showAsNeedle()) {
                 continue;
@@ -440,28 +453,32 @@ public class CompassElement extends AbstractElement {
     }
 
     private void drawMarkerNeedles(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull List<ResolvedMarker> markers) {
+        float offset = this.resolveMarkerYOffset();
         for (ResolvedMarker marker : markers) {
             if (!marker.showAsNeedle()) {
                 continue;
             }
-            this.drawMarkerNeedle(graphics, layout, marker);
+            this.drawMarkerNeedle(graphics, layout, marker, offset);
         }
     }
 
-    private void drawMarkerNeedle(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull ResolvedMarker marker) {
+    private void drawMarkerNeedle(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull ResolvedMarker marker, float offsetY) {
         float centerX = this.computeScreenX(layout, marker.relativeDegrees());
         ResourceSupplier<ITexture> texture = marker.needleTexture();
         if (texture == null) {
             texture = marker.dotTexture();
         }
-        if (texture != null && this.drawNeedleTexture(graphics, layout, centerX, texture)) {
+        float centerY = layout.y() + layout.height() / 2.0F + offsetY;
+        if (texture != null && this.drawNeedleTexture(graphics, layout, centerX, centerY, texture, true, false)) {
             return;
         }
         int needleWidth = Math.max(1, Mth.floor(layout.width() * 0.008F));
         int half = Math.max(0, needleWidth / 2);
         int xi = Mth.clamp(Mth.floor(centerX) - half, layout.x(), layout.x() + layout.width() - needleWidth);
         RenderSystem.enableBlend();
-        graphics.fill(xi, layout.y(), xi + needleWidth, layout.y() + layout.height(), marker.color());
+        int pixelOffset = Mth.floor(offsetY);
+        int top = layout.y() + pixelOffset;
+        graphics.fill(xi, top, xi + needleWidth, top + layout.height(), marker.color());
     }
 
     private DotBounds computeDotBounds(@NotNull CompassLayout layout, float centerX, float centerY, float radius, int size) {
@@ -500,12 +517,16 @@ public class CompassElement extends AbstractElement {
         int needleWidth = Math.max(1, Mth.floor(layout.width() * 0.01F));
         int half = Math.max(0, needleWidth / 2);
         int centerX = layout.x() + layout.width() / 2;
-        if (this.drawNeedleTexture(graphics, layout, centerX, this.needleTexture)) {
+        float offset = this.resolveNeedleYOffset();
+        float centerY = layout.y() + layout.height() / 2.0F + offset;
+        if (this.drawNeedleTexture(graphics, layout, centerX, centerY, this.needleTexture, true, false)) {
             return;
         }
         int xi = Mth.clamp(centerX - half, layout.x(), layout.x() + layout.width() - needleWidth);
         RenderSystem.enableBlend();
-        graphics.fill(xi, layout.y(), xi + needleWidth, layout.y() + layout.height(), colors.needleColor());
+        int pixelOffset = Mth.floor(offset);
+        int top = layout.y() + pixelOffset;
+        graphics.fill(xi, top, xi + needleWidth, top + layout.height(), colors.needleColor());
     }
 
     private void drawDeathNeedle(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull CompassReading reading, @Nullable DeathPointerData pointer, @NotNull ResolvedColors colors) {
@@ -517,11 +538,13 @@ public class CompassElement extends AbstractElement {
         float relative = pointer.signedDegrees() - signedHeading;
         relative = this.adjustDeathPointerRelative(relative);
         float centerX = this.computeScreenXUnbounded(layout, relative);
+        float offset = this.resolveDeathPointerYOffset();
+        float centerY = layout.y() + layout.height() / 2.0F + offset;
         graphics.enableScissor(layout.x(), layout.y(), layout.x() + layout.width(), layout.y() + layout.height());
         try {
-            boolean textured = this.drawNeedleTexture(graphics, layout, centerX, this.deathPointerTexture, false, true);
+            boolean textured = this.drawNeedleTexture(graphics, layout, centerX, centerY, this.deathPointerTexture, false, true);
             if (!textured) {
-                this.drawDeathNeedleStrips(graphics, layout, centerX, colors.deathNeedleColor());
+                this.drawDeathNeedleStrips(graphics, layout, centerX, colors.deathNeedleColor(), offset);
             }
         } finally {
             graphics.disableScissor();
@@ -699,6 +722,26 @@ public class CompassElement extends AbstractElement {
         return this.resolveDotScale(this.markerDotScale);
     }
 
+    private float resolveNeedleYOffset() {
+        return this.resolveClampedFloat(this.needleYOffset, DEFAULT_TICK_OFFSET, MIN_TICK_OFFSET, MAX_TICK_OFFSET);
+    }
+
+    private float resolveMarkerYOffset() {
+        return this.resolveClampedFloat(this.markerYOffset, DEFAULT_TICK_OFFSET, MIN_TICK_OFFSET, MAX_TICK_OFFSET);
+    }
+
+    private float resolveDeathPointerYOffset() {
+        return this.resolveClampedFloat(this.deathPointerYOffset, DEFAULT_TICK_OFFSET, MIN_TICK_OFFSET, MAX_TICK_OFFSET);
+    }
+
+    private float resolveHostileDotsYOffset() {
+        return this.resolveClampedFloat(this.hostileDotsYOffset, DEFAULT_TICK_OFFSET, MIN_TICK_OFFSET, MAX_TICK_OFFSET);
+    }
+
+    private float resolvePassiveDotsYOffset() {
+        return this.resolveClampedFloat(this.passiveDotsYOffset, DEFAULT_TICK_OFFSET, MIN_TICK_OFFSET, MAX_TICK_OFFSET);
+    }
+
     private float resolveCardinalTickYOffset() {
         return this.resolveClampedFloat(this.cardinalTickYOffset, DEFAULT_TICK_OFFSET, MIN_TICK_OFFSET, MAX_TICK_OFFSET);
     }
@@ -717,6 +760,14 @@ public class CompassElement extends AbstractElement {
 
     private float resolveDegreeTextYOffset() {
         return this.resolveClampedFloat(this.degreeTextYOffset, DEFAULT_TICK_OFFSET, MIN_TICK_OFFSET, MAX_TICK_OFFSET);
+    }
+
+    private float resolveCardinalTextScaleMultiplier() {
+        return this.resolveClampedFloat(this.cardinalTextScale, DEFAULT_TEXT_SCALE, MIN_TEXT_SCALE, MAX_TEXT_SCALE);
+    }
+
+    private float resolveDegreeTextScaleMultiplier() {
+        return this.resolveClampedFloat(this.degreeTextScale, DEFAULT_TEXT_SCALE, MIN_TEXT_SCALE, MAX_TEXT_SCALE);
     }
 
     private float resolveDotScale(@Nullable String configured) {
@@ -1025,8 +1076,8 @@ public class CompassElement extends AbstractElement {
         int majorHalf = Math.min(Math.max(barHeight / 2 + 2, Mth.floor(height * 0.3F)), height / 2);
         int minorHalf = Math.min(Math.max(1, Mth.floor(height * 0.18F)), height / 2);
         float baseScale = Mth.clamp(height / 60.0F, 0.55F, 3.0F);
-        float cardinalScale = baseScale;
-        float numberScale = Math.max(0.4F, baseScale * 0.8F);
+        float cardinalScale = baseScale * this.resolveCardinalTextScaleMultiplier();
+        float numberScale = Math.max(0.4F, baseScale * 0.8F) * this.resolveDegreeTextScaleMultiplier();
         float cardinalHalfHeight = font.lineHeight * cardinalScale / 2.0F;
         float numberHalfHeight = font.lineHeight * numberScale / 2.0F;
         float cardinalCenterY = Mth.clamp(y + height * 0.28F, y + cardinalHalfHeight, y + height - cardinalHalfHeight);
@@ -1073,18 +1124,20 @@ public class CompassElement extends AbstractElement {
     private record TextureHandle(ResourceLocation location, int width, int height, @NotNull AspectRatio aspectRatio) {
     }
 
-    private void drawDeathNeedleStrips(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float centerX, int color) {
+    private void drawDeathNeedleStrips(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float centerX, int color, float offsetY) {
         int needleWidth = Math.max(1, Mth.floor(layout.width() * 0.006F));
         int half = Math.max(0, needleWidth / 2);
         float normalizedCenter = this.normalizeCenterForWrap(layout, centerX);
-        this.drawNeedleStrip(graphics, layout, normalizedCenter - layout.width(), needleWidth, half, color);
-        this.drawNeedleStrip(graphics, layout, normalizedCenter, needleWidth, half, color);
-        this.drawNeedleStrip(graphics, layout, normalizedCenter + layout.width(), needleWidth, half, color);
+        this.drawNeedleStrip(graphics, layout, normalizedCenter - layout.width(), needleWidth, half, color, offsetY);
+        this.drawNeedleStrip(graphics, layout, normalizedCenter, needleWidth, half, color, offsetY);
+        this.drawNeedleStrip(graphics, layout, normalizedCenter + layout.width(), needleWidth, half, color, offsetY);
     }
 
-    private void drawNeedleStrip(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float centerX, int width, int halfWidth, int color) {
+    private void drawNeedleStrip(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float centerX, int width, int halfWidth, int color, float offsetY) {
         int xi = Mth.floor(centerX) - halfWidth;
-        graphics.fill(xi, layout.y(), xi + width, layout.y() + layout.height(), color);
+        int pixelOffset = Mth.floor(offsetY);
+        int top = layout.y() + pixelOffset;
+        graphics.fill(xi, top, xi + width, top + layout.height(), color);
     }
 
     private float adjustDeathPointerRelative(float relative) {

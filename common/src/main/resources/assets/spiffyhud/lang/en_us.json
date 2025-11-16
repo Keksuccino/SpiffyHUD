@@ -333,5 +333,19 @@
   "spiffyhud.elements.player_compass.cardinal_text.y_offset": "Cardinal Letters Y-Offset",
   "spiffyhud.elements.player_compass.cardinal_text.y_offset.desc": "Offsets the N/E/S/W labels vertically. Supports placeholders.",
   "spiffyhud.elements.player_compass.degree_text.y_offset": "Degree Numbers Y-Offset",
-  "spiffyhud.elements.player_compass.degree_text.y_offset.desc": "Offsets the number row position vertically. Supports placeholders."
+  "spiffyhud.elements.player_compass.degree_text.y_offset.desc": "Offsets the number row position vertically. Supports placeholders.",
+  "spiffyhud.elements.player_compass.needle.y_offset": "Needle Y-Offset",
+  "spiffyhud.elements.player_compass.needle.y_offset.desc": "Moves the main compass needle up or down. Applies to both textures and the fallback color strip.",
+  "spiffyhud.elements.player_compass.marker.y_offset": "World Marker Y-Offset",
+  "spiffyhud.elements.player_compass.marker.y_offset.desc": "Offsets world marker dots/needles vertically. Supports placeholders for dynamic binding.",
+  "spiffyhud.elements.player_compass.death_pointer.y_offset": "Death Pointer Y-Offset",
+  "spiffyhud.elements.player_compass.death_pointer.y_offset.desc": "Shifts the death pointer needle up or down. Placeholders allowed for animations.",
+  "spiffyhud.elements.player_compass.cardinal_text.scale": "Cardinal Letter Scale",
+  "spiffyhud.elements.player_compass.cardinal_text.scale.desc": "Multiplier applied to the N/E/S/W text size. Accepts decimals and placeholders so you can grow or shrink the letters dynamically.",
+  "spiffyhud.elements.player_compass.degree_text.scale": "Degree Number Scale",
+  "spiffyhud.elements.player_compass.degree_text.scale.desc": "Multiplier that resizes the degree numbers row. Works with placeholders for animated scaling.",
+  "spiffyhud.elements.player_compass.hostile_dots.y_offset": "Hostile Mob Dot Y-Offset",
+  "spiffyhud.elements.player_compass.hostile_dots.y_offset.desc": "Adds a base vertical shift to hostile mob dots before the distance-based movement is applied. Accepts placeholders.",
+  "spiffyhud.elements.player_compass.passive_dots.y_offset": "Other Mob Dot Y-Offset",
+  "spiffyhud.elements.player_compass.passive_dots.y_offset.desc": "Offsets other mob dots up or down while keeping their near/far animation intact. Supports placeholders."
 }
