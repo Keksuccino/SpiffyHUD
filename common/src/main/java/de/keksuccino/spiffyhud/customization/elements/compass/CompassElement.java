@@ -547,7 +547,7 @@ public class CompassElement extends AbstractElement {
         float centerX = this.computeScreenXUnbounded(layout, relative);
         float offset = this.resolveDeathPointerYOffset();
         float centerY = layout.y() + layout.height() / 2.0F + offset;
-        graphics.enableScissor(layout.x(), layout.y(), layout.x() + layout.width(), layout.y() + layout.height());
+        graphics.enableScissor(layout.x(), layout.y() - 200, layout.x() + layout.width(), layout.y() + layout.height() + 200);
         try {
             boolean textured = this.drawNeedleTexture(graphics, layout, centerX, centerY, this.deathPointerTexture, false, true);
             if (!textured) {
