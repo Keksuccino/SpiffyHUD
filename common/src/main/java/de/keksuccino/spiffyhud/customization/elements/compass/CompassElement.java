@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import de.keksuccino.fancymenu.customization.element.AbstractElement;
 import de.keksuccino.fancymenu.customization.element.ElementBuilder;
 import de.keksuccino.fancymenu.customization.placeholder.PlaceholderParser;
+import de.keksuccino.fancymenu.util.MathUtils;
 import de.keksuccino.fancymenu.util.SerializationUtils;
 import de.keksuccino.fancymenu.util.rendering.AspectRatio;
 import de.keksuccino.fancymenu.util.rendering.DrawableColor;
@@ -49,6 +50,13 @@ public class CompassElement extends AbstractElement {
     private static final int DEFAULT_PASSIVE_DOT_COLOR = 0xFFFFE15A;
     private static final int MAX_MOB_DOTS_PER_TYPE = 64;
     private static final long MOB_DOTS_REFRESH_RATE_MS = 10L;
+    private static final float DEFAULT_DOT_SCALE = 1.0F;
+    private static final float MIN_DOT_SCALE = 0.2F;
+    private static final float MAX_DOT_SCALE = 8.0F;
+    private static final float BASE_DOT_DIAMETER_MIN = 2.0F;
+    private static final float BASE_DOT_DIAMETER_MAX = 18.0F;
+    private static final float MIN_SCALED_DOT_DIAMETER = 1.0F;
+    private static final float MAX_SCALED_DOT_DIAMETER = 64.0F;
 
     public static final String DEFAULT_BACKGROUND_COLOR_STRING = "#B0101010";
     public static final String DEFAULT_BAR_COLOR_STRING = "#C0FFFFFF";
@@ -61,6 +69,7 @@ public class CompassElement extends AbstractElement {
     public static final String DEFAULT_DEATH_POINTER_COLOR_STRING = "#FF66C3FF";
     public static final String DEFAULT_HOSTILE_DOT_COLOR_STRING = "#FFFF4A4A";
     public static final String DEFAULT_PASSIVE_DOT_COLOR_STRING = "#FFFFE15A";
+    public static final String DEFAULT_DOT_SCALE_STRING = "1.0";
 
     @NotNull public String backgroundColor = DEFAULT_BACKGROUND_COLOR_STRING;
     @NotNull public String barColor = DEFAULT_BAR_COLOR_STRING;
@@ -78,6 +87,9 @@ public class CompassElement extends AbstractElement {
     @Nullable public ResourceSupplier<ITexture> deathPointerTexture;
     @Nullable public ResourceSupplier<ITexture> hostileDotTexture;
     @Nullable public ResourceSupplier<ITexture> passiveDotTexture;
+    @NotNull public String hostileDotScale = DEFAULT_DOT_SCALE_STRING;
+    @NotNull public String passiveDotScale = DEFAULT_DOT_SCALE_STRING;
+    @NotNull public String markerDotScale = DEFAULT_DOT_SCALE_STRING;
     public boolean backgroundEnabled = true;
     public boolean barEnabled = true;
     public boolean cardinalTicksEnabled = true;
@@ -339,20 +351,21 @@ public class CompassElement extends AbstractElement {
         }
         float minY = layout.y();
         float maxY = layout.y() + layout.height();
-        float dotDiameter = Mth.clamp(layout.height() * 0.12F, 2.0F, 18.0F);
-        float radius = dotDiameter / 2.0F;
+        float baseDiameter = this.computeBaseDotDiameter(layout);
+        float hostileRadius = this.computeScaledRadius(baseDiameter, this.resolveHostileDotScale());
+        float passiveRadius = this.computeScaledRadius(baseDiameter, this.resolvePassiveDotScale());
         boolean drawHostileHeads = this.hostileDotsShowHeads;
         if (!dots.hostileDots().isEmpty()) {
             for (MobDotData data : dots.hostileDots()) {
                 float centerY = this.computeDotCenterY(minY, maxY, data.distanceRatio());
-                this.drawMobDot(graphics, layout, data, centerY, radius, drawHostileHeads, colors.hostileDotColor(), this.hostileDotTexture);
+                this.drawMobDot(graphics, layout, data, centerY, hostileRadius, drawHostileHeads, colors.hostileDotColor(), this.hostileDotTexture);
             }
         }
         boolean drawPassiveHeads = this.passiveDotsShowHeads;
         if (!dots.passiveDots().isEmpty()) {
             for (MobDotData data : dots.passiveDots()) {
                 float centerY = this.computeDotCenterY(minY, maxY, data.distanceRatio());
-                this.drawMobDot(graphics, layout, data, centerY, radius, drawPassiveHeads, colors.passiveDotColor(), this.passiveDotTexture);
+                this.drawMobDot(graphics, layout, data, centerY, passiveRadius, drawPassiveHeads, colors.passiveDotColor(), this.passiveDotTexture);
             }
         }
     }
@@ -360,6 +373,15 @@ public class CompassElement extends AbstractElement {
     private float computeDotCenterY(float minY, float maxY, float ratio) {
         float clampedRatio = Mth.clamp(ratio, 0.0F, 1.0F);
         return Mth.clamp(Mth.lerp(clampedRatio, minY, maxY), minY, maxY);
+    }
+
+    private float computeBaseDotDiameter(@NotNull CompassLayout layout) {
+        return Mth.clamp(layout.height() * 0.12F, BASE_DOT_DIAMETER_MIN, BASE_DOT_DIAMETER_MAX);
+    }
+
+    private float computeScaledRadius(float baseDiameter, float scaleMultiplier) {
+        float scaledDiameter = Mth.clamp(baseDiameter * scaleMultiplier, MIN_SCALED_DOT_DIAMETER, MAX_SCALED_DOT_DIAMETER);
+        return Math.max(1.0F, scaledDiameter / 2.0F);
     }
 
     private void drawMobDot(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull MobDotData data, float centerY, float radius, boolean drawHead, int color, @Nullable ResourceSupplier<ITexture> texture) {
@@ -376,8 +398,8 @@ public class CompassElement extends AbstractElement {
     }
 
     private void drawMarkerDots(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull List<ResolvedMarker> markers) {
-        float dotDiameter = Mth.clamp(layout.height() * 0.12F, 2.0F, 18.0F);
-        float radius = dotDiameter / 2.0F;
+        float baseDiameter = this.computeBaseDotDiameter(layout);
+        float radius = this.computeScaledRadius(baseDiameter, this.resolveMarkerDotScale());
         float centerY = layout.y() + layout.height() / 2.0F;
         for (ResolvedMarker marker : markers) {
             if (marker.showAsNeedle()) {
@@ -647,6 +669,36 @@ public class CompassElement extends AbstractElement {
             }
         }
         return fallback;
+    }
+
+    private float resolveHostileDotScale() {
+        return this.resolveDotScale(this.hostileDotScale);
+    }
+
+    private float resolvePassiveDotScale() {
+        return this.resolveDotScale(this.passiveDotScale);
+    }
+
+    private float resolveMarkerDotScale() {
+        return this.resolveDotScale(this.markerDotScale);
+    }
+
+    private float resolveDotScale(@Nullable String configured) {
+        if (configured == null || configured.isBlank()) {
+            return DEFAULT_DOT_SCALE;
+        }
+        String replaced = PlaceholderParser.replacePlaceholders(configured).trim();
+        if (!replaced.isEmpty() && MathUtils.isFloat(replaced)) {
+            try {
+                float parsed = Float.parseFloat(replaced);
+                if (!Float.isFinite(parsed)) {
+                    return DEFAULT_DOT_SCALE;
+                }
+                return Mth.clamp(parsed, MIN_DOT_SCALE, MAX_DOT_SCALE);
+            } catch (NumberFormatException ignored) {
+            }
+        }
+        return DEFAULT_DOT_SCALE;
     }
 
     public @NotNull List<MarkerData> getMarkers() {

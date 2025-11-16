@@ -58,6 +58,9 @@ public class CompassElementBuilder extends ElementBuilder<CompassElement, Compas
         element.deathPointerTexture = deserializeImageResourceSupplier(serialized.getValue("death_pointer_texture"));
         element.hostileDotTexture = deserializeImageResourceSupplier(serialized.getValue("hostile_dots_texture"));
         element.passiveDotTexture = deserializeImageResourceSupplier(serialized.getValue("passive_dots_texture"));
+        element.hostileDotScale = Objects.requireNonNullElse(serialized.getValue("hostile_dots_scale"), element.hostileDotScale);
+        element.passiveDotScale = Objects.requireNonNullElse(serialized.getValue("passive_dots_scale"), element.passiveDotScale);
+        element.markerDotScale = Objects.requireNonNullElse(serialized.getValue("marker_dots_scale"), element.markerDotScale);
         element.backgroundEnabled = deserializeBoolean(element.backgroundEnabled, serialized.getValue("background_enabled"));
         element.barEnabled = deserializeBoolean(element.barEnabled, serialized.getValue("bar_enabled"));
         element.cardinalTicksEnabled = deserializeBoolean(element.cardinalTicksEnabled, serialized.getValue("cardinal_ticks_enabled"));
@@ -110,6 +113,9 @@ public class CompassElementBuilder extends ElementBuilder<CompassElement, Compas
         serializeTo.putProperty("death_pointer_color", element.deathPointerColor);
         serializeTo.putProperty("hostile_dots_color", element.hostileDotsColor);
         serializeTo.putProperty("passive_dots_color", element.passiveDotsColor);
+        serializeTo.putProperty("hostile_dots_scale", element.hostileDotScale);
+        serializeTo.putProperty("passive_dots_scale", element.passiveDotScale);
+        serializeTo.putProperty("marker_dots_scale", element.markerDotScale);
         ResourceSupplier<ITexture> barTexture = element.barTexture;
         if (barTexture != null) {
             serializeTo.putProperty("bar_texture", barTexture.getSourceWithPrefix());

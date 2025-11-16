@@ -223,6 +223,16 @@ public class CompassEditorElement extends AbstractEditorElement {
                 .setStackable(false)
                 .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.world_markers.desc")));
 
+        this.addStringInputContextMenuEntryTo(this.rightClickMenu, "marker_dots_scale",
+                        CompassEditorElement.class,
+                        consumes -> consumes.getElement().markerDotScale,
+                        (editorElement, value) -> editorElement.getElement().markerDotScale = (value == null || value.isBlank()) ? CompassElement.DEFAULT_DOT_SCALE_STRING : value,
+                        null, false, true,
+                        Component.translatable("spiffyhud.elements.player_compass.marker_dots.scale"),
+                        true, CompassElement.DEFAULT_DOT_SCALE_STRING, null, null)
+                .setStackable(false)
+                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.marker_dots.scale.desc")));
+
         this.rightClickMenu.addClickableEntry("world_markers_clear", Component.translatable("spiffyhud.elements.player_compass.world_markers.clear"), (menu, entry) -> {
                     this.rightClickMenu.closeMenu();
                     ConfirmationScreen confirmation = ConfirmationScreen.critical(confirmed -> {
@@ -235,7 +245,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                 }).setStackable(false)
                 .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.world_markers.clear.desc")));
 
-        this.rightClickMenu.addSeparatorEntry("separator_after_world_markers");
+        this.rightClickMenu.addSeparatorEntry("separator_after_marker_dots_scale");
 
         this.addToggleContextMenuEntryTo(this.rightClickMenu, "hostile_dots_enabled",
                         CompassEditorElement.class,
@@ -255,6 +265,16 @@ public class CompassEditorElement extends AbstractEditorElement {
 
         this.addColorInput("hostile_dots_color", Component.translatable("spiffyhud.elements.player_compass.color.hostile_dots"), CompassElement.DEFAULT_HOSTILE_DOT_COLOR_STRING)
                 .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.color.hostile_dots.desc")));
+
+        this.addStringInputContextMenuEntryTo(this.rightClickMenu, "hostile_dots_scale",
+                        CompassEditorElement.class,
+                        consumes -> consumes.getElement().hostileDotScale,
+                        (editorElement, value) -> editorElement.getElement().hostileDotScale = (value == null || value.isBlank()) ? CompassElement.DEFAULT_DOT_SCALE_STRING : value,
+                        null, false, true,
+                        Component.translatable("spiffyhud.elements.player_compass.hostile_dots.scale"),
+                        true, CompassElement.DEFAULT_DOT_SCALE_STRING, null, null)
+                .setStackable(false)
+                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.hostile_dots.scale.desc")));
 
         this.addIntegerInputContextMenuEntryTo(this.rightClickMenu, "hostile_dots_range",
                         CompassEditorElement.class,
@@ -297,6 +317,16 @@ public class CompassEditorElement extends AbstractEditorElement {
 
         this.addColorInput("passive_dots_color", Component.translatable("spiffyhud.elements.player_compass.color.passive_dots"), CompassElement.DEFAULT_PASSIVE_DOT_COLOR_STRING)
                 .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.color.passive_dots.desc")));
+
+        this.addStringInputContextMenuEntryTo(this.rightClickMenu, "passive_dots_scale",
+                        CompassEditorElement.class,
+                        consumes -> consumes.getElement().passiveDotScale,
+                        (editorElement, value) -> editorElement.getElement().passiveDotScale = (value == null || value.isBlank()) ? CompassElement.DEFAULT_DOT_SCALE_STRING : value,
+                        null, false, true,
+                        Component.translatable("spiffyhud.elements.player_compass.passive_dots.scale"),
+                        true, CompassElement.DEFAULT_DOT_SCALE_STRING, null, null)
+                .setStackable(false)
+                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.passive_dots.scale.desc")));
 
         this.addIntegerInputContextMenuEntryTo(this.rightClickMenu, "passive_dots_range",
                         CompassEditorElement.class,

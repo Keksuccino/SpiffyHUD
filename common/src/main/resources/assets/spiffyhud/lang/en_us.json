@@ -317,5 +317,11 @@
   "spiffyhud.elements.player_compass.texture.cardinal_tick": "Cardinal Tick Texture",
   "spiffyhud.elements.player_compass.texture.cardinal_tick.desc": "Overrides the long tick lines behind the cardinal letters with an image that scales to the compass height while maintaining aspect ratio. The texture stays centered on each cardinal tick.",
   "spiffyhud.elements.player_compass.texture.degree_tick": "Degree Tick Texture",
-  "spiffyhud.elements.player_compass.texture.degree_tick.desc": "Overrides the remaining major tick marks (30°, 60°, etc.) with an image that fills the compass height and stays centered on the tick position."
+  "spiffyhud.elements.player_compass.texture.degree_tick.desc": "Overrides the remaining major tick marks (30°, 60°, etc.) with an image that fills the compass height and stays centered on the tick position.",
+  "spiffyhud.elements.player_compass.hostile_dots.scale": "Hostile Mob Dot Scale",
+  "spiffyhud.elements.player_compass.hostile_dots.scale.desc": "Multiplier that resizes hostile mob dots. Needs decimal numbers. Supports placeholders. Values below 1.0 shrink the dots and values above 1.0 enlarge them.",
+  "spiffyhud.elements.player_compass.passive_dots.scale": "Other Mob Dot Scale",
+  "spiffyhud.elements.player_compass.passive_dots.scale.desc": "Multiplier that resizes \"other\" mob dots. Needs decimal numbers. Supports placeholders. Values below 1.0 shrink the dots and values above 1.0 enlarge them.",
+  "spiffyhud.elements.player_compass.marker_dots.scale": "World Marker Scale",
+  "spiffyhud.elements.player_compass.marker_dots.scale.desc": "Multiplier that resizes world markers. Needs decimal numbers. Supports placeholders. Values below 1.0 shrink the dots and values above 1.0 enlarge them."
 }
