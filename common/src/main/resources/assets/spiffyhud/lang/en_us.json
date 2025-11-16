@@ -303,5 +303,9 @@
   "spiffyhud.elements.player_compass.world_markers.clear.desc": "Deletes every stored world marker tied to this element identifier. This action cannot be undone.",
   "spiffyhud.elements.player_compass.world_markers.clear.confirm": "Remove all world markers for this compass?\n\nThis §xpermanently deletes§r all markers of this compass. You can re-create markers later with actions.",
   "spiffyhud.elements.player_compass.texture.bar": "Compass Bar Texture",
-  "spiffyhud.elements.player_compass.texture.bar.desc": "Optional image that replaces the bar fill. The texture slides as the compass rotates and seamlessly wraps, so repeatable stripe or gradient textures work best. Leave empty to keep the solid color fill."
+  "spiffyhud.elements.player_compass.texture.bar.desc": "Optional image that replaces the bar fill. The texture slides as the compass rotates and seamlessly wraps, so repeatable stripe or gradient textures work best. Leave empty to keep the solid color fill.",
+  "spiffyhud.elements.player_compass.texture.major_tick": "Major Tick Texture",
+  "spiffyhud.elements.player_compass.texture.major_tick.desc": "Overrides the tall major tick marks with an image that stretches to the compass height while keeping its aspect ratio. The texture stays centered on each major tick.",
+  "spiffyhud.elements.player_compass.texture.minor_tick": "Minor Tick Texture",
+  "spiffyhud.elements.player_compass.texture.minor_tick.desc": "Overrides the smaller tick marks with a texture that fills the compass height and remains centered on the tick position. Leave empty to keep the color line."
 }

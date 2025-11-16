@@ -39,7 +39,9 @@ public class CompassElementBuilder extends ElementBuilder<CompassElement, Compas
         element.barColor = Objects.requireNonNullElse(serialized.getValue("bar_color"), element.barColor);
         element.barTexture = deserializeImageResourceSupplier(serialized.getValue("bar_texture"));
         element.majorTickColor = Objects.requireNonNullElse(serialized.getValue("major_tick_color"), element.majorTickColor);
+        element.majorTickTexture = deserializeImageResourceSupplier(serialized.getValue("major_tick_texture"));
         element.minorTickColor = Objects.requireNonNullElse(serialized.getValue("minor_tick_color"), element.minorTickColor);
+        element.minorTickTexture = deserializeImageResourceSupplier(serialized.getValue("minor_tick_texture"));
         element.cardinalTextColor = Objects.requireNonNullElse(serialized.getValue("cardinal_text_color"), element.cardinalTextColor);
         element.numberTextColor = Objects.requireNonNullElse(serialized.getValue("number_text_color"), element.numberTextColor);
         element.needleColor = Objects.requireNonNullElse(serialized.getValue("needle_color"), element.needleColor);
@@ -96,6 +98,14 @@ public class CompassElementBuilder extends ElementBuilder<CompassElement, Compas
         ResourceSupplier<ITexture> barTexture = element.barTexture;
         if (barTexture != null) {
             serializeTo.putProperty("bar_texture", barTexture.getSourceWithPrefix());
+        }
+        ResourceSupplier<ITexture> majorTickTexture = element.majorTickTexture;
+        if (majorTickTexture != null) {
+            serializeTo.putProperty("major_tick_texture", majorTickTexture.getSourceWithPrefix());
+        }
+        ResourceSupplier<ITexture> minorTickTexture = element.minorTickTexture;
+        if (minorTickTexture != null) {
+            serializeTo.putProperty("minor_tick_texture", minorTickTexture.getSourceWithPrefix());
         }
         ResourceSupplier<ITexture> needleTexture = element.needleTexture;
         if (needleTexture != null) {

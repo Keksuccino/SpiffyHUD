@@ -64,7 +64,9 @@ public class CompassElement extends AbstractElement {
     @NotNull public String barColor = DEFAULT_BAR_COLOR_STRING;
     @Nullable public ResourceSupplier<ITexture> barTexture;
     @NotNull public String majorTickColor = DEFAULT_MAJOR_TICK_COLOR_STRING;
+    @Nullable public ResourceSupplier<ITexture> majorTickTexture;
     @NotNull public String minorTickColor = DEFAULT_MINOR_TICK_COLOR_STRING;
+    @Nullable public ResourceSupplier<ITexture> minorTickTexture;
     @NotNull public String cardinalTextColor = DEFAULT_CARDINAL_TEXT_COLOR_STRING;
     @NotNull public String numberTextColor = DEFAULT_NUMBER_TEXT_COLOR_STRING;
     @NotNull public String needleColor = DEFAULT_NEEDLE_COLOR_STRING;
@@ -251,16 +253,41 @@ public class CompassElement extends AbstractElement {
             int halfHeight = major ? layout.majorTickHalfHeight() : layout.minorTickHalfHeight();
             int absolute = toAbsoluteDegrees(degrees);
             float relative = this.relativeToHeading(absolute, reading.headingDegrees());
-            this.drawTick(graphics, layout, relative, halfHeight, color);
+            this.drawTick(graphics, layout, relative, halfHeight, color, major);
         }
     }
 
-    private void drawTick(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float relativeDegrees, int halfHeight, int color) {
+    private void drawTick(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float relativeDegrees, int halfHeight, int color, boolean majorTick) {
         float x = this.computeScreenX(layout, relativeDegrees);
+        if (this.drawTickTexture(graphics, layout, x, majorTick)) {
+            return;
+        }
         int xi = Mth.clamp(Mth.floor(x), layout.x(), layout.x() + layout.width() - 1);
         int top = layout.barCenterY() - halfHeight;
         int bottom = layout.barCenterY() + halfHeight;
         graphics.fill(xi, top, xi + 1, bottom, color);
+    }
+
+    private boolean drawTickTexture(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float centerX, boolean majorTick) {
+        ResourceSupplier<ITexture> supplier = majorTick ? this.majorTickTexture : this.minorTickTexture;
+        return this.drawTickTexture(graphics, layout, centerX, supplier);
+    }
+
+    private boolean drawTickTexture(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float centerX, @Nullable ResourceSupplier<ITexture> supplier) {
+        TextureHandle handle = this.resolveTexture(supplier);
+        if (handle == null) {
+            return false;
+        }
+        int destHeight = Math.max(1, layout.height());
+        int destWidth = Math.max(1, handle.aspectRatio().getAspectRatioWidth(destHeight));
+        float drawX = centerX - destWidth / 2.0F;
+        int drawXi = Mth.floor(drawX);
+        int drawYi = layout.y();
+        RenderSystem.enableBlend();
+        graphics.setColor(1.0F, 1.0F, 1.0F, this.opacity);
+        graphics.blit(handle.location(), drawXi, drawYi, 0.0F, 0.0F, destWidth, destHeight, destWidth, destHeight);
+        graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+        return true;
     }
 
     private void drawCardinalLabels(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull ResolvedColors colors, @NotNull CompassReading reading) {

@@ -95,6 +95,18 @@ public class CompassEditorElement extends AbstractEditorElement {
 
         this.addColorInput("major_tick_color", Component.translatable("spiffyhud.elements.player_compass.color.major_tick"), CompassElement.DEFAULT_MAJOR_TICK_COLOR_STRING);
 
+        this.addImageResourceChooserContextMenuEntryTo(this.rightClickMenu,
+                        "major_tick_texture",
+                        CompassEditorElement.class,
+                        null,
+                        consumes -> consumes.getElement().majorTickTexture,
+                        (editorElement, supplier) -> editorElement.getElement().majorTickTexture = supplier,
+                        Component.translatable("spiffyhud.elements.player_compass.texture.major_tick"),
+                        true, null, true, true, true)
+                .setStackable(false)
+                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.texture.major_tick.desc")))
+                .setIcon(ContextMenu.IconFactory.getIcon("image"));
+
         this.rightClickMenu.addSeparatorEntry("separator_after_major_tick");
 
         this.addToggleContextMenuEntryTo(this.rightClickMenu, "minor_ticks_enabled",
@@ -105,6 +117,18 @@ public class CompassEditorElement extends AbstractEditorElement {
                 .setStackable(false);
 
         this.addColorInput("minor_tick_color", Component.translatable("spiffyhud.elements.player_compass.color.minor_tick"), CompassElement.DEFAULT_MINOR_TICK_COLOR_STRING);
+
+        this.addImageResourceChooserContextMenuEntryTo(this.rightClickMenu,
+                        "minor_tick_texture",
+                        CompassEditorElement.class,
+                        null,
+                        consumes -> consumes.getElement().minorTickTexture,
+                        (editorElement, supplier) -> editorElement.getElement().minorTickTexture = supplier,
+                        Component.translatable("spiffyhud.elements.player_compass.texture.minor_tick"),
+                        true, null, true, true, true)
+                .setStackable(false)
+                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.texture.minor_tick.desc")))
+                .setIcon(ContextMenu.IconFactory.getIcon("image"));
 
         this.rightClickMenu.addSeparatorEntry("separator_after_minor_tick");
 
