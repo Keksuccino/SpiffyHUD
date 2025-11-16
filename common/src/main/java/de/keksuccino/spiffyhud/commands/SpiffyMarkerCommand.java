@@ -1,8 +1,11 @@
 package de.keksuccino.spiffyhud.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
@@ -12,29 +15,20 @@ import de.keksuccino.spiffyhud.customization.actions.marker.MarkerActionConfig;
 import de.keksuccino.spiffyhud.customization.actions.marker.MarkerRemovalConfig;
 import de.keksuccino.spiffyhud.networking.packets.markercommand.MarkerCommandOperation;
 import de.keksuccino.spiffyhud.networking.packets.markercommand.command.MarkerCommandPacket;
-import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public final class SpiffyMarkerCommand {
-
-    private static final int REMOTE_PERMISSION_LEVEL = 4;
 
     private static final SimpleCommandExceptionType MUST_BE_PLAYER_EXCEPTION =
             new SimpleCommandExceptionType(Component.translatable("spiffyhud.commands.marker.requires_player"));
@@ -44,12 +38,10 @@ public final class SpiffyMarkerCommand {
             new SimpleCommandExceptionType(Component.translatable("spiffyhud.commands.marker.error.invalid_marker"));
     private static final SimpleCommandExceptionType INVALID_POSITION =
             new SimpleCommandExceptionType(Component.translatable("spiffyhud.commands.marker.error.position_required"));
-    private static final SimpleCommandExceptionType INVALID_OPTIONS =
-            new SimpleCommandExceptionType(Component.translatable("spiffyhud.commands.marker.error.options_required"));
-    private static final SimpleCommandExceptionType TARGET_PERMISSION_EXCEPTION =
-            new SimpleCommandExceptionType(Component.translatable("spiffyhud.commands.marker.error.target_admin_only"));
+    private static final SimpleCommandExceptionType CLIENT_NOT_SUPPORTED =
+            new SimpleCommandExceptionType(Component.translatable("spiffyhud.commands.marker.self_not_supported"));
 
-    public static final Map<String, List<String>> CACHED_GROUP_SUGGESTIONS = Collections.synchronizedMap(new HashMap<>());
+    private static final Map<String, List<String>> CACHED_GROUP_SUGGESTIONS = java.util.Collections.synchronizedMap(new HashMap<>());
 
     private SpiffyMarkerCommand() {
     }
@@ -81,85 +73,102 @@ public final class SpiffyMarkerCommand {
                 });
     }
 
-    private static RequiredArgumentBuilder<CommandSourceStack, String> optionsArgument() {
-        return Commands.argument("options", StringArgumentType.greedyString());
-    }
-
-    private static com.mojang.brigadier.builder.LiteralArgumentBuilder<CommandSourceStack> buildAddCommand() {
+    private static LiteralArgumentBuilder<CommandSourceStack> buildAddCommand() {
         return Commands.literal("add")
                 .then(targetElementArgument()
-                        .then(optionsArgument().executes(SpiffyMarkerCommand::executeAdd)));
+                        .then(Commands.argument("marker_name", StringArgumentType.string())
+                                .then(Commands.argument("pos_x", StringArgumentType.string())
+                                        .then(Commands.argument("pos_z", StringArgumentType.string())
+                                                .executes(SpiffyMarkerCommand::executeAdd)
+                                                .then(optionalColorArgument().executes(SpiffyMarkerCommand::executeAdd)
+                                                        .then(optionalNeedleArgument().executes(SpiffyMarkerCommand::executeAdd)
+                                                                .then(optionalDotTextureArgument().executes(SpiffyMarkerCommand::executeAdd)
+                                                                        .then(optionalNeedleTextureArgument().executes(SpiffyMarkerCommand::executeAdd)))))))));
     }
 
-    private static com.mojang.brigadier.builder.LiteralArgumentBuilder<CommandSourceStack> buildEditCommand() {
+    private static LiteralArgumentBuilder<CommandSourceStack> buildEditCommand() {
         return Commands.literal("edit")
                 .then(targetElementArgument()
-                        .then(optionsArgument().executes(SpiffyMarkerCommand::executeEdit)));
+                        .then(Commands.argument("marker_name", StringArgumentType.string())
+                                .then(Commands.argument("pos_x", StringArgumentType.string())
+                                        .then(Commands.argument("pos_z", StringArgumentType.string())
+                                                .executes(SpiffyMarkerCommand::executeEdit)
+                                                .then(optionalColorArgument().executes(SpiffyMarkerCommand::executeEdit)
+                                                        .then(optionalNeedleArgument().executes(SpiffyMarkerCommand::executeEdit)
+                                                                .then(optionalDotTextureArgument().executes(SpiffyMarkerCommand::executeEdit)
+                                                                        .then(optionalNeedleTextureArgument().executes(SpiffyMarkerCommand::executeEdit)))))))));
     }
 
-    private static com.mojang.brigadier.builder.LiteralArgumentBuilder<CommandSourceStack> buildRemoveCommand() {
+    private static LiteralArgumentBuilder<CommandSourceStack> buildRemoveCommand() {
         return Commands.literal("remove")
                 .then(targetElementArgument()
-                        .then(optionsArgument().executes(SpiffyMarkerCommand::executeRemove)));
+                        .then(Commands.argument("marker_name", StringArgumentType.string())
+                                .executes(SpiffyMarkerCommand::executeRemove)));
+    }
+
+    private static RequiredArgumentBuilder<CommandSourceStack, String> optionalColorArgument() {
+        return Commands.argument("color", StringArgumentType.string());
+    }
+
+    private static RequiredArgumentBuilder<CommandSourceStack, Boolean> optionalNeedleArgument() {
+        return Commands.argument("show_as_needle", BoolArgumentType.bool());
+    }
+
+    private static RequiredArgumentBuilder<CommandSourceStack, String> optionalDotTextureArgument() {
+        return Commands.argument("dot_texture", StringArgumentType.string());
+    }
+
+    private static RequiredArgumentBuilder<CommandSourceStack, String> optionalNeedleTextureArgument() {
+        return Commands.argument("needle_texture", StringArgumentType.string());
     }
 
     private static int executeAdd(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        CommandSourceStack source = context.getSource();
-        String targetElement = StringArgumentType.getString(context, "target_element").trim();
-        Map<String, String> options = parseOptions(context);
-        String displayName = sanitizeRequired(resolveOption(options, "name", "display", "display_name", "marker"));
-        String posX = sanitizeRequired(resolveOption(options, "x", "posx", "position_x"));
-        String posZ = sanitizeRequired(resolveOption(options, "z", "posz", "position_z"));
-        String color = sanitizeOptional(resolveOption(options, "color", "colour"));
-        Boolean showAsNeedle = parseOptionalBoolean(resolveOption(options, "needle", "show_as_needle"));
-        String dotTexture = sanitizeOptional(resolveOption(options, "dot", "dot_texture"));
-        String needleTexture = sanitizeOptional(resolveOption(options, "needletex", "needle_texture"));
-        Collection<ServerPlayer> explicitTargets = parseTargetOption(source, options);
-        return dispatchAdd(source, explicitTargets, targetElement, displayName, posX, posZ, color, showAsNeedle, dotTexture, needleTexture);
+        ServerPlayer player = getCommandPlayer(context);
+        String targetElement = sanitizeTarget(StringArgumentType.getString(context, "target_element"));
+        String markerName = sanitizeMarkerName(StringArgumentType.getString(context, "marker_name"));
+        String posX = sanitizePosition(StringArgumentType.getString(context, "pos_x"));
+        String posZ = sanitizePosition(StringArgumentType.getString(context, "pos_z"));
+        String color = sanitizeOptional(getOptionalString(context, "color"));
+        Boolean showAsNeedle = getOptionalBool(context, "show_as_needle");
+        String dotTexture = sanitizeOptional(getOptionalString(context, "dot_texture"));
+        String needleTexture = sanitizeOptional(getOptionalString(context, "needle_texture"));
+        return dispatchAdd(context.getSource(), player, targetElement, markerName, posX, posZ, color, showAsNeedle, dotTexture, needleTexture);
     }
 
     private static int executeEdit(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        CommandSourceStack source = context.getSource();
-        String targetElement = StringArgumentType.getString(context, "target_element").trim();
-        Map<String, String> options = parseOptions(context);
-        String displayName = sanitizeRequired(resolveOption(options, "name", "display", "display_name", "marker"));
-        String posX = sanitizeRequired(resolveOption(options, "x", "posx", "position_x"));
-        String posZ = sanitizeRequired(resolveOption(options, "z", "posz", "position_z"));
-        String color = sanitizeOptional(resolveOption(options, "color", "colour"));
-        Boolean showAsNeedle = parseOptionalBoolean(resolveOption(options, "needle", "show_as_needle"));
-        String dotTexture = sanitizeOptional(resolveOption(options, "dot", "dot_texture"));
-        String needleTexture = sanitizeOptional(resolveOption(options, "needletex", "needle_texture"));
-        Collection<ServerPlayer> explicitTargets = parseTargetOption(source, options);
-        return dispatchEdit(source, explicitTargets, targetElement, displayName, posX, posZ, color, showAsNeedle, dotTexture, needleTexture);
+        ServerPlayer player = getCommandPlayer(context);
+        String targetElement = sanitizeTarget(StringArgumentType.getString(context, "target_element"));
+        String markerName = sanitizeMarkerName(StringArgumentType.getString(context, "marker_name"));
+        String posX = sanitizePosition(StringArgumentType.getString(context, "pos_x"));
+        String posZ = sanitizePosition(StringArgumentType.getString(context, "pos_z"));
+        String color = sanitizeOptional(getOptionalString(context, "color"));
+        Boolean showAsNeedle = getOptionalBool(context, "show_as_needle");
+        String dotTexture = sanitizeOptional(getOptionalString(context, "dot_texture"));
+        String needleTexture = sanitizeOptional(getOptionalString(context, "needle_texture"));
+        return dispatchEdit(context.getSource(), player, targetElement, markerName, posX, posZ, color, showAsNeedle, dotTexture, needleTexture);
     }
 
     private static int executeRemove(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        CommandSourceStack source = context.getSource();
-        String targetElement = StringArgumentType.getString(context, "target_element").trim();
-        Map<String, String> options = parseOptions(context);
-        String markerName = sanitizeRequired(resolveOption(options, "name", "marker", "remove", "remove_name"));
-        Collection<ServerPlayer> explicitTargets = parseTargetOption(source, options);
-        return dispatchRemove(source, explicitTargets, targetElement, markerName);
+        ServerPlayer player = getCommandPlayer(context);
+        String targetElement = sanitizeTarget(StringArgumentType.getString(context, "target_element"));
+        String markerName = sanitizeMarkerName(StringArgumentType.getString(context, "marker_name"));
+        return dispatchRemove(context.getSource(), player, targetElement, markerName);
     }
 
     private static int dispatchAdd(CommandSourceStack source,
-                                   @Nullable Collection<ServerPlayer> explicitTargets,
+                                   ServerPlayer player,
                                    String targetElement,
-                                   String displayName,
+                                   String markerName,
                                    String posX,
                                    String posZ,
                                    @Nullable String color,
                                    @Nullable Boolean showAsNeedle,
                                    @Nullable String dotTexture,
                                    @Nullable String needleTexture) throws CommandSyntaxException {
-        validateTargetElement(targetElement);
-        validateMarkerName(displayName, INVALID_MARKER_NAME);
-        validatePosition(posX);
-        validatePosition(posZ);
         MarkerActionConfig config = MarkerActionConfig.defaultConfig();
         config.targetElementIdentifier = targetElement;
-        config.displayName = displayName;
-        config.lookupMarkerName = displayName;
+        config.displayName = markerName;
+        config.lookupMarkerName = markerName;
         config.positionX = posX;
         config.positionZ = posZ;
         config.colorHex = Objects.requireNonNullElse(color, "");
@@ -167,28 +176,24 @@ public final class SpiffyMarkerCommand {
         config.needleTexture = Objects.requireNonNullElse(needleTexture, "");
         config.showAsNeedle = showAsNeedle != null && showAsNeedle;
         config.normalize();
-        return sendPacket(source, explicitTargets, MarkerCommandOperation.ADD, config, null,
-                "spiffyhud.commands.marker.add.sent", displayName, targetElement);
+        return sendPacket(source, player, MarkerCommandOperation.ADD, config, null,
+                "spiffyhud.commands.marker.add.sent", markerName, targetElement);
     }
 
     private static int dispatchEdit(CommandSourceStack source,
-                                    @Nullable Collection<ServerPlayer> explicitTargets,
+                                    ServerPlayer player,
                                     String targetElement,
-                                    String displayName,
+                                    String markerName,
                                     String posX,
                                     String posZ,
                                     @Nullable String color,
                                     @Nullable Boolean showAsNeedle,
                                     @Nullable String dotTexture,
                                     @Nullable String needleTexture) throws CommandSyntaxException {
-        validateTargetElement(targetElement);
-        validateMarkerName(displayName, INVALID_MARKER_NAME);
-        validatePosition(posX);
-        validatePosition(posZ);
         MarkerActionConfig config = MarkerActionConfig.defaultConfig();
         config.targetElementIdentifier = targetElement;
-        config.lookupMarkerName = displayName;
-        config.displayName = displayName;
+        config.displayName = markerName;
+        config.lookupMarkerName = markerName;
         config.positionX = posX;
         config.positionZ = posZ;
         config.colorHex = Objects.requireNonNullElse(color, "");
@@ -196,180 +201,103 @@ public final class SpiffyMarkerCommand {
         config.needleTexture = Objects.requireNonNullElse(needleTexture, "");
         config.showAsNeedle = showAsNeedle != null && showAsNeedle;
         config.normalize();
-        return sendPacket(source, explicitTargets, MarkerCommandOperation.EDIT, config, null,
-                "spiffyhud.commands.marker.edit.sent", displayName, targetElement);
+        return sendPacket(source, player, MarkerCommandOperation.EDIT, config, null,
+                "spiffyhud.commands.marker.edit.sent", markerName, targetElement);
     }
 
     private static int dispatchRemove(CommandSourceStack source,
-                                      @Nullable Collection<ServerPlayer> explicitTargets,
+                                      ServerPlayer player,
                                       String targetElement,
                                       String markerName) throws CommandSyntaxException {
-        validateTargetElement(targetElement);
-        validateMarkerName(markerName, INVALID_MARKER_NAME);
         MarkerRemovalConfig config = MarkerRemovalConfig.defaultConfig();
         config.targetElementIdentifier = targetElement;
         config.markerName = markerName;
         config.normalize();
-        return sendPacket(source, explicitTargets, MarkerCommandOperation.REMOVE, null, config,
+        return sendPacket(source, player, MarkerCommandOperation.REMOVE, null, config,
                 "spiffyhud.commands.marker.remove.sent", markerName, targetElement);
     }
 
     private static int sendPacket(CommandSourceStack source,
-                                  @Nullable Collection<ServerPlayer> explicitTargets,
+                                  ServerPlayer player,
                                   @NotNull MarkerCommandOperation operation,
                                   @Nullable MarkerActionConfig actionConfig,
                                   @Nullable MarkerRemovalConfig removalConfig,
                                   @NotNull String successTranslationKey,
                                   Object... successArgs) throws CommandSyntaxException {
-        List<ServerPlayer> targets = resolveTargets(source, explicitTargets);
-        int sent = 0;
-        for (ServerPlayer player : targets) {
-            if (!PacketHandler.isFancyMenuClient(player)) {
-                source.sendFailure(Component.translatable("spiffyhud.commands.marker.target_not_supported", player.getDisplayName()));
-                continue;
-            }
-            MarkerCommandPacket packet = new MarkerCommandPacket();
-            packet.operation = operation;
-            packet.actionConfig = actionConfig == null ? null : actionConfig.copy();
-            packet.removalConfig = removalConfig == null ? null : removalConfig.copy();
-            PacketHandler.sendToClient(player, packet);
-            sent++;
+        if (!PacketHandler.isFancyMenuClient(player)) {
+            throw CLIENT_NOT_SUPPORTED.create();
         }
-        if (sent > 0) {
-            Object[] augmented = new Object[successArgs.length + 1];
-            System.arraycopy(successArgs, 0, augmented, 0, successArgs.length);
-            augmented[augmented.length - 1] = sent;
-            source.sendSuccess(() -> Component.translatable(successTranslationKey, augmented), true);
-            return sent;
-        }
-        throw new SimpleCommandExceptionType(Component.translatable("spiffyhud.commands.marker.error.no_targets")).create();
+        MarkerCommandPacket packet = new MarkerCommandPacket();
+        packet.operation = operation;
+        packet.actionConfig = actionConfig == null ? null : actionConfig.copy();
+        packet.removalConfig = removalConfig == null ? null : removalConfig.copy();
+        PacketHandler.sendToClient(player, packet);
+        source.sendSuccess(() -> Component.translatable(successTranslationKey, successArgs), true);
+        return 1;
     }
 
-    private static Map<String, String> parseOptions(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        String raw = StringArgumentType.getString(context, "options");
-        if (raw == null || raw.isBlank()) {
-            throw INVALID_OPTIONS.create();
-        }
-        Map<String, String> parsed = new LinkedHashMap<>();
-        StringReader reader = new StringReader(raw);
-        while (reader.canRead()) {
-            reader.skipWhitespace();
-            if (!reader.canRead()) {
-                break;
-            }
-            int keyStart = reader.getCursor();
-            while (reader.canRead() && reader.peek() != '=') {
-                reader.skip();
-            }
-            if (!reader.canRead()) {
-                throw INVALID_OPTIONS.create();
-            }
-            String key = reader.getString().substring(keyStart, reader.getCursor()).trim().toLowerCase(Locale.ROOT);
-            reader.skip();
-            if (!reader.canRead()) {
-                parsed.put(key, "");
-                break;
-            }
-            String value = reader.readString();
-            parsed.put(key, value);
-        }
-        return parsed;
-    }
-
-    @Nullable
-    private static String resolveOption(@NotNull Map<String, String> options, String... aliases) {
-        for (String alias : aliases) {
-            String normalized = alias.toLowerCase(Locale.ROOT);
-            if (options.containsKey(normalized)) {
-                return options.get(normalized);
-            }
-        }
-        return null;
-    }
-
-    private static Collection<ServerPlayer> parseTargetOption(CommandSourceStack source, Map<String, String> options) throws CommandSyntaxException {
-        String selector = resolveOption(options, "target", "player", "players");
-        if (selector == null || selector.isBlank()) {
-            return null;
-        }
-        if (!source.hasPermission(REMOTE_PERMISSION_LEVEL)) {
-            throw TARGET_PERMISSION_EXCEPTION.create();
-        }
-        EntitySelector entitySelector = EntityArgument.players().parse(new StringReader(selector));
-        List<ServerPlayer> players = entitySelector.findPlayers(source);
-        if (players.isEmpty()) {
-            throw EntityArgument.NO_PLAYERS_FOUND.create();
-        }
-        return players;
-    }
-
-    private static List<ServerPlayer> resolveTargets(CommandSourceStack source, @Nullable Collection<ServerPlayer> explicitTargets) throws CommandSyntaxException {
-        if (explicitTargets != null && !explicitTargets.isEmpty()) {
-            return new ArrayList<>(explicitTargets);
-        }
+    private static ServerPlayer getCommandPlayer(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         try {
-            return List.of(source.getPlayerOrException());
+            return context.getSource().getPlayerOrException();
         } catch (CommandSyntaxException ex) {
             throw MUST_BE_PLAYER_EXCEPTION.create();
         }
     }
 
-    private static void validateTargetElement(@Nullable String targetElement) throws CommandSyntaxException {
-        if (targetElement == null || targetElement.isBlank()) {
+    @NotNull
+    private static String sanitizeTarget(@Nullable String value) throws CommandSyntaxException {
+        String trimmed = value == null ? "" : value.trim();
+        if (trimmed.isEmpty()) {
             throw INVALID_TARGET_ELEMENT.create();
         }
-    }
-
-    private static void validateMarkerName(@Nullable String markerName, SimpleCommandExceptionType exceptionType) throws CommandSyntaxException {
-        if (markerName == null || markerName.isBlank()) {
-            throw exceptionType.create();
-        }
-    }
-
-    private static void validatePosition(@Nullable String value) throws CommandSyntaxException {
-        if (value == null || value.isBlank()) {
-            throw INVALID_POSITION.create();
-        }
+        return trimmed;
     }
 
     @NotNull
-    private static String sanitizeRequired(@Nullable String input) throws CommandSyntaxException {
-        if (input == null) {
-            throw INVALID_OPTIONS.create();
+    private static String sanitizeMarkerName(@Nullable String value) throws CommandSyntaxException {
+        String trimmed = value == null ? "" : value.trim();
+        if (trimmed.isEmpty()) {
+            throw INVALID_MARKER_NAME.create();
         }
-        return input.trim();
+        return trimmed;
+    }
+
+    @NotNull
+    private static String sanitizePosition(@Nullable String value) throws CommandSyntaxException {
+        String trimmed = value == null ? "" : value.trim();
+        if (trimmed.isEmpty()) {
+            throw INVALID_POSITION.create();
+        }
+        return trimmed;
     }
 
     @Nullable
-    private static String sanitizeOptional(@Nullable String input) {
-        if (input == null) {
+    private static String sanitizeOptional(@Nullable String value) {
+        if (value == null) {
             return null;
         }
-        String trimmed = input.trim();
-        if (trimmed.isEmpty()) {
-            return null;
-        }
-        if (trimmed.equalsIgnoreCase("none") || trimmed.equalsIgnoreCase("null") || trimmed.equals("-")) {
+        String trimmed = value.trim();
+        if (trimmed.isEmpty() || trimmed.equals("-") || trimmed.equalsIgnoreCase("none") || trimmed.equalsIgnoreCase("null")) {
             return null;
         }
         return trimmed;
     }
 
     @Nullable
-    private static Boolean parseOptionalBoolean(@Nullable String value) throws CommandSyntaxException {
-        if (value == null) {
+    private static String getOptionalString(CommandContext<CommandSourceStack> context, String name) {
+        try {
+            return StringArgumentType.getString(context, name);
+        } catch (IllegalArgumentException ex) {
             return null;
         }
-        String normalized = value.trim().toLowerCase(Locale.ROOT);
-        if (normalized.isEmpty()) {
+    }
+
+    @Nullable
+    private static Boolean getOptionalBool(CommandContext<CommandSourceStack> context, String name) {
+        try {
+            return BoolArgumentType.getBool(context, name);
+        } catch (IllegalArgumentException ex) {
             return null;
         }
-        if (normalized.equals("true") || normalized.equals("1") || normalized.equals("yes") || normalized.equals("on")) {
-            return true;
-        }
-        if (normalized.equals("false") || normalized.equals("0") || normalized.equals("no") || normalized.equals("off")) {
-            return false;
-        }
-        throw INVALID_OPTIONS.create();
     }
 }
