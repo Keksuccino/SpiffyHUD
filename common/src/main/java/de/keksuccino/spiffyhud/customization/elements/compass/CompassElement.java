@@ -209,7 +209,7 @@ public class CompassElement extends AbstractElement {
             return false;
         }
         float normalizedHeading = Mth.positiveModulo(reading.headingDegrees(), 360.0F) / 360.0F;
-        float pixelShift = normalizedHeading * textureWidth;
+        float pixelShift = normalizedHeading * width;
         float offset = Mth.positiveModulo(pixelShift, textureWidth);
         float startX = layout.x() - offset - textureWidth;
         int maxX = layout.x() + width + textureWidth;
