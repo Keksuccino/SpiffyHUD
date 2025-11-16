@@ -85,23 +85,30 @@ public final class SpiffyMarkerCommand {
 
     private static LiteralArgumentBuilder<CommandSourceStack> buildAddCommand() {
         return Commands.literal("add")
-                .then(targetElementArgument()
+                .then(silenceArgument()
+                        .then(targetElementArgument()
                         .then(Commands.argument("marker_name", StringArgumentType.string())
-                                .then(positionAndOptionals(SpiffyMarkerCommand::executeAdd))));
+                                .then(positionAndOptionals(SpiffyMarkerCommand::executeAdd)))));
     }
 
     private static LiteralArgumentBuilder<CommandSourceStack> buildEditCommand() {
         return Commands.literal("edit")
-                .then(targetElementArgument()
+                .then(silenceArgument()
+                        .then(targetElementArgument()
                         .then(Commands.argument("marker_name", StringArgumentType.string())
-                                .then(positionAndOptionals(SpiffyMarkerCommand::executeEdit))));
+                                .then(positionAndOptionals(SpiffyMarkerCommand::executeEdit)))));
     }
 
     private static LiteralArgumentBuilder<CommandSourceStack> buildRemoveCommand() {
         return Commands.literal("remove")
-                .then(targetElementArgument()
+                .then(silenceArgument()
+                        .then(targetElementArgument()
                         .then(Commands.argument("marker_name", StringArgumentType.string())
-                                .executes(SpiffyMarkerCommand::executeRemove)));
+                                .executes(SpiffyMarkerCommand::executeRemove))));
+    }
+
+    private static RequiredArgumentBuilder<CommandSourceStack, Boolean> silenceArgument() {
+        return Commands.argument("silence_command_chat_output", BoolArgumentType.bool());
     }
 
     private static RequiredArgumentBuilder<CommandSourceStack, String> optionalColorArgument() {
@@ -130,60 +137,84 @@ public final class SpiffyMarkerCommand {
     }
 
     private static int executeAdd(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        ServerPlayer player = getCommandPlayer(context);
-        String targetElement = sanitizeTarget(StringArgumentType.getString(context, "target_element"));
-        String markerName = sanitizeMarkerName(StringArgumentType.getString(context, "marker_name"));
-        Vec2 pos = Vec2Argument.getVec2(context, "position");
-        String posX = formatPosition(pos.x);
-        String posZ = formatPosition(pos.y);
-        String color = sanitizeOptional(getOptionalString(context, "color"));
-        Boolean showAsNeedle = getOptionalBool(context, "show_as_needle");
-        String dotTexture = sanitizeOptional(getOptionalString(context, "dot_texture"));
-        String needleTexture = sanitizeOptional(getOptionalString(context, "needle_texture"));
-        return dispatchAdd(context.getSource(), player, targetElement, markerName, posX, posZ, color, showAsNeedle, dotTexture, needleTexture);
+        boolean silence = BoolArgumentType.getBool(context, "silence_command_chat_output");
+        try {
+            ServerPlayer player = getCommandPlayer(context);
+            String targetElement = sanitizeTarget(StringArgumentType.getString(context, "target_element"));
+            String markerName = sanitizeMarkerName(StringArgumentType.getString(context, "marker_name"));
+            Vec2 pos = Vec2Argument.getVec2(context, "position");
+            String posX = formatPosition(pos.x);
+            String posZ = formatPosition(pos.y);
+            String color = sanitizeOptional(getOptionalString(context, "color"));
+            Boolean showAsNeedle = getOptionalBool(context, "show_as_needle");
+            String dotTexture = sanitizeOptional(getOptionalString(context, "dot_texture"));
+            String needleTexture = sanitizeOptional(getOptionalString(context, "needle_texture"));
+            return dispatchAdd(context.getSource(), player, targetElement, markerName, posX, posZ, color, showAsNeedle, dotTexture, needleTexture, silence);
+        } catch (CommandSyntaxException ex) {
+            if (silence) {
+                return 0;
+            }
+            throw ex;
+        }
     }
 
     private static int executeEdit(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        ServerPlayer player = getCommandPlayer(context);
-        String targetElement = sanitizeTarget(StringArgumentType.getString(context, "target_element"));
-        String markerName = sanitizeMarkerName(StringArgumentType.getString(context, "marker_name"));
-        Vec2 pos = Vec2Argument.getVec2(context, "position");
-        String posX = formatPosition(pos.x);
-        String posZ = formatPosition(pos.y);
-        EnumSet<MarkerCommandEditField> overrides = EnumSet.noneOf(MarkerCommandEditField.class);
+        boolean silence = BoolArgumentType.getBool(context, "silence_command_chat_output");
+        try {
+            ServerPlayer player = getCommandPlayer(context);
+            String targetElement = sanitizeTarget(StringArgumentType.getString(context, "target_element"));
+            String markerName = sanitizeMarkerName(StringArgumentType.getString(context, "marker_name"));
+            Vec2 pos = Vec2Argument.getVec2(context, "position");
+            String posX = formatPosition(pos.x);
+            String posZ = formatPosition(pos.y);
+            EnumSet<MarkerCommandEditField> overrides = EnumSet.noneOf(MarkerCommandEditField.class);
 
-        String color = null;
-        if (wasArgumentProvided(context, "color")) {
-            color = sanitizeOptional(StringArgumentType.getString(context, "color"));
-            overrides.add(MarkerCommandEditField.COLOR);
+            String color = null;
+            if (wasArgumentProvided(context, "color")) {
+                color = sanitizeOptional(StringArgumentType.getString(context, "color"));
+                overrides.add(MarkerCommandEditField.COLOR);
+            }
+
+            Boolean showAsNeedle = null;
+            if (wasArgumentProvided(context, "show_as_needle")) {
+                showAsNeedle = BoolArgumentType.getBool(context, "show_as_needle");
+                overrides.add(MarkerCommandEditField.SHOW_AS_NEEDLE);
+            }
+
+            String dotTexture = null;
+            if (wasArgumentProvided(context, "dot_texture")) {
+                dotTexture = sanitizeOptional(StringArgumentType.getString(context, "dot_texture"));
+                overrides.add(MarkerCommandEditField.DOT_TEXTURE);
+            }
+
+            String needleTexture = null;
+            if (wasArgumentProvided(context, "needle_texture")) {
+                needleTexture = sanitizeOptional(StringArgumentType.getString(context, "needle_texture"));
+                overrides.add(MarkerCommandEditField.NEEDLE_TEXTURE);
+            }
+
+            return dispatchEdit(context.getSource(), player, targetElement, markerName, posX, posZ, color, showAsNeedle, dotTexture, needleTexture, overrides, silence);
+        } catch (CommandSyntaxException ex) {
+            if (silence) {
+                return 0;
+            }
+            throw ex;
         }
-
-        Boolean showAsNeedle = null;
-        if (wasArgumentProvided(context, "show_as_needle")) {
-            showAsNeedle = BoolArgumentType.getBool(context, "show_as_needle");
-            overrides.add(MarkerCommandEditField.SHOW_AS_NEEDLE);
-        }
-
-        String dotTexture = null;
-        if (wasArgumentProvided(context, "dot_texture")) {
-            dotTexture = sanitizeOptional(StringArgumentType.getString(context, "dot_texture"));
-            overrides.add(MarkerCommandEditField.DOT_TEXTURE);
-        }
-
-        String needleTexture = null;
-        if (wasArgumentProvided(context, "needle_texture")) {
-            needleTexture = sanitizeOptional(StringArgumentType.getString(context, "needle_texture"));
-            overrides.add(MarkerCommandEditField.NEEDLE_TEXTURE);
-        }
-
-        return dispatchEdit(context.getSource(), player, targetElement, markerName, posX, posZ, color, showAsNeedle, dotTexture, needleTexture, overrides);
     }
 
     private static int executeRemove(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        ServerPlayer player = getCommandPlayer(context);
-        String targetElement = sanitizeTarget(StringArgumentType.getString(context, "target_element"));
-        String markerName = sanitizeMarkerName(StringArgumentType.getString(context, "marker_name"));
-        return dispatchRemove(context.getSource(), player, targetElement, markerName);
+        boolean silence = BoolArgumentType.getBool(context, "silence_command_chat_output");
+        try {
+            ServerPlayer player = getCommandPlayer(context);
+            String targetElement = sanitizeTarget(StringArgumentType.getString(context, "target_element"));
+            String markerName = sanitizeMarkerName(StringArgumentType.getString(context, "marker_name"));
+            return dispatchRemove(context.getSource(), player, targetElement, markerName, silence);
+        } catch (CommandSyntaxException ex) {
+            if (silence) {
+                return 0;
+            }
+            throw ex;
+        }
     }
 
     private static int dispatchAdd(CommandSourceStack source,
@@ -195,7 +226,8 @@ public final class SpiffyMarkerCommand {
                                    @Nullable String color,
                                    @Nullable Boolean showAsNeedle,
                                    @Nullable String dotTexture,
-                                   @Nullable String needleTexture) throws CommandSyntaxException {
+                                   @Nullable String needleTexture,
+                                   boolean silence) throws CommandSyntaxException {
         MarkerActionConfig config = MarkerActionConfig.defaultConfig();
         config.targetElementIdentifier = targetElement;
         config.displayName = markerName;
@@ -207,7 +239,7 @@ public final class SpiffyMarkerCommand {
         config.needleTexture = Objects.requireNonNullElse(needleTexture, "");
         config.showAsNeedle = showAsNeedle != null && showAsNeedle;
         config.normalize();
-        return sendPacket(source, player, MarkerCommandOperation.ADD, config, null, null,
+        return sendPacket(source, player, MarkerCommandOperation.ADD, config, null, null, silence,
                 "spiffyhud.commands.marker.add.sent", markerName, targetElement);
     }
 
@@ -221,7 +253,8 @@ public final class SpiffyMarkerCommand {
                                     @Nullable Boolean showAsNeedle,
                                     @Nullable String dotTexture,
                                     @Nullable String needleTexture,
-                                    @NotNull Set<MarkerCommandEditField> overrides) throws CommandSyntaxException {
+                                    @NotNull Set<MarkerCommandEditField> overrides,
+                                    boolean silence) throws CommandSyntaxException {
         MarkerActionConfig config = MarkerActionConfig.defaultConfig();
         config.targetElementIdentifier = targetElement;
         config.displayName = markerName;
@@ -233,19 +266,20 @@ public final class SpiffyMarkerCommand {
         config.needleTexture = Objects.requireNonNullElse(needleTexture, "");
         config.showAsNeedle = showAsNeedle != null && showAsNeedle;
         config.normalize();
-        return sendPacket(source, player, MarkerCommandOperation.EDIT, config, null, overrides,
+        return sendPacket(source, player, MarkerCommandOperation.EDIT, config, null, overrides, silence,
                 "spiffyhud.commands.marker.edit.sent", markerName, targetElement);
     }
 
     private static int dispatchRemove(CommandSourceStack source,
                                       ServerPlayer player,
                                       String targetElement,
-                                      String markerName) throws CommandSyntaxException {
+                                      String markerName,
+                                      boolean silence) throws CommandSyntaxException {
         MarkerRemovalConfig config = MarkerRemovalConfig.defaultConfig();
         config.targetElementIdentifier = targetElement;
         config.markerName = markerName;
         config.normalize();
-        return sendPacket(source, player, MarkerCommandOperation.REMOVE, null, config, null,
+        return sendPacket(source, player, MarkerCommandOperation.REMOVE, null, config, null, silence,
                 "spiffyhud.commands.marker.remove.sent", markerName, targetElement);
     }
 
@@ -255,9 +289,13 @@ public final class SpiffyMarkerCommand {
                                   @Nullable MarkerActionConfig actionConfig,
                                   @Nullable MarkerRemovalConfig removalConfig,
                                   @Nullable Set<MarkerCommandEditField> editFields,
+                                  boolean silence,
                                   @NotNull String successTranslationKey,
                                   Object... successArgs) throws CommandSyntaxException {
         if (!PacketHandler.isFancyMenuClient(player)) {
+            if (silence) {
+                return 0;
+            }
             throw CLIENT_NOT_SUPPORTED.create();
         }
         MarkerCommandPacket packet = new MarkerCommandPacket();
@@ -265,8 +303,11 @@ public final class SpiffyMarkerCommand {
         packet.actionConfig = actionConfig == null ? null : actionConfig.copy();
         packet.removalConfig = removalConfig == null ? null : removalConfig.copy();
         packet.editFields = editFields == null ? null : (editFields.isEmpty() ? Collections.emptySet() : EnumSet.copyOf(editFields));
+        packet.silenceClientFeedback = silence;
         PacketHandler.sendToClient(player, packet);
-        source.sendSuccess(() -> Component.translatable(successTranslationKey, successArgs), true);
+        if (!silence) {
+            source.sendSuccess(() -> Component.translatable(successTranslationKey, successArgs), true);
+        }
         return 1;
     }
 

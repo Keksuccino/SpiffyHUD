@@ -15,6 +15,7 @@ public class MarkerCommandPacket extends Packet {
     public MarkerActionConfig actionConfig;
     public MarkerRemovalConfig removalConfig;
     public Set<MarkerCommandEditField> editFields;
+    public boolean silenceClientFeedback;
 
     @Override
     public boolean processPacket(@Nullable ServerPlayer sender) {
