@@ -48,6 +48,10 @@ public class CompassElementBuilder extends ElementBuilder<CompassElement, Compas
         ResourceSupplier<ITexture> degreeTexture = deserializeImageResourceSupplier(serialized.getValue("degree_tick_texture"));
         element.degreeTickTexture = (degreeTexture != null) ? degreeTexture : legacyMajorTexture;
         element.minorTickTexture = deserializeImageResourceSupplier(serialized.getValue("minor_tick_texture"));
+        element.northCardinalTexture = deserializeImageResourceSupplier(serialized.getValue("cardinal_texture_north"));
+        element.eastCardinalTexture = deserializeImageResourceSupplier(serialized.getValue("cardinal_texture_east"));
+        element.southCardinalTexture = deserializeImageResourceSupplier(serialized.getValue("cardinal_texture_south"));
+        element.westCardinalTexture = deserializeImageResourceSupplier(serialized.getValue("cardinal_texture_west"));
         element.cardinalTextColor = Objects.requireNonNullElse(serialized.getValue("cardinal_text_color"), element.cardinalTextColor);
         element.numberTextColor = Objects.requireNonNullElse(serialized.getValue("number_text_color"), element.numberTextColor);
         element.cardinalTextScale = Objects.requireNonNullElse(serialized.getValue("cardinal_text_scale"), element.cardinalTextScale);
@@ -172,6 +176,22 @@ public class CompassElementBuilder extends ElementBuilder<CompassElement, Compas
         ResourceSupplier<ITexture> minorTickTexture = element.minorTickTexture;
         if (minorTickTexture != null) {
             serializeTo.putProperty("minor_tick_texture", minorTickTexture.getSourceWithPrefix());
+        }
+        ResourceSupplier<ITexture> northCardinalTexture = element.northCardinalTexture;
+        if (northCardinalTexture != null) {
+            serializeTo.putProperty("cardinal_texture_north", northCardinalTexture.getSourceWithPrefix());
+        }
+        ResourceSupplier<ITexture> eastCardinalTexture = element.eastCardinalTexture;
+        if (eastCardinalTexture != null) {
+            serializeTo.putProperty("cardinal_texture_east", eastCardinalTexture.getSourceWithPrefix());
+        }
+        ResourceSupplier<ITexture> southCardinalTexture = element.southCardinalTexture;
+        if (southCardinalTexture != null) {
+            serializeTo.putProperty("cardinal_texture_south", southCardinalTexture.getSourceWithPrefix());
+        }
+        ResourceSupplier<ITexture> westCardinalTexture = element.westCardinalTexture;
+        if (westCardinalTexture != null) {
+            serializeTo.putProperty("cardinal_texture_west", westCardinalTexture.getSourceWithPrefix());
         }
         ResourceSupplier<ITexture> needleTexture = element.needleTexture;
         if (needleTexture != null) {

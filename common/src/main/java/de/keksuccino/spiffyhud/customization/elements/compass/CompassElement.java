@@ -92,6 +92,10 @@ public class CompassElement extends AbstractElement {
     @NotNull public String cardinalTextColor = DEFAULT_CARDINAL_TEXT_COLOR_STRING;
     @NotNull public String numberTextColor = DEFAULT_NUMBER_TEXT_COLOR_STRING;
     @NotNull public String needleColor = DEFAULT_NEEDLE_COLOR_STRING;
+    @Nullable public ResourceSupplier<ITexture> northCardinalTexture;
+    @Nullable public ResourceSupplier<ITexture> eastCardinalTexture;
+    @Nullable public ResourceSupplier<ITexture> southCardinalTexture;
+    @Nullable public ResourceSupplier<ITexture> westCardinalTexture;
     @Nullable public ResourceSupplier<ITexture> needleTexture;
     @Nullable public ResourceSupplier<ITexture> deathPointerTexture;
     @Nullable public ResourceSupplier<ITexture> hostileDotTexture;
@@ -355,7 +359,12 @@ public class CompassElement extends AbstractElement {
     private void drawCardinal(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float absoluteDegrees, @NotNull String text, int color, @NotNull CompassReading reading, float offsetY) {
         float relative = this.relativeToHeading(absoluteDegrees, reading.headingDegrees());
         float centerX = this.computeScreenX(layout, relative);
-        this.drawScaledCenteredString(graphics, text, centerX, layout.cardinalCenterY() + offsetY, layout.cardinalScale(), color, this.cardinalOutlineEnabled);
+        float centerY = layout.cardinalCenterY() + offsetY;
+        ResourceSupplier<ITexture> texture = this.getCardinalTexture(text);
+        if (texture != null && this.drawCardinalTexture(graphics, layout, centerX, centerY, layout.cardinalScale(), texture)) {
+            return;
+        }
+        this.drawScaledCenteredString(graphics, text, centerX, centerY, layout.cardinalScale(), color, this.cardinalOutlineEnabled);
     }
 
     private void drawDegreeNumbers(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull ResolvedColors colors, @NotNull CompassReading reading) {
@@ -613,6 +622,41 @@ public class CompassElement extends AbstractElement {
         graphics.setColor(1.0F, 1.0F, 1.0F, this.opacity);
         graphics.blit(handle.location(), drawXi, drawYi, 0.0F, 0.0F, destWidth, destHeight, destWidth, destHeight);
         graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+    }
+
+    private boolean drawCardinalTexture(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float centerX, float centerY, float scale, @Nullable ResourceSupplier<ITexture> supplier) {
+        if (scale <= 0.0F) {
+            return false;
+        }
+        TextureHandle handle = this.resolveTexture(supplier);
+        if (handle == null) {
+            return false;
+        }
+        int availableWidth = Math.max(1, layout.width());
+        int availableHeight = Math.max(1, layout.height());
+        float scaledHeight = Math.max(1.0F, MC.font.lineHeight * scale);
+        int destHeight = Math.max(1, Math.min(Mth.floor(scaledHeight), availableHeight));
+        int destWidth = Math.max(1, Math.min(handle.aspectRatio().getAspectRatioWidth(destHeight), availableWidth));
+        float drawX = centerX - (destWidth / 2.0F);
+        float drawY = centerY - (destHeight / 2.0F);
+        int drawXi = Mth.floor(drawX);
+        int drawYi = Mth.floor(drawY);
+        RenderSystem.enableBlend();
+        graphics.setColor(1.0F, 1.0F, 1.0F, this.opacity);
+        graphics.blit(handle.location(), drawXi, drawYi, 0.0F, 0.0F, destWidth, destHeight, destWidth, destHeight);
+        graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+        return true;
+    }
+
+    @Nullable
+    private ResourceSupplier<ITexture> getCardinalTexture(@NotNull String label) {
+        return switch (label) {
+            case "N" -> this.northCardinalTexture;
+            case "E" -> this.eastCardinalTexture;
+            case "S" -> this.southCardinalTexture;
+            case "W" -> this.westCardinalTexture;
+            default -> null;
+        };
     }
 
     @Nullable

@@ -224,6 +224,54 @@ public class CompassEditorElement extends AbstractEditorElement {
                 .setStackable(false)
                 .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.cardinal_text.y_offset.desc")));
 
+        this.addImageResourceChooserContextMenuEntryTo(this.rightClickMenu,
+                        "cardinal_texture_north",
+                        CompassEditorElement.class,
+                        null,
+                        consumes -> consumes.getElement().northCardinalTexture,
+                        (editorElement, supplier) -> editorElement.getElement().northCardinalTexture = supplier,
+                        Component.translatable("spiffyhud.elements.player_compass.texture.cardinal.north"),
+                        true, null, true, true, true)
+                .setStackable(false)
+                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.texture.cardinal.north.desc")))
+                .setIcon(ContextMenu.IconFactory.getIcon("image"));
+
+        this.addImageResourceChooserContextMenuEntryTo(this.rightClickMenu,
+                        "cardinal_texture_east",
+                        CompassEditorElement.class,
+                        null,
+                        consumes -> consumes.getElement().eastCardinalTexture,
+                        (editorElement, supplier) -> editorElement.getElement().eastCardinalTexture = supplier,
+                        Component.translatable("spiffyhud.elements.player_compass.texture.cardinal.east"),
+                        true, null, true, true, true)
+                .setStackable(false)
+                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.texture.cardinal.east.desc")))
+                .setIcon(ContextMenu.IconFactory.getIcon("image"));
+
+        this.addImageResourceChooserContextMenuEntryTo(this.rightClickMenu,
+                        "cardinal_texture_south",
+                        CompassEditorElement.class,
+                        null,
+                        consumes -> consumes.getElement().southCardinalTexture,
+                        (editorElement, supplier) -> editorElement.getElement().southCardinalTexture = supplier,
+                        Component.translatable("spiffyhud.elements.player_compass.texture.cardinal.south"),
+                        true, null, true, true, true)
+                .setStackable(false)
+                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.texture.cardinal.south.desc")))
+                .setIcon(ContextMenu.IconFactory.getIcon("image"));
+
+        this.addImageResourceChooserContextMenuEntryTo(this.rightClickMenu,
+                        "cardinal_texture_west",
+                        CompassEditorElement.class,
+                        null,
+                        consumes -> consumes.getElement().westCardinalTexture,
+                        (editorElement, supplier) -> editorElement.getElement().westCardinalTexture = supplier,
+                        Component.translatable("spiffyhud.elements.player_compass.texture.cardinal.west"),
+                        true, null, true, true, true)
+                .setStackable(false)
+                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.texture.cardinal.west.desc")))
+                .setIcon(ContextMenu.IconFactory.getIcon("image"));
+
         this.addToggleContextMenuEntryTo(this.rightClickMenu, "cardinal_outline",
                         CompassEditorElement.class,
                         consumes -> consumes.getElement().cardinalOutlineEnabled,
