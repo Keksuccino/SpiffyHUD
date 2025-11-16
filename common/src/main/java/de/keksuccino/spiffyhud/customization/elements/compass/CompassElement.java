@@ -62,6 +62,7 @@ public class CompassElement extends AbstractElement {
 
     @NotNull public String backgroundColor = DEFAULT_BACKGROUND_COLOR_STRING;
     @NotNull public String barColor = DEFAULT_BAR_COLOR_STRING;
+    @Nullable public ResourceSupplier<ITexture> barTexture;
     @NotNull public String majorTickColor = DEFAULT_MAJOR_TICK_COLOR_STRING;
     @NotNull public String minorTickColor = DEFAULT_MINOR_TICK_COLOR_STRING;
     @NotNull public String cardinalTextColor = DEFAULT_CARDINAL_TEXT_COLOR_STRING;
@@ -138,7 +139,7 @@ public class CompassElement extends AbstractElement {
                 this.drawBackground(graphics, layout, colors.backgroundColor());
             }
             if (this.barEnabled) {
-                this.drawBar(graphics, layout, colors.barColor());
+                this.drawBar(graphics, layout, colors.barColor(), reading);
             }
             this.drawGradeLines(graphics, layout, colors, reading);
             if (this.cardinalTextEnabled) {
@@ -188,8 +189,48 @@ public class CompassElement extends AbstractElement {
         graphics.fill(layout.x(), layout.y(), layout.x() + layout.width(), layout.y() + layout.height(), color);
     }
 
-    private void drawBar(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, int color) {
+    private void drawBar(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, int color, @NotNull CompassReading reading) {
+        if (this.drawBarTexture(graphics, layout, reading)) {
+            return;
+        }
         graphics.fill(layout.x(), layout.barTop(), layout.x() + layout.width(), layout.barTop() + layout.barHeight(), color);
+    }
+
+    private boolean drawBarTexture(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull CompassReading reading) {
+        TextureHandle handle = this.resolveTexture(this.barTexture);
+        if (handle == null) {
+            return false;
+        }
+        int width = Math.max(1, layout.width());
+        int height = Math.max(1, layout.barHeight());
+        int textureWidth = handle.width();
+        int textureHeight = handle.height();
+        if (width <= 0 || height <= 0 || textureWidth <= 0 || textureHeight <= 0) {
+            return false;
+        }
+        float normalizedHeading = Mth.positiveModulo(reading.headingDegrees(), 360.0F) / 360.0F;
+        float pixelShift = normalizedHeading * textureWidth;
+        float offset = Mth.positiveModulo(pixelShift, textureWidth);
+        float startX = layout.x() - offset - textureWidth;
+        int maxX = layout.x() + width + textureWidth;
+        int drawY = layout.barTop() + (layout.barHeight() - textureHeight) / 2;
+        RenderSystem.enableBlend();
+        graphics.enableScissor(layout.x(), layout.barTop(), layout.x() + width, layout.barTop() + height);
+        graphics.setColor(1.0F, 1.0F, 1.0F, this.opacity);
+        try {
+            for (float drawX = startX; drawX < maxX; drawX += textureWidth) {
+                int drawXi = Mth.floor(drawX);
+                this.blitBarTextureTile(graphics, handle, drawXi, drawY);
+            }
+        } finally {
+            graphics.disableScissor();
+            graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+        }
+        return true;
+    }
+
+    private void blitBarTextureTile(@NotNull GuiGraphics graphics, @NotNull TextureHandle handle, int drawX, int drawY) {
+        graphics.blit(handle.location(), drawX, drawY, 0.0F, 0.0F, handle.width(), handle.height(), handle.width(), handle.height());
     }
 
     private void drawGradeLines(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull ResolvedColors colors, @NotNull CompassReading reading) {

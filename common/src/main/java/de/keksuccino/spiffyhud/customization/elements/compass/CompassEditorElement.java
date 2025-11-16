@@ -48,6 +48,18 @@ public class CompassEditorElement extends AbstractEditorElement {
         this.addColorInput("bar_color", Component.translatable("spiffyhud.elements.player_compass.color.bar"), CompassElement.DEFAULT_BAR_COLOR_STRING)
                 .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.color.bar.desc")));
 
+        this.addImageResourceChooserContextMenuEntryTo(this.rightClickMenu,
+                        "bar_texture",
+                        CompassEditorElement.class,
+                        null,
+                        consumes -> consumes.getElement().barTexture,
+                        (editorElement, supplier) -> editorElement.getElement().barTexture = supplier,
+                        Component.translatable("spiffyhud.elements.player_compass.texture.bar"),
+                        true, null, true, true, true)
+                .setStackable(false)
+                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.texture.bar.desc")))
+                .setIcon(ContextMenu.IconFactory.getIcon("image"));
+
         this.rightClickMenu.addSeparatorEntry("separator_after_bar");
 
         this.addToggleContextMenuEntryTo(this.rightClickMenu, "needle_enabled",

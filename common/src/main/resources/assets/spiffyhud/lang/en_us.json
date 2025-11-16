@@ -301,5 +301,7 @@
   "spiffyhud.elements.player_compass.world_markers.desc": "Toggles rendering of stored world markers on this compass while keeping the marker data accessible for actions.",
   "spiffyhud.elements.player_compass.world_markers.clear": "Clear World Markers",
   "spiffyhud.elements.player_compass.world_markers.clear.desc": "Deletes every stored world marker tied to this element identifier. This action cannot be undone.",
-  "spiffyhud.elements.player_compass.world_markers.clear.confirm": "Remove all world markers for this compass?\n\nThis §xpermanently deletes§r all markers of this compass. You can re-create markers later with actions."
+  "spiffyhud.elements.player_compass.world_markers.clear.confirm": "Remove all world markers for this compass?\n\nThis §xpermanently deletes§r all markers of this compass. You can re-create markers later with actions.",
+  "spiffyhud.elements.player_compass.texture.bar": "Compass Bar Texture",
+  "spiffyhud.elements.player_compass.texture.bar.desc": "Optional image that replaces the bar fill. The texture slides as the compass rotates and seamlessly wraps, so repeatable stripe or gradient textures work best. Leave empty to keep the solid color fill."
 }

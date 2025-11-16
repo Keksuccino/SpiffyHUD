@@ -37,6 +37,7 @@ public class CompassElementBuilder extends ElementBuilder<CompassElement, Compas
 
         element.backgroundColor = Objects.requireNonNullElse(serialized.getValue("background_color"), element.backgroundColor);
         element.barColor = Objects.requireNonNullElse(serialized.getValue("bar_color"), element.barColor);
+        element.barTexture = deserializeImageResourceSupplier(serialized.getValue("bar_texture"));
         element.majorTickColor = Objects.requireNonNullElse(serialized.getValue("major_tick_color"), element.majorTickColor);
         element.minorTickColor = Objects.requireNonNullElse(serialized.getValue("minor_tick_color"), element.minorTickColor);
         element.cardinalTextColor = Objects.requireNonNullElse(serialized.getValue("cardinal_text_color"), element.cardinalTextColor);
@@ -92,6 +93,10 @@ public class CompassElementBuilder extends ElementBuilder<CompassElement, Compas
         serializeTo.putProperty("death_pointer_color", element.deathPointerColor);
         serializeTo.putProperty("hostile_dots_color", element.hostileDotsColor);
         serializeTo.putProperty("passive_dots_color", element.passiveDotsColor);
+        ResourceSupplier<ITexture> barTexture = element.barTexture;
+        if (barTexture != null) {
+            serializeTo.putProperty("bar_texture", barTexture.getSourceWithPrefix());
+        }
         ResourceSupplier<ITexture> needleTexture = element.needleTexture;
         if (needleTexture != null) {
             serializeTo.putProperty("needle_texture", needleTexture.getSourceWithPrefix());
