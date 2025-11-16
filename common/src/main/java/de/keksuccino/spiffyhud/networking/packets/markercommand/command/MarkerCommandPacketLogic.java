@@ -3,11 +3,15 @@ package de.keksuccino.spiffyhud.networking.packets.markercommand.command;
 import de.keksuccino.spiffyhud.customization.actions.marker.MarkerActionConfig;
 import de.keksuccino.spiffyhud.customization.actions.marker.MarkerRemovalConfig;
 import de.keksuccino.spiffyhud.customization.marker.MarkerStorage;
+import de.keksuccino.spiffyhud.networking.packets.markercommand.MarkerCommandEditField;
 import de.keksuccino.spiffyhud.networking.packets.markercommand.MarkerCommandOperation;
 import net.minecraft.network.chat.Component;
+import java.util.EnumSet;
+import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public final class MarkerCommandPacketLogic {
 
@@ -60,14 +64,23 @@ public final class MarkerCommandPacketLogic {
             LOGGER.error("[SPIFFYHUD] Marker edit command missing required fields.");
             return false;
         }
+        EnumSet<MarkerCommandEditField> overrides = sanitizeEditFields(packet.editFields);
         boolean success = MarkerStorage.editMarker(config.targetElementIdentifier, lookup, marker -> {
             marker.setName(config.displayName);
-            marker.setColor(config.colorHex);
-            marker.setDotTexture(config.dotTexture);
-            marker.setNeedleTexture(config.needleTexture);
-            marker.setShowAsNeedle(config.showAsNeedle);
             marker.setMarkerPosX(config.positionX);
             marker.setMarkerPosZ(config.positionZ);
+            if (shouldUpdate(overrides, MarkerCommandEditField.COLOR)) {
+                marker.setColor(config.colorHex);
+            }
+            if (shouldUpdate(overrides, MarkerCommandEditField.DOT_TEXTURE)) {
+                marker.setDotTexture(config.dotTexture);
+            }
+            if (shouldUpdate(overrides, MarkerCommandEditField.NEEDLE_TEXTURE)) {
+                marker.setNeedleTexture(config.needleTexture);
+            }
+            if (shouldUpdate(overrides, MarkerCommandEditField.SHOW_AS_NEEDLE)) {
+                marker.setShowAsNeedle(config.showAsNeedle);
+            }
         });
         if (success) {
             packet.sendChatFeedback(Component.translatable("spiffyhud.commands.marker.client.edit.success", lookup, config.targetElementIdentifier), false);
@@ -95,5 +108,16 @@ public final class MarkerCommandPacketLogic {
             packet.sendChatFeedback(Component.translatable("spiffyhud.commands.marker.client.remove.failure", config.markerName, config.targetElementIdentifier), true);
         }
         return success;
+    }
+
+    private static EnumSet<MarkerCommandEditField> sanitizeEditFields(@Nullable Set<MarkerCommandEditField> fields) {
+        if (fields == null || fields.isEmpty()) {
+            return EnumSet.noneOf(MarkerCommandEditField.class);
+        }
+        return EnumSet.copyOf(fields);
+    }
+
+    private static boolean shouldUpdate(@NotNull EnumSet<MarkerCommandEditField> fields, @NotNull MarkerCommandEditField field) {
+        return fields.contains(field);
     }
 }
