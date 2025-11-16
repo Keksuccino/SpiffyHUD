@@ -38,9 +38,15 @@ public class CompassElementBuilder extends ElementBuilder<CompassElement, Compas
         element.backgroundColor = Objects.requireNonNullElse(serialized.getValue("background_color"), element.backgroundColor);
         element.barColor = Objects.requireNonNullElse(serialized.getValue("bar_color"), element.barColor);
         element.barTexture = deserializeImageResourceSupplier(serialized.getValue("bar_texture"));
-        element.majorTickColor = Objects.requireNonNullElse(serialized.getValue("major_tick_color"), element.majorTickColor);
-        element.majorTickTexture = deserializeImageResourceSupplier(serialized.getValue("major_tick_texture"));
+        String legacyMajorColor = serialized.getValue("major_tick_color");
+        element.cardinalTickColor = Objects.requireNonNullElse(serialized.getValue("cardinal_tick_color"), Objects.requireNonNullElse(legacyMajorColor, element.cardinalTickColor));
+        element.degreeTickColor = Objects.requireNonNullElse(serialized.getValue("degree_tick_color"), Objects.requireNonNullElse(legacyMajorColor, element.degreeTickColor));
         element.minorTickColor = Objects.requireNonNullElse(serialized.getValue("minor_tick_color"), element.minorTickColor);
+        ResourceSupplier<ITexture> legacyMajorTexture = deserializeImageResourceSupplier(serialized.getValue("major_tick_texture"));
+        ResourceSupplier<ITexture> cardinalTexture = deserializeImageResourceSupplier(serialized.getValue("cardinal_tick_texture"));
+        element.cardinalTickTexture = (cardinalTexture != null) ? cardinalTexture : legacyMajorTexture;
+        ResourceSupplier<ITexture> degreeTexture = deserializeImageResourceSupplier(serialized.getValue("degree_tick_texture"));
+        element.degreeTickTexture = (degreeTexture != null) ? degreeTexture : legacyMajorTexture;
         element.minorTickTexture = deserializeImageResourceSupplier(serialized.getValue("minor_tick_texture"));
         element.cardinalTextColor = Objects.requireNonNullElse(serialized.getValue("cardinal_text_color"), element.cardinalTextColor);
         element.numberTextColor = Objects.requireNonNullElse(serialized.getValue("number_text_color"), element.numberTextColor);
@@ -54,7 +60,15 @@ public class CompassElementBuilder extends ElementBuilder<CompassElement, Compas
         element.passiveDotTexture = deserializeImageResourceSupplier(serialized.getValue("passive_dots_texture"));
         element.backgroundEnabled = deserializeBoolean(element.backgroundEnabled, serialized.getValue("background_enabled"));
         element.barEnabled = deserializeBoolean(element.barEnabled, serialized.getValue("bar_enabled"));
-        element.majorTicksEnabled = deserializeBoolean(element.majorTicksEnabled, serialized.getValue("major_ticks_enabled"));
+        element.cardinalTicksEnabled = deserializeBoolean(element.cardinalTicksEnabled, serialized.getValue("cardinal_ticks_enabled"));
+        element.degreeTicksEnabled = deserializeBoolean(element.degreeTicksEnabled, serialized.getValue("degree_ticks_enabled"));
+        String legacyMajorTicksEnabled = serialized.getValue("major_ticks_enabled");
+        if (serialized.getValue("cardinal_ticks_enabled") == null) {
+            element.cardinalTicksEnabled = deserializeBoolean(element.cardinalTicksEnabled, legacyMajorTicksEnabled);
+        }
+        if (serialized.getValue("degree_ticks_enabled") == null) {
+            element.degreeTicksEnabled = deserializeBoolean(element.degreeTicksEnabled, legacyMajorTicksEnabled);
+        }
         element.minorTicksEnabled = deserializeBoolean(element.minorTicksEnabled, serialized.getValue("minor_ticks_enabled"));
         element.needleEnabled = deserializeBoolean(element.needleEnabled, serialized.getValue("needle_enabled"));
         element.cardinalTextEnabled = deserializeBoolean(element.cardinalTextEnabled, serialized.getValue("cardinal_text_enabled"));
@@ -87,7 +101,8 @@ public class CompassElementBuilder extends ElementBuilder<CompassElement, Compas
     protected SerializedElement serializeElement(@NotNull CompassElement element, @NotNull SerializedElement serializeTo) {
         serializeTo.putProperty("background_color", element.backgroundColor);
         serializeTo.putProperty("bar_color", element.barColor);
-        serializeTo.putProperty("major_tick_color", element.majorTickColor);
+        serializeTo.putProperty("cardinal_tick_color", element.cardinalTickColor);
+        serializeTo.putProperty("degree_tick_color", element.degreeTickColor);
         serializeTo.putProperty("minor_tick_color", element.minorTickColor);
         serializeTo.putProperty("cardinal_text_color", element.cardinalTextColor);
         serializeTo.putProperty("number_text_color", element.numberTextColor);
@@ -99,9 +114,13 @@ public class CompassElementBuilder extends ElementBuilder<CompassElement, Compas
         if (barTexture != null) {
             serializeTo.putProperty("bar_texture", barTexture.getSourceWithPrefix());
         }
-        ResourceSupplier<ITexture> majorTickTexture = element.majorTickTexture;
-        if (majorTickTexture != null) {
-            serializeTo.putProperty("major_tick_texture", majorTickTexture.getSourceWithPrefix());
+        ResourceSupplier<ITexture> cardinalTickTexture = element.cardinalTickTexture;
+        if (cardinalTickTexture != null) {
+            serializeTo.putProperty("cardinal_tick_texture", cardinalTickTexture.getSourceWithPrefix());
+        }
+        ResourceSupplier<ITexture> degreeTickTexture = element.degreeTickTexture;
+        if (degreeTickTexture != null) {
+            serializeTo.putProperty("degree_tick_texture", degreeTickTexture.getSourceWithPrefix());
         }
         ResourceSupplier<ITexture> minorTickTexture = element.minorTickTexture;
         if (minorTickTexture != null) {
@@ -125,7 +144,8 @@ public class CompassElementBuilder extends ElementBuilder<CompassElement, Compas
         }
         serializeTo.putProperty("background_enabled", "" + element.backgroundEnabled);
         serializeTo.putProperty("bar_enabled", "" + element.barEnabled);
-        serializeTo.putProperty("major_ticks_enabled", "" + element.majorTicksEnabled);
+        serializeTo.putProperty("cardinal_ticks_enabled", Boolean.toString(element.cardinalTicksEnabled));
+        serializeTo.putProperty("degree_ticks_enabled", Boolean.toString(element.degreeTicksEnabled));
         serializeTo.putProperty("minor_ticks_enabled", "" + element.minorTicksEnabled);
         serializeTo.putProperty("needle_enabled", "" + element.needleEnabled);
         serializeTo.putProperty("cardinal_text_enabled", "" + element.cardinalTextEnabled);

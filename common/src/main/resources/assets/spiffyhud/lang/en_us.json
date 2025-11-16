@@ -307,5 +307,15 @@
   "spiffyhud.elements.player_compass.texture.major_tick": "Major Tick Texture",
   "spiffyhud.elements.player_compass.texture.major_tick.desc": "Overrides the tall major tick marks with an image that stretches to the compass height while keeping its aspect ratio. The texture stays centered on each major tick.",
   "spiffyhud.elements.player_compass.texture.minor_tick": "Minor Tick Texture",
-  "spiffyhud.elements.player_compass.texture.minor_tick.desc": "Overrides the smaller tick marks with a texture that fills the compass height and remains centered on the tick position. Leave empty to keep the color line."
+  "spiffyhud.elements.player_compass.texture.minor_tick.desc": "Overrides the smaller tick marks with a texture that fills the compass height and remains centered on the tick position. Leave empty to keep the color line.",
+  "spiffyhud.elements.player_compass.cardinal_ticks_enabled": "Show Cardinal Tick Lines: %s",
+  "spiffyhud.elements.player_compass.degree_ticks_enabled": "Show Degree Tick Lines: %s",
+  "spiffyhud.elements.player_compass.color.cardinal_tick": "Cardinal Tick Lines Color [HEX]",
+  "spiffyhud.elements.player_compass.color.cardinal_tick.desc": "Sets the color used for the long ticks that anchor the N/E/S/W letters when no texture is provided.",
+  "spiffyhud.elements.player_compass.color.degree_tick": "Degree Tick Lines Color [HEX]",
+  "spiffyhud.elements.player_compass.color.degree_tick.desc": "Sets the fallback color for the remaining major tick marks (30°, 60°, etc.) when no texture overrides them.",
+  "spiffyhud.elements.player_compass.texture.cardinal_tick": "Cardinal Tick Texture",
+  "spiffyhud.elements.player_compass.texture.cardinal_tick.desc": "Overrides the long tick lines behind the cardinal letters with an image that scales to the compass height while maintaining aspect ratio. The texture stays centered on each cardinal tick.",
+  "spiffyhud.elements.player_compass.texture.degree_tick": "Degree Tick Texture",
+  "spiffyhud.elements.player_compass.texture.degree_tick.desc": "Overrides the remaining major tick marks (30°, 60°, etc.) with an image that fills the compass height and stays centered on the tick position."
 }

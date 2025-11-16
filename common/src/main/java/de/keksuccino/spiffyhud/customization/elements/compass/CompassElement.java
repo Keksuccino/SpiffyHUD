@@ -38,7 +38,8 @@ public class CompassElement extends AbstractElement {
 
     private static final int DEFAULT_BACKGROUND_COLOR = 0xB0101010;
     private static final int DEFAULT_BAR_COLOR = 0xC0FFFFFF;
-    private static final int DEFAULT_MAJOR_TICK_COLOR = 0xFFFFFFFF;
+    private static final int DEFAULT_CARDINAL_TICK_COLOR = 0xFFFFFFFF;
+    private static final int DEFAULT_DEGREE_TICK_COLOR = 0xFFFFFFFF;
     private static final int DEFAULT_MINOR_TICK_COLOR = 0x99FFFFFF;
     private static final int DEFAULT_CARDINAL_TEXT_COLOR = 0xFFFFFFFF;
     private static final int DEFAULT_NUMBER_TEXT_COLOR = 0xFFDCDCDC;
@@ -51,7 +52,8 @@ public class CompassElement extends AbstractElement {
 
     public static final String DEFAULT_BACKGROUND_COLOR_STRING = "#B0101010";
     public static final String DEFAULT_BAR_COLOR_STRING = "#C0FFFFFF";
-    public static final String DEFAULT_MAJOR_TICK_COLOR_STRING = "#FFFFFFFF";
+    public static final String DEFAULT_CARDINAL_TICK_COLOR_STRING = "#FFFFFFFF";
+    public static final String DEFAULT_DEGREE_TICK_COLOR_STRING = "#FFFFFFFF";
     public static final String DEFAULT_MINOR_TICK_COLOR_STRING = "#99FFFFFF";
     public static final String DEFAULT_CARDINAL_TEXT_COLOR_STRING = "#FFFFFFFF";
     public static final String DEFAULT_NUMBER_TEXT_COLOR_STRING = "#FFDCDCDC";
@@ -63,8 +65,10 @@ public class CompassElement extends AbstractElement {
     @NotNull public String backgroundColor = DEFAULT_BACKGROUND_COLOR_STRING;
     @NotNull public String barColor = DEFAULT_BAR_COLOR_STRING;
     @Nullable public ResourceSupplier<ITexture> barTexture;
-    @NotNull public String majorTickColor = DEFAULT_MAJOR_TICK_COLOR_STRING;
-    @Nullable public ResourceSupplier<ITexture> majorTickTexture;
+    @NotNull public String cardinalTickColor = DEFAULT_CARDINAL_TICK_COLOR_STRING;
+    @Nullable public ResourceSupplier<ITexture> cardinalTickTexture;
+    @NotNull public String degreeTickColor = DEFAULT_DEGREE_TICK_COLOR_STRING;
+    @Nullable public ResourceSupplier<ITexture> degreeTickTexture;
     @NotNull public String minorTickColor = DEFAULT_MINOR_TICK_COLOR_STRING;
     @Nullable public ResourceSupplier<ITexture> minorTickTexture;
     @NotNull public String cardinalTextColor = DEFAULT_CARDINAL_TEXT_COLOR_STRING;
@@ -76,7 +80,8 @@ public class CompassElement extends AbstractElement {
     @Nullable public ResourceSupplier<ITexture> passiveDotTexture;
     public boolean backgroundEnabled = true;
     public boolean barEnabled = true;
-    public boolean majorTicksEnabled = true;
+    public boolean cardinalTicksEnabled = true;
+    public boolean degreeTicksEnabled = true;
     public boolean minorTicksEnabled = true;
     public boolean needleEnabled = true;
     public boolean cardinalTextEnabled = true;
@@ -236,30 +241,41 @@ public class CompassElement extends AbstractElement {
     }
 
     private void drawGradeLines(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull ResolvedColors colors, @NotNull CompassReading reading) {
-        boolean drawMajor = this.majorTicksEnabled;
+        boolean drawCardinal = this.cardinalTicksEnabled;
+        boolean drawDegree = this.degreeTicksEnabled;
         boolean drawMinor = this.minorTicksEnabled;
-        if (!drawMajor && !drawMinor) {
+        if (!drawCardinal && !drawDegree && !drawMinor) {
             return;
         }
         for (int degrees = -180; degrees <= 180; degrees += 10) {
-            boolean major = (degrees % 30) == 0;
-            if (major && !drawMajor) {
-                continue;
-            }
-            if (!major && !drawMinor) {
-                continue;
-            }
-            int color = major ? colors.majorTickColor() : colors.minorTickColor();
-            int halfHeight = major ? layout.majorTickHalfHeight() : layout.minorTickHalfHeight();
             int absolute = toAbsoluteDegrees(degrees);
+            boolean majorCandidate = (absolute % 30) == 0;
             float relative = this.relativeToHeading(absolute, reading.headingDegrees());
-            this.drawTick(graphics, layout, relative, halfHeight, color, major);
+            if (majorCandidate) {
+                boolean cardinalTick = (absolute % 90) == 0;
+                if (cardinalTick) {
+                    if (!drawCardinal) {
+                        continue;
+                    }
+                    this.drawTick(graphics, layout, relative, layout.majorTickHalfHeight(), colors.cardinalTickColor(), this.cardinalTickTexture);
+                } else {
+                    if (!drawDegree) {
+                        continue;
+                    }
+                    this.drawTick(graphics, layout, relative, layout.majorTickHalfHeight(), colors.degreeTickColor(), this.degreeTickTexture);
+                }
+            } else {
+                if (!drawMinor) {
+                    continue;
+                }
+                this.drawTick(graphics, layout, relative, layout.minorTickHalfHeight(), colors.minorTickColor(), this.minorTickTexture);
+            }
         }
     }
 
-    private void drawTick(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float relativeDegrees, int halfHeight, int color, boolean majorTick) {
+    private void drawTick(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float relativeDegrees, int halfHeight, int color, @Nullable ResourceSupplier<ITexture> texture) {
         float x = this.computeScreenX(layout, relativeDegrees);
-        if (this.drawTickTexture(graphics, layout, x, majorTick)) {
+        if (this.drawTickTexture(graphics, layout, x, texture)) {
             return;
         }
         int xi = Mth.clamp(Mth.floor(x), layout.x(), layout.x() + layout.width() - 1);
@@ -268,18 +284,15 @@ public class CompassElement extends AbstractElement {
         graphics.fill(xi, top, xi + 1, bottom, color);
     }
 
-    private boolean drawTickTexture(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float centerX, boolean majorTick) {
-        ResourceSupplier<ITexture> supplier = majorTick ? this.majorTickTexture : this.minorTickTexture;
-        return this.drawTickTexture(graphics, layout, centerX, supplier);
-    }
-
     private boolean drawTickTexture(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float centerX, @Nullable ResourceSupplier<ITexture> supplier) {
         TextureHandle handle = this.resolveTexture(supplier);
         if (handle == null) {
             return false;
         }
         int destHeight = Math.max(1, layout.height());
-        int destWidth = Math.max(1, handle.aspectRatio().getAspectRatioWidth(destHeight));
+        int availableWidth = Math.max(1, layout.width());
+        int computedWidth = handle.aspectRatio().getAspectRatioWidth(destHeight);
+        int destWidth = Math.max(1, Math.min(computedWidth, availableWidth));
         float drawX = centerX - destWidth / 2.0F;
         int drawXi = Mth.floor(drawX);
         int drawYi = layout.y();
@@ -604,7 +617,8 @@ public class CompassElement extends AbstractElement {
         return new ResolvedColors(
                 this.applyOpacity(parseColor(this.backgroundColor, DEFAULT_BACKGROUND_COLOR)),
                 this.applyOpacity(parseColor(this.barColor, DEFAULT_BAR_COLOR)),
-                this.applyOpacity(parseColor(this.majorTickColor, DEFAULT_MAJOR_TICK_COLOR)),
+                this.applyOpacity(parseColor(this.cardinalTickColor, DEFAULT_CARDINAL_TICK_COLOR)),
+                this.applyOpacity(parseColor(this.degreeTickColor, DEFAULT_DEGREE_TICK_COLOR)),
                 this.applyOpacity(parseColor(this.minorTickColor, DEFAULT_MINOR_TICK_COLOR)),
                 this.applyOpacity(parseColor(this.cardinalTextColor, DEFAULT_CARDINAL_TEXT_COLOR)),
                 this.applyOpacity(parseColor(this.numberTextColor, DEFAULT_NUMBER_TEXT_COLOR)),
@@ -933,9 +947,9 @@ public class CompassElement extends AbstractElement {
                                  float numberCenterY, float cardinalScale, float numberScale) {
     }
 
-    private record ResolvedColors(int backgroundColor, int barColor, int majorTickColor, int minorTickColor,
-                                  int cardinalTextColor, int numberTextColor, int needleColor, int deathNeedleColor,
-                                  int hostileDotColor, int passiveDotColor) {
+    private record ResolvedColors(int backgroundColor, int barColor, int cardinalTickColor, int degreeTickColor,
+                                  int minorTickColor, int cardinalTextColor, int numberTextColor, int needleColor,
+                                  int deathNeedleColor, int hostileDotColor, int passiveDotColor) {
     }
 
     private record CompassReading(float headingDegrees) {

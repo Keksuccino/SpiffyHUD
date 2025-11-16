@@ -86,28 +86,51 @@ public class CompassEditorElement extends AbstractEditorElement {
 
         this.rightClickMenu.addSeparatorEntry("separator_after_needle");
 
-        this.addToggleContextMenuEntryTo(this.rightClickMenu, "major_ticks_enabled",
+        this.addToggleContextMenuEntryTo(this.rightClickMenu, "cardinal_ticks_enabled",
                         CompassEditorElement.class,
-                        consumes -> consumes.getElement().majorTicksEnabled,
-                        (editorElement, value) -> editorElement.getElement().majorTicksEnabled = value,
-                        "spiffyhud.elements.player_compass.major_ticks_enabled")
+                        consumes -> consumes.getElement().cardinalTicksEnabled,
+                        (editorElement, value) -> editorElement.getElement().cardinalTicksEnabled = value,
+                        "spiffyhud.elements.player_compass.cardinal_ticks_enabled")
                 .setStackable(false);
 
-        this.addColorInput("major_tick_color", Component.translatable("spiffyhud.elements.player_compass.color.major_tick"), CompassElement.DEFAULT_MAJOR_TICK_COLOR_STRING);
+        this.addColorInput("cardinal_tick_color", Component.translatable("spiffyhud.elements.player_compass.color.cardinal_tick"), CompassElement.DEFAULT_CARDINAL_TICK_COLOR_STRING);
 
         this.addImageResourceChooserContextMenuEntryTo(this.rightClickMenu,
-                        "major_tick_texture",
+                        "cardinal_tick_texture",
                         CompassEditorElement.class,
                         null,
-                        consumes -> consumes.getElement().majorTickTexture,
-                        (editorElement, supplier) -> editorElement.getElement().majorTickTexture = supplier,
-                        Component.translatable("spiffyhud.elements.player_compass.texture.major_tick"),
+                        consumes -> consumes.getElement().cardinalTickTexture,
+                        (editorElement, supplier) -> editorElement.getElement().cardinalTickTexture = supplier,
+                        Component.translatable("spiffyhud.elements.player_compass.texture.cardinal_tick"),
                         true, null, true, true, true)
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.texture.major_tick.desc")))
+                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.texture.cardinal_tick.desc")))
                 .setIcon(ContextMenu.IconFactory.getIcon("image"));
 
-        this.rightClickMenu.addSeparatorEntry("separator_after_major_tick");
+        this.rightClickMenu.addSeparatorEntry("separator_after_cardinal_tick");
+
+        this.addToggleContextMenuEntryTo(this.rightClickMenu, "degree_ticks_enabled",
+                        CompassEditorElement.class,
+                        consumes -> consumes.getElement().degreeTicksEnabled,
+                        (editorElement, value) -> editorElement.getElement().degreeTicksEnabled = value,
+                        "spiffyhud.elements.player_compass.degree_ticks_enabled")
+                .setStackable(false);
+
+        this.addColorInput("degree_tick_color", Component.translatable("spiffyhud.elements.player_compass.color.degree_tick"), CompassElement.DEFAULT_DEGREE_TICK_COLOR_STRING);
+
+        this.addImageResourceChooserContextMenuEntryTo(this.rightClickMenu,
+                        "degree_tick_texture",
+                        CompassEditorElement.class,
+                        null,
+                        consumes -> consumes.getElement().degreeTickTexture,
+                        (editorElement, supplier) -> editorElement.getElement().degreeTickTexture = supplier,
+                        Component.translatable("spiffyhud.elements.player_compass.texture.degree_tick"),
+                        true, null, true, true, true)
+                .setStackable(false)
+                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.texture.degree_tick.desc")))
+                .setIcon(ContextMenu.IconFactory.getIcon("image"));
+
+        this.rightClickMenu.addSeparatorEntry("separator_after_degree_tick");
 
         this.addToggleContextMenuEntryTo(this.rightClickMenu, "minor_ticks_enabled",
                         CompassEditorElement.class,
@@ -311,7 +334,8 @@ public class CompassEditorElement extends AbstractEditorElement {
         return switch (key) {
             case "background_color" -> element.backgroundColor;
             case "bar_color" -> element.barColor;
-            case "major_tick_color" -> element.majorTickColor;
+            case "cardinal_tick_color" -> element.cardinalTickColor;
+            case "degree_tick_color" -> element.degreeTickColor;
             case "minor_tick_color" -> element.minorTickColor;
             case "cardinal_text_color" -> element.cardinalTextColor;
             case "number_text_color" -> element.numberTextColor;
@@ -328,7 +352,8 @@ public class CompassEditorElement extends AbstractEditorElement {
         switch (key) {
             case "background_color" -> element.backgroundColor = value;
             case "bar_color" -> element.barColor = value;
-            case "major_tick_color" -> element.majorTickColor = value;
+            case "cardinal_tick_color" -> element.cardinalTickColor = value;
+            case "degree_tick_color" -> element.degreeTickColor = value;
             case "minor_tick_color" -> element.minorTickColor = value;
             case "cardinal_text_color" -> element.cardinalTextColor = value;
             case "number_text_color" -> element.numberTextColor = value;
