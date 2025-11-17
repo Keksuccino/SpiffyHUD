@@ -12,15 +12,19 @@ CHANGELOG | SPIFFYHUD v3.1.0 [ !!  WIP !! NOT FINISHED YET !! WIP !! ]
   - Customizable appearance (shaking, blinking, icons per row, etc.)
   - Supports scaling
 - Added "Mount Heart Health Bar" element that is a fully customizable mount health bar that works similar to the Vanilla one, with health points being displayed as individual icons
-  - Allows to set custom textures for all kinds of heart types (normal, frozen, poisoned, etc., including half heart versions for all of them)
+  - Allows to set custom textures for all kinds of heart icon types (normal, frozen, poisoned, etc., including half heart versions for all of them)
   - Customizable appearance (shaking, blinking, icons per row, etc.)
   - Supports scaling
 - Added "Player Food Icon Bar" element that is a fully customizable food bar that works similar to the Vanilla one, with food points being displayed as individual icons
-  - Allows to set custom textures for all kinds of food types (empty, half, full, half hungry, full hungry)
+  - Allows to set custom textures for all kinds of food icon types (empty, half, full, half hungry, full hungry)
+  - Customizable appearance (shaking, blinking, icons per row, etc.)
+  - Supports scaling
+- Added "Player Armor Icon Bar" element that is a fully customizable armor bar that works similar to the Vanilla one, with armor points being displayed as individual icons
+  - Allows to set custom textures for all kinds of armor icon types (empty, half, full)
   - Customizable appearance (shaking, blinking, icons per row, etc.)
   - Supports scaling
 - Added "Player Air Bubble Bar" element that is a fully customizable air bar that works similar to the Vanilla one, with air points being displayed as individual icons
-  - Allows to set custom textures for all kinds of bubble types (empty, full, popping)
+  - Allows to set custom textures for all kinds of bubble icon types (empty, full, popping)
   - Customizable appearance (shaking, popping, icons per row, etc.)
   - Supports scaling
 - Added "Compass" element that renders an RPG-like compass bar
