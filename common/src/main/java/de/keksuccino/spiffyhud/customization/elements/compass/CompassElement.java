@@ -400,7 +400,7 @@ public class CompassElement extends AbstractElement {
             String label = Integer.toString(absolute);
             float relative = this.relativeToHeading(absolute, reading.headingDegrees());
             float centerX = this.computeScreenX(layout, relative);
-            this.drawScaledCenteredString(graphics, label, centerX, layout.numberCenterY() + offset, layout.numberScale(), colors.numberTextColor(), this.degreeOutlineEnabled);
+            this.drawScaledCenteredString(graphics, label, centerX, layout.degreeNumberCenterY() + offset, layout.degreeNumberScale(), colors.degreeNumberTextColor(), this.degreeOutlineEnabled);
         }
     }
 
@@ -526,12 +526,12 @@ public class CompassElement extends AbstractElement {
         float dotRadius = this.computeScaledRadius(baseDiameter, this.resolveMarkerDotScale());
         float dotCenterY = layout.y() + layout.height() / 2.0F + this.resolveMarkerDotYOffset();
         float needleCenterY = layout.y() + layout.height() / 2.0F + this.resolveMarkerNeedleYOffset();
-        float labelScale = layout.numberScale() * this.resolveMarkerLabelScaleMultiplier();
+        float labelScale = this.computeBaseNumberScale(layout) * this.resolveMarkerLabelScaleMultiplier();
         float dotLabelXOffset = this.resolveMarkerDotLabelXOffset();
         float dotLabelYOffset = this.resolveMarkerDotLabelYOffset();
         float needleLabelXOffset = this.resolveMarkerNeedleLabelXOffset();
         float needleLabelYOffset = this.resolveMarkerNeedleLabelYOffset();
-        int textColor = colors.numberTextColor();
+        int textColor = colors.degreeNumberTextColor();
         boolean outline = this.markerLabelOutlineEnabled;
         for (ResolvedMarker marker : markers) {
             String label = this.formatMarkerDistance(marker.distanceMeters());
@@ -671,8 +671,8 @@ public class CompassElement extends AbstractElement {
         }
         float pointerBottom = needleCenterY + layout.height() / 2.0F;
         float drawY = pointerBottom + MARKER_LABEL_NEEDLE_GAP + this.resolveDeathPointerLabelYOffset();
-        float scale = layout.numberScale() * this.resolveDeathPointerLabelScaleMultiplier();
-        this.drawMarkerLabel(graphics, label, drawX, drawY, scale, colors.numberTextColor(), this.deathPointerLabelOutlineEnabled);
+        float scale = this.computeBaseNumberScale(layout) * this.resolveDeathPointerLabelScaleMultiplier();
+        this.drawMarkerLabel(graphics, label, drawX, drawY, scale, colors.degreeNumberTextColor(), this.deathPointerLabelOutlineEnabled);
     }
 
     private boolean drawNeedleTexture(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float centerX, @Nullable ResourceSupplier<ITexture> supplier) {
@@ -802,6 +802,11 @@ public class CompassElement extends AbstractElement {
     private float computeScreenXUnbounded(@NotNull CompassLayout layout, float signedDegrees) {
         float normalized = (signedDegrees / 360.0F) + 0.5F;
         return layout.x() + normalized * layout.width();
+    }
+
+    private float computeBaseNumberScale(@NotNull CompassLayout layout) {
+        float baseScale = Mth.clamp(layout.height() / 60.0F, 0.55F, 3.0F);
+        return Math.max(0.4F, baseScale * 0.8F);
     }
 
     private void drawScaledCenteredString(@NotNull GuiGraphics graphics, @NotNull String text, float centerX, float centerY, float scale, int color, boolean outline) {
@@ -1287,11 +1292,11 @@ public class CompassElement extends AbstractElement {
 
     private record CompassLayout(int x, int y, int width, int height, int barTop, int barHeight, int barCenterY,
                                  int majorTickHalfHeight, int minorTickHalfHeight, float cardinalCenterY,
-                                 float numberCenterY, float cardinalScale, float numberScale) {
+                                 float degreeNumberCenterY, float cardinalScale, float degreeNumberScale) {
     }
 
     private record ResolvedColors(int backgroundColor, int barColor, int cardinalTickColor, int degreeTickColor,
-                                  int minorTickColor, int cardinalTextColor, int numberTextColor, int needleColor,
+                                  int minorTickColor, int cardinalTextColor, int degreeNumberTextColor, int needleColor,
                                   int deathNeedleColor, int hostileDotColor, int passiveDotColor) {
     }
 
