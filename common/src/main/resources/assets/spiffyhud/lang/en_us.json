@@ -406,5 +406,9 @@
   "spiffyhud.elements.compass.death_pointer.label.x_offset": "Death Pointer Distance Label X-Offset",
   "spiffyhud.elements.compass.death_pointer.label.x_offset.desc": "Shifts the death pointer label horizontally relative to the needle center. Supports placeholders.",
   "spiffyhud.elements.compass.death_pointer.label.y_offset": "Death Pointer Distance Label Y-Offset",
-  "spiffyhud.elements.compass.death_pointer.label.y_offset.desc": "Shifts the death pointer label vertically after the automatic spacing. Supports placeholders."
+  "spiffyhud.elements.compass.death_pointer.label.y_offset.desc": "Shifts the death pointer label vertically after the automatic spacing. Supports placeholders.",
+  "spiffyhud.elements.compass.world_markers.labels.scale": "World Marker Distance Label Scale",
+  "spiffyhud.elements.compass.world_markers.labels.scale.desc": "Multiplier that resizes world marker distance labels relative to the compass numbers. Supports placeholders.",
+  "spiffyhud.elements.compass.death_pointer.label.scale": "Death Pointer Distance Label Scale",
+  "spiffyhud.elements.compass.death_pointer.label.scale.desc": "Multiplier that resizes the death pointer distance label relative to the compass numbers. Supports placeholders."
 }

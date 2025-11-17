@@ -74,8 +74,10 @@ public class CompassElementBuilder extends ElementBuilder<CompassElement, Compas
         element.markerDotLabelYOffset = Objects.requireNonNullElse(serialized.getValue("marker_dot_label_y_offset"), element.markerDotLabelYOffset);
         element.markerNeedleLabelXOffset = Objects.requireNonNullElse(serialized.getValue("marker_needle_label_x_offset"), element.markerNeedleLabelXOffset);
         element.markerNeedleLabelYOffset = Objects.requireNonNullElse(serialized.getValue("marker_needle_label_y_offset"), element.markerNeedleLabelYOffset);
+        element.markerLabelScale = Objects.requireNonNullElse(serialized.getValue("marker_label_scale"), element.markerLabelScale);
         element.deathPointerLabelXOffset = Objects.requireNonNullElse(serialized.getValue("death_pointer_label_x_offset"), element.deathPointerLabelXOffset);
         element.deathPointerLabelYOffset = Objects.requireNonNullElse(serialized.getValue("death_pointer_label_y_offset"), element.deathPointerLabelYOffset);
+        element.deathPointerLabelScale = Objects.requireNonNullElse(serialized.getValue("death_pointer_label_scale"), element.deathPointerLabelScale);
         element.deathPointerYOffset = Objects.requireNonNullElse(serialized.getValue("death_pointer_y_offset"), element.deathPointerYOffset);
         element.hostileDotsYOffset = Objects.requireNonNullElse(serialized.getValue("hostile_dots_y_offset"), element.hostileDotsYOffset);
         element.passiveDotsYOffset = Objects.requireNonNullElse(serialized.getValue("passive_dots_y_offset"), element.passiveDotsYOffset);
@@ -167,8 +169,10 @@ public class CompassElementBuilder extends ElementBuilder<CompassElement, Compas
         serializeTo.putProperty("marker_dot_label_y_offset", element.markerDotLabelYOffset);
         serializeTo.putProperty("marker_needle_label_x_offset", element.markerNeedleLabelXOffset);
         serializeTo.putProperty("marker_needle_label_y_offset", element.markerNeedleLabelYOffset);
+        serializeTo.putProperty("marker_label_scale", element.markerLabelScale);
         serializeTo.putProperty("death_pointer_label_x_offset", element.deathPointerLabelXOffset);
         serializeTo.putProperty("death_pointer_label_y_offset", element.deathPointerLabelYOffset);
+        serializeTo.putProperty("death_pointer_label_scale", element.deathPointerLabelScale);
         serializeTo.putProperty("death_pointer_y_offset", element.deathPointerYOffset);
         serializeTo.putProperty("hostile_dots_y_offset", element.hostileDotsYOffset);
         serializeTo.putProperty("passive_dots_y_offset", element.passiveDotsYOffset);

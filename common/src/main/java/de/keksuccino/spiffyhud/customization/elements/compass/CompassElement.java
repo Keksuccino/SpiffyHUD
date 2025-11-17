@@ -114,8 +114,10 @@ public class CompassElement extends AbstractElement {
     @NotNull public String markerDotLabelYOffset = DEFAULT_TEXT_OFFSET_STRING;
     @NotNull public String markerNeedleLabelXOffset = DEFAULT_TEXT_OFFSET_STRING;
     @NotNull public String markerNeedleLabelYOffset = DEFAULT_TEXT_OFFSET_STRING;
+    @NotNull public String markerLabelScale = DEFAULT_TEXT_SCALE_STRING;
     @NotNull public String deathPointerLabelXOffset = DEFAULT_TEXT_OFFSET_STRING;
     @NotNull public String deathPointerLabelYOffset = DEFAULT_TEXT_OFFSET_STRING;
+    @NotNull public String deathPointerLabelScale = DEFAULT_TEXT_SCALE_STRING;
     @NotNull public String deathPointerYOffset = DEFAULT_TEXT_OFFSET_STRING;
     @NotNull public String hostileDotsYOffset = DEFAULT_TEXT_OFFSET_STRING;
     @NotNull public String passiveDotsYOffset = DEFAULT_TEXT_OFFSET_STRING;
@@ -524,7 +526,7 @@ public class CompassElement extends AbstractElement {
         float dotRadius = this.computeScaledRadius(baseDiameter, this.resolveMarkerDotScale());
         float dotCenterY = layout.y() + layout.height() / 2.0F + this.resolveMarkerDotYOffset();
         float needleCenterY = layout.y() + layout.height() / 2.0F + this.resolveMarkerNeedleYOffset();
-        float labelScale = layout.numberScale();
+        float labelScale = layout.numberScale() * this.resolveMarkerLabelScaleMultiplier();
         float dotLabelXOffset = this.resolveMarkerDotLabelXOffset();
         float dotLabelYOffset = this.resolveMarkerDotLabelYOffset();
         float needleLabelXOffset = this.resolveMarkerNeedleLabelXOffset();
@@ -669,7 +671,8 @@ public class CompassElement extends AbstractElement {
         }
         float pointerBottom = needleCenterY + layout.height() / 2.0F;
         float drawY = pointerBottom + MARKER_LABEL_NEEDLE_GAP + this.resolveDeathPointerLabelYOffset();
-        this.drawMarkerLabel(graphics, label, drawX, drawY, layout.numberScale(), colors.numberTextColor(), this.deathPointerLabelOutlineEnabled);
+        float scale = layout.numberScale() * this.resolveDeathPointerLabelScaleMultiplier();
+        this.drawMarkerLabel(graphics, label, drawX, drawY, scale, colors.numberTextColor(), this.deathPointerLabelOutlineEnabled);
     }
 
     private boolean drawNeedleTexture(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float centerX, @Nullable ResourceSupplier<ITexture> supplier) {
@@ -952,6 +955,14 @@ public class CompassElement extends AbstractElement {
 
     private float resolveDegreeTextScaleMultiplier() {
         return this.resolveClampedFloat(this.degreeTextScale, DEFAULT_TEXT_SCALE, MIN_TEXT_SCALE, MAX_TEXT_SCALE);
+    }
+
+    private float resolveMarkerLabelScaleMultiplier() {
+        return this.resolveClampedFloat(this.markerLabelScale, DEFAULT_TEXT_SCALE, MIN_TEXT_SCALE, MAX_TEXT_SCALE);
+    }
+
+    private float resolveDeathPointerLabelScaleMultiplier() {
+        return this.resolveClampedFloat(this.deathPointerLabelScale, DEFAULT_TEXT_SCALE, MIN_TEXT_SCALE, MAX_TEXT_SCALE);
     }
 
     private float resolveDotScale(@Nullable String configured) {

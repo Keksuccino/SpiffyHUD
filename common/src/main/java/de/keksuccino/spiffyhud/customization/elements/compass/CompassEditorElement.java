@@ -355,6 +355,16 @@ public class CompassEditorElement extends AbstractEditorElement {
                 .setStackable(false)
                 .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.death_pointer.label.outline.desc")));
 
+        this.addStringInputContextMenuEntryTo(this.rightClickMenu, "death_pointer_label_scale",
+                        CompassEditorElement.class,
+                        consumes -> consumes.getElement().deathPointerLabelScale,
+                        (editorElement, value) -> editorElement.getElement().deathPointerLabelScale = (value == null || value.isBlank()) ? CompassElement.DEFAULT_TEXT_SCALE_STRING : value,
+                        null, false, true,
+                        Component.translatable("spiffyhud.elements.compass.death_pointer.label.scale"),
+                        true, CompassElement.DEFAULT_TEXT_SCALE_STRING, null, null)
+                .setStackable(false)
+                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.death_pointer.label.scale.desc")));
+
         this.addStringInputContextMenuEntryTo(this.rightClickMenu, "death_pointer_label_x_offset",
                         CompassEditorElement.class,
                         consumes -> consumes.getElement().deathPointerLabelXOffset,
@@ -442,6 +452,16 @@ public class CompassEditorElement extends AbstractEditorElement {
                         "spiffyhud.elements.compass.world_markers.labels.outline")
                 .setStackable(false)
                 .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.world_markers.labels.outline.desc")));
+
+        this.addStringInputContextMenuEntryTo(this.rightClickMenu, "marker_label_scale",
+                        CompassEditorElement.class,
+                        consumes -> consumes.getElement().markerLabelScale,
+                        (editorElement, value) -> editorElement.getElement().markerLabelScale = (value == null || value.isBlank()) ? CompassElement.DEFAULT_TEXT_SCALE_STRING : value,
+                        null, false, true,
+                        Component.translatable("spiffyhud.elements.compass.world_markers.labels.scale"),
+                        true, CompassElement.DEFAULT_TEXT_SCALE_STRING, null, null)
+                .setStackable(false)
+                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.world_markers.labels.scale.desc")));
 
         this.addStringInputContextMenuEntryTo(this.rightClickMenu, "marker_dot_label_x_offset",
                         CompassEditorElement.class,
