@@ -407,11 +407,6 @@ public class CompassEditorElement extends AbstractEditorElement {
                 .setStackable(false)
                 .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.marker.labels.outline.desc")));
 
-        this.addColorInput("marker_label_background_color",
-                        Component.translatable("spiffyhud.elements.player_compass.marker.labels.background"),
-                        CompassElement.DEFAULT_MARKER_LABEL_BACKGROUND_COLOR_STRING)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.marker.labels.background.desc")));
-
         this.addStringInputContextMenuEntryTo(this.rightClickMenu, "marker_dot_label_x_offset",
                         CompassEditorElement.class,
                         consumes -> consumes.getElement().markerDotLabelXOffset,
@@ -452,6 +447,8 @@ public class CompassEditorElement extends AbstractEditorElement {
                 .setStackable(false)
                 .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.marker.needle_label.y_offset.desc")));
 
+        this.rightClickMenu.addSeparatorEntry("separator_before_world_markers_clear");
+
         this.rightClickMenu.addClickableEntry("world_markers_clear", Component.translatable("spiffyhud.elements.player_compass.world_markers.clear"), (menu, entry) -> {
                     this.rightClickMenu.closeMenu();
                     ConfirmationScreen confirmation = ConfirmationScreen.critical(confirmed -> {
@@ -464,7 +461,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                 }).setStackable(false)
                 .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.world_markers.clear.desc")));
 
-        this.rightClickMenu.addSeparatorEntry("separator_after_marker_dots_scale");
+        this.rightClickMenu.addSeparatorEntry("separator_before_mob_dots_move_up_down");
 
         this.addToggleContextMenuEntryTo(this.rightClickMenu, "mob_dots_move_up_down",
                         CompassEditorElement.class,
@@ -473,6 +470,8 @@ public class CompassEditorElement extends AbstractEditorElement {
                         "spiffyhud.elements.player_compass.mob_dots.move")
                 .setStackable(false)
                 .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.mob_dots.move.desc")));
+
+        this.rightClickMenu.addSeparatorEntry("separator_before_hostile_dots_enabled");
 
         this.addToggleContextMenuEntryTo(this.rightClickMenu, "hostile_dots_enabled",
                         CompassEditorElement.class,
