@@ -11,6 +11,7 @@ import de.keksuccino.spiffyhud.customization.elements.playermounthealthbar.Playe
 import de.keksuccino.spiffyhud.customization.elements.playernbthelper.PlayerNbtHelperElementBuilder;
 import de.keksuccino.spiffyhud.customization.elements.playerheartbar.PlayerHeartHealthBarElementBuilder;
 import de.keksuccino.spiffyhud.customization.elements.playerfoodbar.PlayerFoodBarElementBuilder;
+import de.keksuccino.spiffyhud.customization.elements.playerarmorbar.PlayerArmorBarElementBuilder;
 import de.keksuccino.spiffyhud.customization.elements.singlelinetext.SingleLineTextElementBuilder;
 import de.keksuccino.spiffyhud.customization.elements.slot.SlotElementBuilder;
 import de.keksuccino.spiffyhud.customization.elements.vanillalike.air.VanillaLikePlayerAirElementBuilder;
@@ -49,6 +50,7 @@ public class Elements {
     public static final SingleLineTextElementBuilder SINGLE_LINE_TEXT = new SingleLineTextElementBuilder();
     public static final PlayerHeartHealthBarElementBuilder PLAYER_HEART_HEALTH_BAR = new PlayerHeartHealthBarElementBuilder();
     public static final PlayerFoodBarElementBuilder PLAYER_FOOD_BAR = new PlayerFoodBarElementBuilder();
+    public static final PlayerArmorBarElementBuilder PLAYER_ARMOR_BAR = new PlayerArmorBarElementBuilder();
     public static final PlayerAirBubbleBarElementBuilder PLAYER_AIR_BUBBLE_BAR = new PlayerAirBubbleBarElementBuilder();
     public static final PlayerMountHealthBarElementBuilder PLAYER_MOUNT_HEALTH_BAR = new PlayerMountHealthBarElementBuilder();
     public static final CompassElementBuilder PLAYER_COMPASS = new CompassElementBuilder();
@@ -77,6 +79,7 @@ public class Elements {
         ElementRegistry.register(SINGLE_LINE_TEXT);
         ElementRegistry.register(PLAYER_HEART_HEALTH_BAR);
         ElementRegistry.register(PLAYER_FOOD_BAR);
+        ElementRegistry.register(PLAYER_ARMOR_BAR);
         ElementRegistry.register(PLAYER_AIR_BUBBLE_BAR);
         ElementRegistry.register(PLAYER_MOUNT_HEALTH_BAR);
         ElementRegistry.register(PLAYER_COMPASS);
