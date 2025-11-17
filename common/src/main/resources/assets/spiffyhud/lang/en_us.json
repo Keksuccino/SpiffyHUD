@@ -398,5 +398,13 @@
   "spiffyhud.requirements.is_player_in_structure.desc": "Checks if the player is currently in a specific structure type.\n\n§xSpiffy needs to be installed on the server for this to work!",
   "spiffyhud.requirements.is_player_in_structure.key": "Structure key to check for:",
   "spiffyhud.requirements.is_player_using_item": "Is Player Using Item [Spiffy]",
-  "spiffyhud.requirements.is_player_using_item.desc": "Returns true when the player is using an item.\nUsing an item means, for example, eating food, drinking a potion, drawing a bow, etc."
+  "spiffyhud.requirements.is_player_using_item.desc": "Returns true when the player is using an item.\nUsing an item means, for example, eating food, drinking a potion, drawing a bow, etc.",
+  "spiffyhud.elements.compass.death_pointer.label.enabled": "Show Death Pointer Distance Label: %s",
+  "spiffyhud.elements.compass.death_pointer.label.enabled.desc": "Displays a distance label underneath the death pointer needle, formatted as \"123m\".",
+  "spiffyhud.elements.compass.death_pointer.label.outline": "Outline Death Pointer Distance Label: %s",
+  "spiffyhud.elements.compass.death_pointer.label.outline.desc": "Toggles the 8-direction outline for the death pointer distance label.",
+  "spiffyhud.elements.compass.death_pointer.label.x_offset": "Death Pointer Distance Label X-Offset",
+  "spiffyhud.elements.compass.death_pointer.label.x_offset.desc": "Shifts the death pointer label horizontally relative to the needle center. Supports placeholders.",
+  "spiffyhud.elements.compass.death_pointer.label.y_offset": "Death Pointer Distance Label Y-Offset",
+  "spiffyhud.elements.compass.death_pointer.label.y_offset.desc": "Shifts the death pointer label vertically after the automatic spacing. Supports placeholders."
 }

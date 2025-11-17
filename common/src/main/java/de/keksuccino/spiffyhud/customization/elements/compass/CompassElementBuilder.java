@@ -74,7 +74,8 @@ public class CompassElementBuilder extends ElementBuilder<CompassElement, Compas
         element.markerDotLabelYOffset = Objects.requireNonNullElse(serialized.getValue("marker_dot_label_y_offset"), element.markerDotLabelYOffset);
         element.markerNeedleLabelXOffset = Objects.requireNonNullElse(serialized.getValue("marker_needle_label_x_offset"), element.markerNeedleLabelXOffset);
         element.markerNeedleLabelYOffset = Objects.requireNonNullElse(serialized.getValue("marker_needle_label_y_offset"), element.markerNeedleLabelYOffset);
-        element.markerLabelBackgroundColor = Objects.requireNonNullElse(serialized.getValue("marker_label_background_color"), element.markerLabelBackgroundColor);
+        element.deathPointerLabelXOffset = Objects.requireNonNullElse(serialized.getValue("death_pointer_label_x_offset"), element.deathPointerLabelXOffset);
+        element.deathPointerLabelYOffset = Objects.requireNonNullElse(serialized.getValue("death_pointer_label_y_offset"), element.deathPointerLabelYOffset);
         element.deathPointerYOffset = Objects.requireNonNullElse(serialized.getValue("death_pointer_y_offset"), element.deathPointerYOffset);
         element.hostileDotsYOffset = Objects.requireNonNullElse(serialized.getValue("hostile_dots_y_offset"), element.hostileDotsYOffset);
         element.passiveDotsYOffset = Objects.requireNonNullElse(serialized.getValue("passive_dots_y_offset"), element.passiveDotsYOffset);
@@ -120,6 +121,8 @@ public class CompassElementBuilder extends ElementBuilder<CompassElement, Compas
         element.worldMarkersEnabled = deserializeBoolean(element.worldMarkersEnabled, serialized.getValue("world_markers_enabled"));
         element.markerLabelsEnabled = deserializeBoolean(element.markerLabelsEnabled, serialized.getValue("marker_labels_enabled"));
         element.markerLabelOutlineEnabled = deserializeBoolean(element.markerLabelOutlineEnabled, serialized.getValue("marker_label_outline_enabled"));
+        element.deathPointerLabelEnabled = deserializeBoolean(element.deathPointerLabelEnabled, serialized.getValue("death_pointer_label_enabled"));
+        element.deathPointerLabelOutlineEnabled = deserializeBoolean(element.deathPointerLabelOutlineEnabled, serialized.getValue("death_pointer_label_outline_enabled"));
         element.hostileDotsEnabled = deserializeBoolean(element.hostileDotsEnabled, serialized.getValue("hostile_dots_enabled"));
         element.passiveDotsEnabled = deserializeBoolean(element.passiveDotsEnabled, serialized.getValue("passive_dots_enabled"));
         element.mobDotsMoveUpDown = deserializeBoolean(element.mobDotsMoveUpDown, serialized.getValue("mob_dots_move_up_down"));
@@ -164,7 +167,8 @@ public class CompassElementBuilder extends ElementBuilder<CompassElement, Compas
         serializeTo.putProperty("marker_dot_label_y_offset", element.markerDotLabelYOffset);
         serializeTo.putProperty("marker_needle_label_x_offset", element.markerNeedleLabelXOffset);
         serializeTo.putProperty("marker_needle_label_y_offset", element.markerNeedleLabelYOffset);
-        serializeTo.putProperty("marker_label_background_color", element.markerLabelBackgroundColor);
+        serializeTo.putProperty("death_pointer_label_x_offset", element.deathPointerLabelXOffset);
+        serializeTo.putProperty("death_pointer_label_y_offset", element.deathPointerLabelYOffset);
         serializeTo.putProperty("death_pointer_y_offset", element.deathPointerYOffset);
         serializeTo.putProperty("hostile_dots_y_offset", element.hostileDotsYOffset);
         serializeTo.putProperty("passive_dots_y_offset", element.passiveDotsYOffset);
@@ -234,6 +238,8 @@ public class CompassElementBuilder extends ElementBuilder<CompassElement, Compas
         serializeTo.putProperty("cardinal_outline", "" + element.cardinalOutlineEnabled);
         serializeTo.putProperty("degree_outline", "" + element.degreeOutlineEnabled);
         serializeTo.putProperty("death_pointer_enabled", "" + element.deathPointerEnabled);
+        serializeTo.putProperty("death_pointer_label_enabled", Boolean.toString(element.deathPointerLabelEnabled));
+        serializeTo.putProperty("death_pointer_label_outline_enabled", Boolean.toString(element.deathPointerLabelOutlineEnabled));
         serializeTo.putProperty("world_markers_enabled", Boolean.toString(element.worldMarkersEnabled));
         serializeTo.putProperty("marker_labels_enabled", Boolean.toString(element.markerLabelsEnabled));
         serializeTo.putProperty("marker_label_outline_enabled", Boolean.toString(element.markerLabelOutlineEnabled));

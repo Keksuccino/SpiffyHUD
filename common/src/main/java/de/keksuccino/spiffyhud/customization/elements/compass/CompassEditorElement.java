@@ -339,6 +339,42 @@ public class CompassEditorElement extends AbstractEditorElement {
                 .setStackable(false)
                 .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.death_pointer.y_offset.desc")));
 
+        this.addToggleContextMenuEntryTo(this.rightClickMenu, "death_pointer_label_enabled",
+                        CompassEditorElement.class,
+                        consumes -> consumes.getElement().deathPointerLabelEnabled,
+                        (editorElement, value) -> editorElement.getElement().deathPointerLabelEnabled = value,
+                        "spiffyhud.elements.compass.death_pointer.label.enabled")
+                .setStackable(false)
+                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.death_pointer.label.enabled.desc")));
+
+        this.addToggleContextMenuEntryTo(this.rightClickMenu, "death_pointer_label_outline_enabled",
+                        CompassEditorElement.class,
+                        consumes -> consumes.getElement().deathPointerLabelOutlineEnabled,
+                        (editorElement, value) -> editorElement.getElement().deathPointerLabelOutlineEnabled = value,
+                        "spiffyhud.elements.compass.death_pointer.label.outline")
+                .setStackable(false)
+                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.death_pointer.label.outline.desc")));
+
+        this.addStringInputContextMenuEntryTo(this.rightClickMenu, "death_pointer_label_x_offset",
+                        CompassEditorElement.class,
+                        consumes -> consumes.getElement().deathPointerLabelXOffset,
+                        (editorElement, value) -> editorElement.getElement().deathPointerLabelXOffset = (value == null || value.isBlank()) ? CompassElement.DEFAULT_TEXT_OFFSET_STRING : value,
+                        null, false, true,
+                        Component.translatable("spiffyhud.elements.compass.death_pointer.label.x_offset"),
+                        true, CompassElement.DEFAULT_TEXT_OFFSET_STRING, null, null)
+                .setStackable(false)
+                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.death_pointer.label.x_offset.desc")));
+
+        this.addStringInputContextMenuEntryTo(this.rightClickMenu, "death_pointer_label_y_offset",
+                        CompassEditorElement.class,
+                        consumes -> consumes.getElement().deathPointerLabelYOffset,
+                        (editorElement, value) -> editorElement.getElement().deathPointerLabelYOffset = (value == null || value.isBlank()) ? CompassElement.DEFAULT_TEXT_OFFSET_STRING : value,
+                        null, false, true,
+                        Component.translatable("spiffyhud.elements.compass.death_pointer.label.y_offset"),
+                        true, CompassElement.DEFAULT_TEXT_OFFSET_STRING, null, null)
+                .setStackable(false)
+                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.death_pointer.label.y_offset.desc")));
+
         this.addImageResourceChooserContextMenuEntryTo(this.rightClickMenu,
                         "death_pointer_texture",
                         CompassEditorElement.class,

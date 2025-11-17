@@ -83,7 +83,6 @@ public class CompassElement extends AbstractElement {
     public static final String DEFAULT_TEXT_SCALE_STRING = "1.0";
     public static final String DEFAULT_TICK_OFFSET_STRING = "0";
     public static final String DEFAULT_TEXT_OFFSET_STRING = "0";
-    public static final String DEFAULT_MARKER_LABEL_BACKGROUND_COLOR_STRING = "#B0000000";
 
     @NotNull public String backgroundColor = DEFAULT_BACKGROUND_COLOR_STRING;
     @NotNull public String barColor = DEFAULT_BAR_COLOR_STRING;
@@ -115,7 +114,8 @@ public class CompassElement extends AbstractElement {
     @NotNull public String markerDotLabelYOffset = DEFAULT_TEXT_OFFSET_STRING;
     @NotNull public String markerNeedleLabelXOffset = DEFAULT_TEXT_OFFSET_STRING;
     @NotNull public String markerNeedleLabelYOffset = DEFAULT_TEXT_OFFSET_STRING;
-    @NotNull public String markerLabelBackgroundColor = DEFAULT_MARKER_LABEL_BACKGROUND_COLOR_STRING;
+    @NotNull public String deathPointerLabelXOffset = DEFAULT_TEXT_OFFSET_STRING;
+    @NotNull public String deathPointerLabelYOffset = DEFAULT_TEXT_OFFSET_STRING;
     @NotNull public String deathPointerYOffset = DEFAULT_TEXT_OFFSET_STRING;
     @NotNull public String hostileDotsYOffset = DEFAULT_TEXT_OFFSET_STRING;
     @NotNull public String passiveDotsYOffset = DEFAULT_TEXT_OFFSET_STRING;
@@ -140,6 +140,8 @@ public class CompassElement extends AbstractElement {
     public boolean worldMarkersEnabled = true;
     public boolean markerLabelsEnabled = true;
     public boolean markerLabelOutlineEnabled = true;
+    public boolean deathPointerLabelEnabled = true;
+    public boolean deathPointerLabelOutlineEnabled = true;
     @NotNull public String deathPointerColor = DEFAULT_DEATH_POINTER_COLOR_STRING;
     public boolean hostileDotsEnabled = true;
     public boolean passiveDotsEnabled = true;
@@ -528,7 +530,6 @@ public class CompassElement extends AbstractElement {
         float needleLabelXOffset = this.resolveMarkerNeedleLabelXOffset();
         float needleLabelYOffset = this.resolveMarkerNeedleLabelYOffset();
         int textColor = colors.numberTextColor();
-        int backgroundColor = colors.markerLabelBackgroundColor();
         boolean outline = this.markerLabelOutlineEnabled;
         for (ResolvedMarker marker : markers) {
             String label = this.formatMarkerDistance(marker.distanceMeters());
@@ -545,12 +546,12 @@ public class CompassElement extends AbstractElement {
             } else {
                 drawY = dotCenterY + dotRadius + MARKER_LABEL_DOT_GAP + dotLabelYOffset;
             }
-            this.drawMarkerLabel(graphics, label, drawX, drawY, labelScale, textColor, backgroundColor, outline);
+            this.drawMarkerLabel(graphics, label, drawX, drawY, labelScale, textColor, outline);
         }
     }
 
     private void drawMarkerLabel(@NotNull GuiGraphics graphics, @NotNull String text, float centerX, float centerY,
-                                 float scale, int textColor, int backgroundColor, boolean outline) {
+                                 float scale, int textColor, boolean outline) {
         if (text.isEmpty() || scale <= 0.0F) {
             return;
         }
@@ -566,7 +567,6 @@ public class CompassElement extends AbstractElement {
         int top = Mth.floor(centerY - halfHeight - paddingY);
         int bottom = Mth.ceil(centerY + halfHeight + paddingY);
         RenderSystem.enableBlend();
-        graphics.fill(left, top, right, bottom, backgroundColor);
         this.drawScaledCenteredString(graphics, text, centerX, centerY, scale, textColor, outline);
     }
 
@@ -647,6 +647,29 @@ public class CompassElement extends AbstractElement {
         } finally {
             graphics.disableScissor();
         }
+        this.drawDeathPointerLabel(graphics, layout, pointer, centerX, centerY, colors);
+    }
+
+    private void drawDeathPointerLabel(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout,
+                                       @NotNull DeathPointerData pointer, float needleCenterX, float needleCenterY,
+                                       @NotNull ResolvedColors colors) {
+        if (!this.deathPointerLabelEnabled) {
+            return;
+        }
+        String label = this.formatMarkerDistance(pointer.distanceMeters());
+        if (label.isEmpty()) {
+            return;
+        }
+        float normalizedCenterX = this.normalizeCenterForWrap(layout, needleCenterX);
+        float drawX = normalizedCenterX + this.resolveDeathPointerLabelXOffset();
+        int minX = layout.x();
+        int maxX = layout.x() + layout.width();
+        if (maxX > minX) {
+            drawX = Mth.clamp(drawX, (float) minX, (float) maxX);
+        }
+        float pointerBottom = needleCenterY + layout.height() / 2.0F;
+        float drawY = pointerBottom + MARKER_LABEL_NEEDLE_GAP + this.resolveDeathPointerLabelYOffset();
+        this.drawMarkerLabel(graphics, label, drawX, drawY, layout.numberScale(), colors.numberTextColor(), this.deathPointerLabelOutlineEnabled);
     }
 
     private boolean drawNeedleTexture(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float centerX, @Nullable ResourceSupplier<ITexture> supplier) {
@@ -819,8 +842,7 @@ public class CompassElement extends AbstractElement {
                 this.applyOpacity(parseColor(this.needleColor, DEFAULT_NEEDLE_COLOR)),
                 this.applyOpacity(parseColor(this.deathPointerColor, DEFAULT_DEATH_POINTER_COLOR)),
                 this.applyOpacity(parseColor(this.hostileDotsColor, DEFAULT_HOSTILE_DOT_COLOR)),
-                this.applyOpacity(parseColor(this.passiveDotsColor, DEFAULT_PASSIVE_DOT_COLOR)),
-                this.applyOpacity(parseColor(this.markerLabelBackgroundColor, DEFAULT_MARKER_LABEL_BACKGROUND_COLOR))
+                this.applyOpacity(parseColor(this.passiveDotsColor, DEFAULT_PASSIVE_DOT_COLOR))
         );
     }
 
@@ -882,6 +904,14 @@ public class CompassElement extends AbstractElement {
 
     private float resolveMarkerNeedleLabelYOffset() {
         return this.resolveClampedFloat(this.markerNeedleLabelYOffset, DEFAULT_TICK_OFFSET, MIN_TICK_OFFSET, MAX_TICK_OFFSET);
+    }
+
+    private float resolveDeathPointerLabelXOffset() {
+        return this.resolveClampedFloat(this.deathPointerLabelXOffset, DEFAULT_TICK_OFFSET, MIN_TICK_OFFSET, MAX_TICK_OFFSET);
+    }
+
+    private float resolveDeathPointerLabelYOffset() {
+        return this.resolveClampedFloat(this.deathPointerLabelYOffset, DEFAULT_TICK_OFFSET, MIN_TICK_OFFSET, MAX_TICK_OFFSET);
     }
 
     private float resolveDeathPointerYOffset() {
@@ -1000,7 +1030,7 @@ public class CompassElement extends AbstractElement {
             return null;
         }
         if (this.isEditor()) {
-            return new DeathPointerData(60.0F);
+            return new DeathPointerData(60.0F, 120.0F);
         }
         Player player = MC.player;
         if (player == null) {
@@ -1019,9 +1049,10 @@ public class CompassElement extends AbstractElement {
         if (distanceSq < 1.0E-4D) {
             return null;
         }
+        float distanceMeters = (float) Math.sqrt(distanceSq);
         double angleRad = Math.atan2(dx, -dz);
         float degrees = (float) (angleRad * (180.0D / Math.PI));
-        return new DeathPointerData(degrees);
+        return new DeathPointerData(degrees, distanceMeters);
     }
 
     @NotNull
@@ -1250,14 +1281,13 @@ public class CompassElement extends AbstractElement {
 
     private record ResolvedColors(int backgroundColor, int barColor, int cardinalTickColor, int degreeTickColor,
                                   int minorTickColor, int cardinalTextColor, int numberTextColor, int needleColor,
-                                  int deathNeedleColor, int hostileDotColor, int passiveDotColor,
-                                  int markerLabelBackgroundColor) {
+                                  int deathNeedleColor, int hostileDotColor, int passiveDotColor) {
     }
 
     private record CompassReading(float headingDegrees) {
     }
 
-    private record DeathPointerData(float signedDegrees) {
+    private record DeathPointerData(float signedDegrees, float distanceMeters) {
     }
 
     private record MobDots(@NotNull List<MobDotData> hostileDots, @NotNull List<MobDotData> passiveDots) {
