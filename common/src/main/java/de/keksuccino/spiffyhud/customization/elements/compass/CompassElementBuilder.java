@@ -265,12 +265,12 @@ public class CompassElementBuilder extends ElementBuilder<CompassElement, Compas
 
     @Override
     public @NotNull Component getDisplayName(@Nullable AbstractElement element) {
-        return Component.translatable("spiffyhud.elements.player_compass");
+        return Component.translatable("spiffyhud.elements.compass");
     }
 
     @Override
     public @Nullable Component[] getDescription(@Nullable AbstractElement element) {
-        return LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.desc");
+        return LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.desc");
     }
 
     @Override
