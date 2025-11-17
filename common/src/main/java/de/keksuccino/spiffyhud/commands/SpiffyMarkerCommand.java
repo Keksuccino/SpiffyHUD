@@ -37,7 +37,7 @@ import net.minecraft.world.phys.Vec2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class SpiffyMarkerCommand {
+public class SpiffyMarkerCommand {
 
     private static final SimpleCommandExceptionType MUST_BE_PLAYER_EXCEPTION =
             new SimpleCommandExceptionType(Component.translatable("spiffyhud.commands.marker.requires_player"));
@@ -45,16 +45,11 @@ public final class SpiffyMarkerCommand {
             new SimpleCommandExceptionType(Component.translatable("spiffyhud.commands.marker.error.invalid_target"));
     private static final SimpleCommandExceptionType INVALID_MARKER_NAME =
             new SimpleCommandExceptionType(Component.translatable("spiffyhud.commands.marker.error.invalid_marker"));
-    private static final SimpleCommandExceptionType INVALID_POSITION =
-            new SimpleCommandExceptionType(Component.translatable("spiffyhud.commands.marker.error.position_required"));
     private static final SimpleCommandExceptionType CLIENT_NOT_SUPPORTED =
             new SimpleCommandExceptionType(Component.translatable("spiffyhud.commands.marker.self_not_supported"));
 
     private static final Map<String, List<String>> CACHED_GROUP_SUGGESTIONS = java.util.Collections.synchronizedMap(new HashMap<>());
     private static final DecimalFormat POSITION_FORMAT = buildPositionFormat();
-
-    private SpiffyMarkerCommand() {
-    }
 
     public static void register(@NotNull CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("spiffymarker")

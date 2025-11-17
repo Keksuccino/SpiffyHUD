@@ -5,17 +5,17 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
-public final class SpiffyHudNeoForgeServerEvents {
-
-    private SpiffyHudNeoForgeServerEvents() {
-    }
+public class SpiffyHudNeoForgeServerEvents {
 
     public static void registerAll() {
+
         NeoForge.EVENT_BUS.register(new SpiffyHudNeoForgeServerEvents());
+
     }
 
     @SubscribeEvent
     public void onRegisterCommands(RegisterCommandsEvent event) {
         SpiffyCommands.registerAll(event.getDispatcher());
     }
+
 }
