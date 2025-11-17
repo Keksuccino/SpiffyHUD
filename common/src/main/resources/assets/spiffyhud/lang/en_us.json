@@ -374,5 +374,19 @@
   "spiffyhud.elements.player_compass.marker.dot_y_offset": "World Marker Dot Y-Offset",
   "spiffyhud.elements.player_compass.marker.dot_y_offset.desc": "Offsets the dot-style world markers vertically. Supports placeholders.",
   "spiffyhud.elements.player_compass.marker.needle_y_offset": "World Marker Needle Y-Offset",
-  "spiffyhud.elements.player_compass.marker.needle_y_offset.desc": "Offsets the needle-style world markers vertically. Supports placeholders."
+  "spiffyhud.elements.player_compass.marker.needle_y_offset.desc": "Offsets the needle-style world markers vertically. Supports placeholders.",
+  "spiffyhud.elements.player_compass.marker.labels": "Show World Marker Distance Labels: %s",
+  "spiffyhud.elements.player_compass.marker.labels.desc": "Displays the distance to each world marker underneath its icon, formatted as \"123m\".",
+  "spiffyhud.elements.player_compass.marker.labels.background": "Marker Label Background Color [HEX]",
+  "spiffyhud.elements.player_compass.marker.labels.background.desc": "Sets the fill color drawn behind every world marker distance label. Accepts HEX or placeholders.",
+  "spiffyhud.elements.player_compass.marker.labels.outline": "Outline Marker Labels: %s",
+  "spiffyhud.elements.player_compass.marker.labels.outline.desc": "Toggles the 8-direction text outline for distance labels.",
+  "spiffyhud.elements.player_compass.marker.dot_label.x_offset": "Dot Label X-Offset",
+  "spiffyhud.elements.player_compass.marker.dot_label.x_offset.desc": "Shifts dot labels horizontally relative to the marker center. Supports placeholders.",
+  "spiffyhud.elements.player_compass.marker.dot_label.y_offset": "Dot Label Y-Offset",
+  "spiffyhud.elements.player_compass.marker.dot_label.y_offset.desc": "Shifts dot labels vertically after the automatic spacing. Supports placeholders.",
+  "spiffyhud.elements.player_compass.marker.needle_label.x_offset": "Needle Label X-Offset",
+  "spiffyhud.elements.player_compass.marker.needle_label.x_offset.desc": "Shifts needle labels horizontally relative to the needle center. Supports placeholders.",
+  "spiffyhud.elements.player_compass.marker.needle_label.y_offset": "Needle Label Y-Offset",
+  "spiffyhud.elements.player_compass.marker.needle_label.y_offset.desc": "Shifts needle labels vertically after the automatic spacing. Supports placeholders."
 }
