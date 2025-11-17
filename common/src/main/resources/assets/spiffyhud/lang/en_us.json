@@ -186,8 +186,6 @@
   "spiffyhud.elements.player_compass.hostile_dots.y_offset": "Hostile Mob Dot Y-Offset",
   "spiffyhud.elements.player_compass.hostile_dots.y_offset.desc": "Adds a base vertical shift to hostile mob dots before the distance-based movement is applied. Accepts placeholders.",
   "spiffyhud.elements.player_compass.major_ticks_enabled": "Show Major Tick Lines: %s",
-  "spiffyhud.elements.player_compass.marker.y_offset": "World Marker Y-Offset",
-  "spiffyhud.elements.player_compass.marker.y_offset.desc": "Offsets world marker dots/needles vertically. Supports placeholders for dynamic binding.",
   "spiffyhud.elements.player_compass.marker_dots.scale": "World Marker Scale",
   "spiffyhud.elements.player_compass.marker_dots.scale.desc": "Multiplier that resizes world markers. Needs decimal numbers. Supports placeholders. Values below 1.0 shrink the dots and values above 1.0 enlarge them.",
   "spiffyhud.elements.player_compass.minor_ticks.y_offset": "Minor Tick Y-Offset",
@@ -372,5 +370,9 @@
   "spiffyhud.requirements.is_player_in_structure.desc": "Checks if the player is currently in a specific structure type.\n\n§xSpiffy needs to be installed on the server for this to work!",
   "spiffyhud.requirements.is_player_in_structure.key": "Structure key to check for:",
   "spiffyhud.requirements.is_player_using_item": "Is Player Using Item [Spiffy]",
-  "spiffyhud.requirements.is_player_using_item.desc": "Returns true when the player is using an item.\nUsing an item means, for example, eating food, drinking a potion, drawing a bow, etc."
+  "spiffyhud.requirements.is_player_using_item.desc": "Returns true when the player is using an item.\nUsing an item means, for example, eating food, drinking a potion, drawing a bow, etc.",
+  "spiffyhud.elements.player_compass.marker.dot_y_offset": "World Marker Dot Y-Offset",
+  "spiffyhud.elements.player_compass.marker.dot_y_offset.desc": "Offsets the dot-style world markers vertically. Supports placeholders.",
+  "spiffyhud.elements.player_compass.marker.needle_y_offset": "World Marker Needle Y-Offset",
+  "spiffyhud.elements.player_compass.marker.needle_y_offset.desc": "Offsets the needle-style world markers vertically. Supports placeholders."
 }

@@ -371,15 +371,25 @@ public class CompassEditorElement extends AbstractEditorElement {
                 .setStackable(false)
                 .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.marker_dots.scale.desc")));
 
-        this.addStringInputContextMenuEntryTo(this.rightClickMenu, "marker_y_offset",
+        this.addStringInputContextMenuEntryTo(this.rightClickMenu, "marker_dot_y_offset",
                         CompassEditorElement.class,
-                        consumes -> consumes.getElement().markerYOffset,
-                        (editorElement, value) -> editorElement.getElement().markerYOffset = (value == null || value.isBlank()) ? CompassElement.DEFAULT_TEXT_OFFSET_STRING : value,
+                        consumes -> consumes.getElement().markerDotYOffset,
+                        (editorElement, value) -> editorElement.getElement().markerDotYOffset = (value == null || value.isBlank()) ? CompassElement.DEFAULT_TEXT_OFFSET_STRING : value,
                         null, false, true,
-                        Component.translatable("spiffyhud.elements.player_compass.marker.y_offset"),
+                        Component.translatable("spiffyhud.elements.player_compass.marker.dot_y_offset"),
                         true, CompassElement.DEFAULT_TEXT_OFFSET_STRING, null, null)
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.marker.y_offset.desc")));
+                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.marker.dot_y_offset.desc")));
+
+        this.addStringInputContextMenuEntryTo(this.rightClickMenu, "marker_needle_y_offset",
+                        CompassEditorElement.class,
+                        consumes -> consumes.getElement().markerNeedleYOffset,
+                        (editorElement, value) -> editorElement.getElement().markerNeedleYOffset = (value == null || value.isBlank()) ? CompassElement.DEFAULT_TEXT_OFFSET_STRING : value,
+                        null, false, true,
+                        Component.translatable("spiffyhud.elements.player_compass.marker.needle_y_offset"),
+                        true, CompassElement.DEFAULT_TEXT_OFFSET_STRING, null, null)
+                .setStackable(false)
+                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_compass.marker.needle_y_offset.desc")));
 
         this.rightClickMenu.addClickableEntry("world_markers_clear", Component.translatable("spiffyhud.elements.player_compass.world_markers.clear"), (menu, entry) -> {
                     this.rightClickMenu.closeMenu();

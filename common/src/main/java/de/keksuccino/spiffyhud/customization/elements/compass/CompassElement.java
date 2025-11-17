@@ -104,7 +104,8 @@ public class CompassElement extends AbstractElement {
     @NotNull public String passiveDotScale = DEFAULT_DOT_SCALE_STRING;
     @NotNull public String markerDotScale = DEFAULT_DOT_SCALE_STRING;
     @NotNull public String needleYOffset = DEFAULT_TEXT_OFFSET_STRING;
-    @NotNull public String markerYOffset = DEFAULT_TEXT_OFFSET_STRING;
+    @NotNull public String markerDotYOffset = DEFAULT_TEXT_OFFSET_STRING;
+    @NotNull public String markerNeedleYOffset = DEFAULT_TEXT_OFFSET_STRING;
     @NotNull public String deathPointerYOffset = DEFAULT_TEXT_OFFSET_STRING;
     @NotNull public String hostileDotsYOffset = DEFAULT_TEXT_OFFSET_STRING;
     @NotNull public String passiveDotsYOffset = DEFAULT_TEXT_OFFSET_STRING;
@@ -390,7 +391,7 @@ public class CompassElement extends AbstractElement {
         }
         float minY = layout.y();
         float maxY = layout.y() + layout.height();
-        float markerCenter = layout.y() + layout.height() / 2.0F + this.resolveMarkerYOffset();
+        float markerCenter = layout.y() + layout.height() / 2.0F;
         float baseDiameter = this.computeBaseDotDiameter(layout);
         float hostileRadius = this.computeScaledRadius(baseDiameter, this.resolveHostileDotScale());
         float passiveRadius = this.computeScaledRadius(baseDiameter, this.resolvePassiveDotScale());
@@ -445,7 +446,7 @@ public class CompassElement extends AbstractElement {
     private void drawMarkerDots(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull List<ResolvedMarker> markers) {
         float baseDiameter = this.computeBaseDotDiameter(layout);
         float radius = this.computeScaledRadius(baseDiameter, this.resolveMarkerDotScale());
-        float centerY = layout.y() + layout.height() / 2.0F + this.resolveMarkerYOffset();
+        float centerY = layout.y() + layout.height() / 2.0F + this.resolveMarkerDotYOffset();
         for (ResolvedMarker marker : markers) {
             if (marker.showAsNeedle()) {
                 continue;
@@ -469,7 +470,7 @@ public class CompassElement extends AbstractElement {
     }
 
     private void drawMarkerNeedles(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull List<ResolvedMarker> markers) {
-        float offset = this.resolveMarkerYOffset();
+        float offset = this.resolveMarkerNeedleYOffset();
         for (ResolvedMarker marker : markers) {
             if (!marker.showAsNeedle()) {
                 continue;
@@ -777,8 +778,12 @@ public class CompassElement extends AbstractElement {
         return this.resolveClampedFloat(this.needleYOffset, DEFAULT_TICK_OFFSET, MIN_TICK_OFFSET, MAX_TICK_OFFSET);
     }
 
-    private float resolveMarkerYOffset() {
-        return this.resolveClampedFloat(this.markerYOffset, DEFAULT_TICK_OFFSET, MIN_TICK_OFFSET, MAX_TICK_OFFSET);
+    private float resolveMarkerDotYOffset() {
+        return this.resolveClampedFloat(this.markerDotYOffset, DEFAULT_TICK_OFFSET, MIN_TICK_OFFSET, MAX_TICK_OFFSET);
+    }
+
+    private float resolveMarkerNeedleYOffset() {
+        return this.resolveClampedFloat(this.markerNeedleYOffset, DEFAULT_TICK_OFFSET, MIN_TICK_OFFSET, MAX_TICK_OFFSET);
     }
 
     private float resolveDeathPointerYOffset() {

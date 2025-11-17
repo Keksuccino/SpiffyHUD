@@ -68,7 +68,8 @@ public class CompassElementBuilder extends ElementBuilder<CompassElement, Compas
         element.passiveDotScale = Objects.requireNonNullElse(serialized.getValue("passive_dots_scale"), element.passiveDotScale);
         element.markerDotScale = Objects.requireNonNullElse(serialized.getValue("marker_dots_scale"), element.markerDotScale);
         element.needleYOffset = Objects.requireNonNullElse(serialized.getValue("needle_y_offset"), element.needleYOffset);
-        element.markerYOffset = Objects.requireNonNullElse(serialized.getValue("marker_y_offset"), element.markerYOffset);
+        element.markerDotYOffset = Objects.requireNonNullElse(serialized.getValue("marker_dot_y_offset"), element.markerDotYOffset);
+        element.markerNeedleYOffset = Objects.requireNonNullElse(serialized.getValue("marker_needle_y_offset"), element.markerNeedleYOffset);
         element.deathPointerYOffset = Objects.requireNonNullElse(serialized.getValue("death_pointer_y_offset"), element.deathPointerYOffset);
         element.hostileDotsYOffset = Objects.requireNonNullElse(serialized.getValue("hostile_dots_y_offset"), element.hostileDotsYOffset);
         element.passiveDotsYOffset = Objects.requireNonNullElse(serialized.getValue("passive_dots_y_offset"), element.passiveDotsYOffset);
@@ -150,7 +151,8 @@ public class CompassElementBuilder extends ElementBuilder<CompassElement, Compas
         serializeTo.putProperty("passive_dots_scale", element.passiveDotScale);
         serializeTo.putProperty("marker_dots_scale", element.markerDotScale);
         serializeTo.putProperty("needle_y_offset", element.needleYOffset);
-        serializeTo.putProperty("marker_y_offset", element.markerYOffset);
+        serializeTo.putProperty("marker_dot_y_offset", element.markerDotYOffset);
+        serializeTo.putProperty("marker_needle_y_offset", element.markerNeedleYOffset);
         serializeTo.putProperty("death_pointer_y_offset", element.deathPointerYOffset);
         serializeTo.putProperty("hostile_dots_y_offset", element.hostileDotsYOffset);
         serializeTo.putProperty("passive_dots_y_offset", element.passiveDotsYOffset);
