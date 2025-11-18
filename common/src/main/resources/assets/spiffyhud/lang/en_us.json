@@ -1,6 +1,6 @@
 {
   "spiffyhud.actions.add_marker": "Add World Marker §z[Spiffy]§r",
-  "spiffyhud.actions.add_marker.desc": "Adds a persistent marker to the marker storage of the targeted element.\nMarkers are used for Compass and Minimap elements.",
+  "spiffyhud.actions.add_marker.desc": "Adds a persistent marker to the marker storage of the targeted element.\nMarkers are used for Compass elements.",
   "spiffyhud.actions.add_marker.editor": "Add World Marker Action",
   "spiffyhud.actions.clear_markers": "Clear World Markers §z[Spiffy]§r",
   "spiffyhud.actions.clear_markers.desc": "Removes every stored marker entry for the selected target element identifier so you can rebuild the marker group from scratch.",
