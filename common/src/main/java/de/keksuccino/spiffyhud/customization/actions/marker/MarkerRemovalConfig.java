@@ -60,6 +60,10 @@ public class MarkerRemovalConfig {
         return !this.targetElementIdentifier.isBlank() && !this.uniqueMarkerName.isBlank();
     }
 
+    public boolean hasValidTarget() {
+        return !this.targetElementIdentifier.isBlank();
+    }
+
     private static String normalize(@Nullable String value) {
         if (value == null) {
             return "";

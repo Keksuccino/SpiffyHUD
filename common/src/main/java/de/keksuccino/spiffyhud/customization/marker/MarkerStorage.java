@@ -121,12 +121,14 @@ public class MarkerStorage {
         return true;
     }
 
-    public static synchronized void clearGroup(@NotNull String groupId) {
+    public static synchronized boolean clearGroup(@NotNull String groupId) {
         String normalized = normalizeGroupId(groupId);
         ensureLoaded();
-        if (cachedData.dropGroup(normalized)) {
+        boolean dropped = cachedData.dropGroup(normalized);
+        if (dropped) {
             persist();
         }
+        return dropped;
     }
 
     private static void ensureLoaded() {

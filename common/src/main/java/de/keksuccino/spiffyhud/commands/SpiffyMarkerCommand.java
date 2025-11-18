@@ -55,7 +55,8 @@ public class SpiffyMarkerCommand {
         dispatcher.register(Commands.literal("spiffymarker")
                 .then(buildAddCommand())
                 .then(buildEditCommand())
-                .then(buildRemoveCommand()));
+                .then(buildRemoveCommand())
+                .then(buildClearCommand()));
     }
 
     public static void cacheSuggestions(@NotNull UUID playerUuid, @NotNull List<String> groups) {
@@ -100,6 +101,13 @@ public class SpiffyMarkerCommand {
                         .then(targetElementArgument()
                         .then(Commands.argument("marker_name", StringArgumentType.string())
                                 .executes(SpiffyMarkerCommand::executeRemove))));
+    }
+
+    private static LiteralArgumentBuilder<CommandSourceStack> buildClearCommand() {
+        return Commands.literal("clear")
+                .then(silenceArgument()
+                        .then(targetElementArgument()
+                                .executes(SpiffyMarkerCommand::executeClear)));
     }
 
     private static RequiredArgumentBuilder<CommandSourceStack, Boolean> silenceArgument() {
@@ -212,6 +220,20 @@ public class SpiffyMarkerCommand {
         }
     }
 
+    private static int executeClear(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        boolean silence = BoolArgumentType.getBool(context, "silence_command_chat_output");
+        try {
+            ServerPlayer player = getCommandPlayer(context);
+            String targetElement = sanitizeTarget(StringArgumentType.getString(context, "target_element"));
+            return dispatchClear(context.getSource(), player, targetElement, silence);
+        } catch (CommandSyntaxException ex) {
+            if (silence) {
+                return 0;
+            }
+            throw ex;
+        }
+    }
+
     private static int dispatchAdd(CommandSourceStack source,
                                    ServerPlayer player,
                                    String targetElement,
@@ -274,6 +296,18 @@ public class SpiffyMarkerCommand {
         config.normalize();
         return sendPacket(source, player, MarkerCommandOperation.REMOVE, null, config, null, silence,
                 "spiffyhud.commands.marker.remove.sent", markerName, targetElement);
+    }
+
+    private static int dispatchClear(CommandSourceStack source,
+                                     ServerPlayer player,
+                                     String targetElement,
+                                     boolean silence) throws CommandSyntaxException {
+        MarkerRemovalConfig config = MarkerRemovalConfig.defaultConfig();
+        config.targetElementIdentifier = targetElement;
+        config.uniqueMarkerName = "";
+        config.normalize();
+        return sendPacket(source, player, MarkerCommandOperation.CLEAR_GROUP, null, config, null, silence,
+                "spiffyhud.commands.marker.clear.sent", targetElement);
     }
 
     private static int sendPacket(CommandSourceStack source,

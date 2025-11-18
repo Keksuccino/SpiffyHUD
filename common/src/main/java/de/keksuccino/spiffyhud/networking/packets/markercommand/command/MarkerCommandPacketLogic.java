@@ -26,6 +26,7 @@ public class MarkerCommandPacketLogic {
             case ADD -> handleAdd(packet);
             case EDIT -> handleEdit(packet);
             case REMOVE -> handleRemove(packet);
+            case CLEAR_GROUP -> handleClearGroup(packet);
         };
     }
 
@@ -103,6 +104,26 @@ public class MarkerCommandPacketLogic {
             sendClientFeedback(packet, Component.translatable("spiffyhud.commands.marker.client.remove.success", config.uniqueMarkerName, config.targetElementIdentifier), false);
         } else {
             sendClientFeedback(packet, Component.translatable("spiffyhud.commands.marker.client.remove.failure", config.uniqueMarkerName, config.targetElementIdentifier), true);
+        }
+        return success;
+    }
+
+    private static boolean handleClearGroup(@NotNull MarkerCommandPacket packet) {
+        MarkerRemovalConfig config = packet.removalConfig;
+        if (config == null) {
+            LOGGER.error("[SPIFFYHUD] Marker clear command missing config.");
+            return false;
+        }
+        config.normalize();
+        if (!config.hasValidTarget()) {
+            LOGGER.error("[SPIFFYHUD] Marker clear command missing target element identifier.");
+            return false;
+        }
+        boolean success = MarkerStorage.clearGroup(config.targetElementIdentifier);
+        if (success) {
+            sendClientFeedback(packet, Component.translatable("spiffyhud.commands.marker.client.clear.success", config.targetElementIdentifier), false);
+        } else {
+            sendClientFeedback(packet, Component.translatable("spiffyhud.commands.marker.client.clear.failure", config.targetElementIdentifier), true);
         }
         return success;
     }
