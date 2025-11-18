@@ -4,7 +4,6 @@ import de.keksuccino.fancymenu.customization.action.Action;
 import de.keksuccino.fancymenu.customization.action.ActionInstance;
 import de.keksuccino.fancymenu.util.LocalizationUtils;
 import de.keksuccino.spiffyhud.customization.marker.MarkerStorage;
-import de.keksuccino.konkrete.math.MathUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -33,13 +32,13 @@ public class EditMarkerAction extends Action {
             LOGGER.error("[SPIFFYHUD] EditMarkerAction received malformed configuration.");
             return;
         }
-        String lookupName = config.getLookupName();
-        if (!config.hasValidTarget() || lookupName.isBlank() || !config.hasDisplayName()) {
-            LOGGER.error("[SPIFFYHUD] EditMarkerAction is missing required data.");
+        String markerName = config.getMarkerName();
+        if (!config.hasValidTarget() || markerName.isBlank() || !config.hasValidMarkerName()) {
+            LOGGER.error("[SPIFFYHUD] EditMarkerAction is missing required data: Invalid marker name");
             return;
         }
-        boolean success = MarkerStorage.editMarker(config.targetElementIdentifier, lookupName, marker -> {
-            marker.setName(config.displayName);
+        boolean success = MarkerStorage.editMarker(config.targetElementIdentifier, markerName, marker -> {
+            marker.setName(config.uniqueMarkerName);
             marker.setColor(config.colorHex);
             marker.setDotTexture(config.dotTexture);
             marker.setNeedleTexture(config.needleTexture);
@@ -48,7 +47,7 @@ public class EditMarkerAction extends Action {
             marker.setMarkerPosZ(config.positionZ);
         });
         if (!success) {
-            LOGGER.error("[SPIFFYHUD] Failed to edit marker '{}' in group '{}'.", lookupName, config.targetElementIdentifier);
+            LOGGER.error("[SPIFFYHUD] Failed to edit marker '{}' in group '{}'.", markerName, config.targetElementIdentifier);
         }
     }
 
@@ -81,7 +80,6 @@ public class EditMarkerAction extends Action {
         MarkerEditorScreen screen = new MarkerEditorScreen(
                 Component.translatable("spiffyhud.actions.edit_marker.editor"),
                 config,
-                true,
                 serialized -> {
                     if (serialized != null) {
                         instance.value = serialized;

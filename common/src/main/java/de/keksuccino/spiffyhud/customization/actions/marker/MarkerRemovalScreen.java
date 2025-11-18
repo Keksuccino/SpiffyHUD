@@ -33,8 +33,8 @@ public class MarkerRemovalScreen extends CellScreen {
 
         this.addLabelCell(Component.translatable("spiffyhud.actions.marker.remove_name"));
         TextInputCell markerCell = this.addTextInputCell(null, true, true)
-                .setEditListener(s -> this.config.markerName = s.trim())
-                .setText(this.config.markerName);
+                .setEditListener(s -> this.config.uniqueMarkerName = s.trim())
+                .setText(this.config.uniqueMarkerName);
         markerCell.editBox.setTooltip(() -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.actions.marker.remove_name.desc")));
 
         this.addStartEndSpacerCell();

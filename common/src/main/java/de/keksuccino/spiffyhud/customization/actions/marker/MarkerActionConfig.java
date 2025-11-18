@@ -15,8 +15,7 @@ public class MarkerActionConfig {
     private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
 
     public String targetElementIdentifier = "";
-    public String lookupMarkerName = "";
-    public String displayName = "";
+    public String uniqueMarkerName = "";
     public String colorHex = "";
     public String dotTexture = "";
     public String needleTexture = "";
@@ -35,8 +34,7 @@ public class MarkerActionConfig {
     public @NotNull MarkerActionConfig copy() {
         MarkerActionConfig copy = new MarkerActionConfig();
         copy.targetElementIdentifier = this.targetElementIdentifier;
-        copy.lookupMarkerName = this.lookupMarkerName;
-        copy.displayName = this.displayName;
+        copy.uniqueMarkerName = this.uniqueMarkerName;
         copy.colorHex = this.colorHex;
         copy.dotTexture = this.dotTexture;
         copy.needleTexture = this.needleTexture;
@@ -67,8 +65,7 @@ public class MarkerActionConfig {
 
     public void normalize() {
         this.targetElementIdentifier = normalize(this.targetElementIdentifier);
-        this.lookupMarkerName = normalize(this.lookupMarkerName);
-        this.displayName = normalize(this.displayName);
+        this.uniqueMarkerName = normalize(this.uniqueMarkerName);
         this.colorHex = normalize(this.colorHex);
         this.dotTexture = normalize(this.dotTexture);
         this.needleTexture = normalize(this.needleTexture);
@@ -86,17 +83,17 @@ public class MarkerActionConfig {
         return !this.targetElementIdentifier.isBlank();
     }
 
-    public boolean hasDisplayName() {
-        return !this.displayName.isBlank();
+    public boolean hasValidMarkerName() {
+        return !this.uniqueMarkerName.isBlank();
     }
 
-    public @NotNull String getLookupName() {
-        return this.lookupMarkerName.isBlank() ? this.displayName : this.lookupMarkerName;
+    public String getMarkerName() {
+        return uniqueMarkerName;
     }
 
     public @NotNull MarkerData toMarkerData() {
         return new MarkerData(
-                this.displayName,
+                this.uniqueMarkerName,
                 blankToNull(this.colorHex),
                 blankToNull(this.dotTexture),
                 blankToNull(this.needleTexture),
@@ -133,4 +130,5 @@ public class MarkerActionConfig {
         String trimmed = value.trim();
         return trimmed.isEmpty() ? null : trimmed;
     }
+
 }

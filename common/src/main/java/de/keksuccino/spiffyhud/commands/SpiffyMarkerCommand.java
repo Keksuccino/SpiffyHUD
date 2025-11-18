@@ -225,8 +225,7 @@ public class SpiffyMarkerCommand {
                                    boolean silence) throws CommandSyntaxException {
         MarkerActionConfig config = MarkerActionConfig.defaultConfig();
         config.targetElementIdentifier = targetElement;
-        config.displayName = markerName;
-        config.lookupMarkerName = markerName;
+        config.uniqueMarkerName = markerName;
         config.positionX = posX;
         config.positionZ = posZ;
         config.colorHex = Objects.requireNonNullElse(color, "");
@@ -252,8 +251,7 @@ public class SpiffyMarkerCommand {
                                     boolean silence) throws CommandSyntaxException {
         MarkerActionConfig config = MarkerActionConfig.defaultConfig();
         config.targetElementIdentifier = targetElement;
-        config.displayName = markerName;
-        config.lookupMarkerName = markerName;
+        config.uniqueMarkerName = markerName;
         config.positionX = posX;
         config.positionZ = posZ;
         config.colorHex = Objects.requireNonNullElse(color, "");
@@ -272,7 +270,7 @@ public class SpiffyMarkerCommand {
                                       boolean silence) throws CommandSyntaxException {
         MarkerRemovalConfig config = MarkerRemovalConfig.defaultConfig();
         config.targetElementIdentifier = targetElement;
-        config.markerName = markerName;
+        config.uniqueMarkerName = markerName;
         config.normalize();
         return sendPacket(source, player, MarkerCommandOperation.REMOVE, null, config, null, silence,
                 "spiffyhud.commands.marker.remove.sent", markerName, targetElement);

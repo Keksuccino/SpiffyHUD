@@ -36,9 +36,9 @@ public class RemoveMarkerAction extends Action {
             LOGGER.error("[SPIFFYHUD] RemoveMarkerAction is missing required data.");
             return;
         }
-        boolean success = MarkerStorage.removeMarker(config.targetElementIdentifier, config.markerName);
+        boolean success = MarkerStorage.removeMarker(config.targetElementIdentifier, config.uniqueMarkerName);
         if (!success) {
-            LOGGER.error("[SPIFFYHUD] Failed to remove marker '{}' from group '{}'.", config.markerName, config.targetElementIdentifier);
+            LOGGER.error("[SPIFFYHUD] Failed to remove marker '{}' from group '{}'.", config.uniqueMarkerName, config.targetElementIdentifier);
         }
     }
 

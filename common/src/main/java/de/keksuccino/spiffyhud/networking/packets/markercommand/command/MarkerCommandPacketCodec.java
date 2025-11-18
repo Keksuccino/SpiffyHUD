@@ -7,4 +7,5 @@ public class MarkerCommandPacketCodec extends PacketCodec<MarkerCommandPacket> {
     public MarkerCommandPacketCodec() {
         super("spiffy_marker_command", MarkerCommandPacket.class);
     }
+
 }

@@ -1,6 +1,5 @@
 package de.keksuccino.spiffyhud.customization.marker;
 
-import com.google.gson.annotations.SerializedName;
 import de.keksuccino.fancymenu.customization.placeholder.PlaceholderParser;
 import de.keksuccino.fancymenu.util.SerializationUtils;
 import org.jetbrains.annotations.NotNull;
@@ -20,9 +19,6 @@ public class MarkerData {
     private String dotTexture;
     @Nullable
     private String needleTexture;
-    @SerializedName("texture")
-    @Nullable
-    private String legacyTexture;
     private boolean showAsNeedle;
     @NotNull
     private String markerPosX = "0";
@@ -37,7 +33,6 @@ public class MarkerData {
         this.color = normalizeString(color);
         this.dotTexture = normalizeString(dotTexture);
         this.needleTexture = normalizeString(needleTexture);
-        this.legacyTexture = null;
         this.showAsNeedle = showAsNeedle;
         this.markerPosX = markerPosX;
         this.markerPosZ = markerPosZ;
@@ -48,7 +43,6 @@ public class MarkerData {
         this.color = source.color;
         this.dotTexture = source.dotTexture;
         this.needleTexture = source.needleTexture;
-        this.legacyTexture = null;
         this.showAsNeedle = source.showAsNeedle;
         this.markerPosX = source.markerPosX;
         this.markerPosZ = source.markerPosZ;
@@ -164,23 +158,9 @@ public class MarkerData {
         this.color = source.color;
         this.dotTexture = source.dotTexture;
         this.needleTexture = source.needleTexture;
-        this.legacyTexture = null;
         this.showAsNeedle = source.showAsNeedle;
         this.markerPosX = source.markerPosX;
         this.markerPosZ = source.markerPosZ;
-    }
-
-    void applyLegacyTextureFallback() {
-        String normalized = normalizeString(this.legacyTexture);
-        if (normalized != null) {
-            if (this.dotTexture == null) {
-                this.dotTexture = normalized;
-            }
-            if (this.needleTexture == null) {
-                this.needleTexture = normalized;
-            }
-        }
-        this.legacyTexture = null;
     }
 
     @NotNull

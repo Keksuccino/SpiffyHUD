@@ -24,4 +24,5 @@ public class MarkerCommandPacket extends Packet {
         }
         return MarkerCommandPacketLogic.handle(this);
     }
+
 }

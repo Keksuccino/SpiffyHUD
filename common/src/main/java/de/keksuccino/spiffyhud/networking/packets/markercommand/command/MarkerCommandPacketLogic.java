@@ -4,7 +4,6 @@ import de.keksuccino.spiffyhud.customization.actions.marker.MarkerActionConfig;
 import de.keksuccino.spiffyhud.customization.actions.marker.MarkerRemovalConfig;
 import de.keksuccino.spiffyhud.customization.marker.MarkerStorage;
 import de.keksuccino.spiffyhud.networking.packets.markercommand.MarkerCommandEditField;
-import de.keksuccino.spiffyhud.networking.packets.markercommand.MarkerCommandOperation;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import java.util.EnumSet;
@@ -14,12 +13,9 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class MarkerCommandPacketLogic {
+public class MarkerCommandPacketLogic {
 
     private static final Logger LOGGER = LogManager.getLogger();
-
-    private MarkerCommandPacketLogic() {
-    }
 
     protected static boolean handle(@NotNull MarkerCommandPacket packet) {
         if (packet.operation == null) {
@@ -40,15 +36,15 @@ public final class MarkerCommandPacketLogic {
             return false;
         }
         config.normalize();
-        if (!config.hasValidTarget() || !config.hasDisplayName()) {
+        if (!config.hasValidTarget() || !config.hasValidMarkerName()) {
             LOGGER.error("[SPIFFYHUD] Marker add command missing required fields.");
             return false;
         }
         boolean success = MarkerStorage.addMarker(config.targetElementIdentifier, config.toMarkerData());
         if (success) {
-            sendClientFeedback(packet, Component.translatable("spiffyhud.commands.marker.client.add.success", config.displayName, config.targetElementIdentifier), false);
+            sendClientFeedback(packet, Component.translatable("spiffyhud.commands.marker.client.add.success", config.uniqueMarkerName, config.targetElementIdentifier), false);
         } else {
-            sendClientFeedback(packet, Component.translatable("spiffyhud.commands.marker.client.add.failure", config.displayName, config.targetElementIdentifier), true);
+            sendClientFeedback(packet, Component.translatable("spiffyhud.commands.marker.client.add.failure", config.uniqueMarkerName, config.targetElementIdentifier), true);
         }
         return success;
     }
@@ -60,14 +56,14 @@ public final class MarkerCommandPacketLogic {
             return false;
         }
         config.normalize();
-        String lookup = config.getLookupName();
-        if (!config.hasValidTarget() || lookup.isBlank() || !config.hasDisplayName()) {
-            LOGGER.error("[SPIFFYHUD] Marker edit command missing required fields.");
+        String markerName = config.getMarkerName();
+        if (!config.hasValidTarget() || markerName.isBlank() || !config.hasValidMarkerName()) {
+            LOGGER.error("[SPIFFYHUD] Marker edit command missing required field: target or marker name invalid");
             return false;
         }
         EnumSet<MarkerCommandEditField> overrides = sanitizeEditFields(packet.editFields);
-        boolean success = MarkerStorage.editMarker(config.targetElementIdentifier, lookup, marker -> {
-            marker.setName(config.displayName);
+        boolean success = MarkerStorage.editMarker(config.targetElementIdentifier, markerName, marker -> {
+            marker.setName(config.uniqueMarkerName);
             marker.setMarkerPosX(config.positionX);
             marker.setMarkerPosZ(config.positionZ);
             if (shouldUpdate(overrides, MarkerCommandEditField.COLOR)) {
@@ -84,9 +80,9 @@ public final class MarkerCommandPacketLogic {
             }
         });
         if (success) {
-            sendClientFeedback(packet, Component.translatable("spiffyhud.commands.marker.client.edit.success", lookup, config.targetElementIdentifier), false);
+            sendClientFeedback(packet, Component.translatable("spiffyhud.commands.marker.client.edit.success", markerName, config.targetElementIdentifier), false);
         } else {
-            sendClientFeedback(packet, Component.translatable("spiffyhud.commands.marker.client.edit.failure", lookup, config.targetElementIdentifier), true);
+            sendClientFeedback(packet, Component.translatable("spiffyhud.commands.marker.client.edit.failure", markerName, config.targetElementIdentifier), true);
         }
         return success;
     }
@@ -102,11 +98,11 @@ public final class MarkerCommandPacketLogic {
             LOGGER.error("[SPIFFYHUD] Marker remove command invalid config.");
             return false;
         }
-        boolean success = MarkerStorage.removeMarker(config.targetElementIdentifier, config.markerName);
+        boolean success = MarkerStorage.removeMarker(config.targetElementIdentifier, config.uniqueMarkerName);
         if (success) {
-            sendClientFeedback(packet, Component.translatable("spiffyhud.commands.marker.client.remove.success", config.markerName, config.targetElementIdentifier), false);
+            sendClientFeedback(packet, Component.translatable("spiffyhud.commands.marker.client.remove.success", config.uniqueMarkerName, config.targetElementIdentifier), false);
         } else {
-            sendClientFeedback(packet, Component.translatable("spiffyhud.commands.marker.client.remove.failure", config.markerName, config.targetElementIdentifier), true);
+            sendClientFeedback(packet, Component.translatable("spiffyhud.commands.marker.client.remove.failure", config.uniqueMarkerName, config.targetElementIdentifier), true);
         }
         return success;
     }
@@ -127,4 +123,5 @@ public final class MarkerCommandPacketLogic {
             packet.sendChatFeedback(message, failure);
         }
     }
+
 }

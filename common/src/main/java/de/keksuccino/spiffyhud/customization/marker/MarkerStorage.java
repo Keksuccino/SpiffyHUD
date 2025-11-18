@@ -192,7 +192,7 @@ public class MarkerStorage {
         return trimmed;
     }
 
-    private static final class MarkerStoreData {
+    private static class MarkerStoreData {
 
         private Map<String, List<MarkerData>> groups = new HashMap<>();
 
@@ -218,7 +218,6 @@ public class MarkerStorage {
                         if (marker == null || !marker.hasValidName()) {
                             continue;
                         }
-                        marker.applyLegacyTextureFallback();
                         cleaned.add(marker);
                     }
                 }
@@ -253,5 +252,7 @@ public class MarkerStorage {
         private boolean dropGroup(@NotNull String groupId) {
             return this.groups.remove(groupId) != null;
         }
+
     }
+
 }

@@ -4,7 +4,6 @@ import de.keksuccino.fancymenu.customization.action.Action;
 import de.keksuccino.fancymenu.customization.action.ActionInstance;
 import de.keksuccino.fancymenu.util.LocalizationUtils;
 import de.keksuccino.spiffyhud.customization.marker.MarkerStorage;
-import de.keksuccino.konkrete.math.MathUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -33,13 +32,13 @@ public class AddMarkerAction extends Action {
             LOGGER.error("[SPIFFYHUD] AddMarkerAction received malformed configuration.");
             return;
         }
-        if (!config.hasValidTarget() || !config.hasDisplayName()) {
+        if (!config.hasValidTarget() || !config.hasValidMarkerName()) {
             LOGGER.error("[SPIFFYHUD] AddMarkerAction requires a target element identifier and display name.");
             return;
         }
         boolean success = MarkerStorage.addMarker(config.targetElementIdentifier, config.toMarkerData());
         if (!success) {
-            LOGGER.error("[SPIFFYHUD] Failed to add marker '{}' to group '{}'.", config.displayName, config.targetElementIdentifier);
+            LOGGER.error("[SPIFFYHUD] Failed to add marker '{}' to group '{}'.", config.uniqueMarkerName, config.targetElementIdentifier);
         }
     }
 
@@ -72,7 +71,6 @@ public class AddMarkerAction extends Action {
         MarkerEditorScreen screen = new MarkerEditorScreen(
                 Component.translatable("spiffyhud.actions.add_marker.editor"),
                 config,
-                false,
                 serialized -> {
                     if (serialized != null) {
                         instance.value = serialized;
@@ -82,4 +80,5 @@ public class AddMarkerAction extends Action {
         );
         Minecraft.getInstance().setScreen(screen);
     }
+
 }

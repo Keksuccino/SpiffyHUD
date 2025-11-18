@@ -17,4 +17,5 @@ public class MarkerCommandSuggestionsPacket extends Packet {
         }
         return ServerSideMarkerCommandSuggestionsPacketLogic.handle(sender, this);
     }
+
 }

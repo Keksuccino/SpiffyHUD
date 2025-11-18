@@ -51,4 +51,5 @@ public class MarkerCommandSuggestionsPacketCodec extends PacketCodec<MarkerComma
         }
         return groups;
     }
+
 }

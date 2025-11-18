@@ -21,15 +21,13 @@ public class MarkerEditorScreen extends CellScreen {
 
     private final MarkerActionConfig config;
     private final Consumer<String> callback;
-    private final boolean includeLookupField;
 
     private TextInputCell dotTextureCell;
     private TextInputCell needleTextureCell;
 
-    public MarkerEditorScreen(@NotNull Component title, @NotNull MarkerActionConfig config, boolean includeLookupField, @NotNull Consumer<String> callback) {
+    public MarkerEditorScreen(@NotNull Component title, @NotNull MarkerActionConfig config, @NotNull Consumer<String> callback) {
         super(title);
         this.config = Objects.requireNonNull(config);
-        this.includeLookupField = includeLookupField;
         this.callback = Objects.requireNonNull(callback);
     }
 
@@ -47,19 +45,10 @@ public class MarkerEditorScreen extends CellScreen {
 
         this.addCellGroupEndSpacerCell();
 
-        if (this.includeLookupField) {
-            this.addLabelCell(Component.translatable("spiffyhud.actions.marker.lookup_name"));
-            TextInputCell lookupCell = this.addTextInputCell(null, false, true)
-                    .setEditListener(s -> this.config.lookupMarkerName = s.trim())
-                    .setText(this.config.getLookupName());
-            lookupCell.editBox.setTooltip(() -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.actions.marker.lookup_name.desc")));
-            this.addCellGroupEndSpacerCell();
-        }
-
         this.addLabelCell(Component.translatable("spiffyhud.actions.marker.display_name"));
         TextInputCell displayNameCell = this.addTextInputCell(null, false, true)
-                .setEditListener(s -> this.config.displayName = s.trim())
-                .setText(this.config.displayName);
+                .setEditListener(s -> this.config.uniqueMarkerName = s.trim())
+                .setText(this.config.uniqueMarkerName);
         displayNameCell.editBox.setTooltip(() -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.actions.marker.display_name.desc")));
 
         this.addCellGroupEndSpacerCell();
@@ -108,17 +97,14 @@ public class MarkerEditorScreen extends CellScreen {
 
     @Override
     protected void onDone() {
-        this.config.displayName = PlaceholderParser.replacePlaceholders(this.config.displayName);
+        this.config.uniqueMarkerName = PlaceholderParser.replacePlaceholders(this.config.uniqueMarkerName);
         this.config.normalize();
         this.callback.accept(this.config.serialize());
     }
 
     @Override
     public boolean allowDone() {
-        if (!this.config.hasValidTarget() || !this.config.hasDisplayName()) {
-            return false;
-        }
-        if (this.includeLookupField && this.config.getLookupName().isBlank()) {
+        if (!this.config.hasValidTarget() || !this.config.hasValidMarkerName()) {
             return false;
         }
         return true;

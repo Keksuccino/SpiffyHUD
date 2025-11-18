@@ -10,12 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public final class ServerSideMarkerCommandSuggestionsPacketLogic {
+public class ServerSideMarkerCommandSuggestionsPacketLogic {
 
     private static final Logger LOGGER = LogManager.getLogger();
-
-    private ServerSideMarkerCommandSuggestionsPacketLogic() {
-    }
 
     protected static boolean handle(@NotNull ServerPlayer sender, @NotNull MarkerCommandSuggestionsPacket packet) {
         try {
@@ -27,4 +24,5 @@ public final class ServerSideMarkerCommandSuggestionsPacketLogic {
         }
         return false;
     }
+
 }

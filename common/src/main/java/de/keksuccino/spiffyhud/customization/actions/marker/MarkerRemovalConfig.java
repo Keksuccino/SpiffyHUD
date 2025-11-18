@@ -14,7 +14,7 @@ public class MarkerRemovalConfig {
     private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
 
     public String targetElementIdentifier = "";
-    public String markerName = "";
+    public String uniqueMarkerName = "";
 
     public static @NotNull MarkerRemovalConfig defaultConfig() {
         MarkerRemovalConfig config = new MarkerRemovalConfig();
@@ -43,7 +43,7 @@ public class MarkerRemovalConfig {
     public @NotNull MarkerRemovalConfig copy() {
         MarkerRemovalConfig copy = new MarkerRemovalConfig();
         copy.targetElementIdentifier = this.targetElementIdentifier;
-        copy.markerName = this.markerName;
+        copy.uniqueMarkerName = this.uniqueMarkerName;
         return copy;
     }
 
@@ -53,11 +53,11 @@ public class MarkerRemovalConfig {
 
     public void normalize() {
         this.targetElementIdentifier = normalize(this.targetElementIdentifier);
-        this.markerName = normalize(this.markerName);
+        this.uniqueMarkerName = normalize(this.uniqueMarkerName);
     }
 
     public boolean isValid() {
-        return !this.targetElementIdentifier.isBlank() && !this.markerName.isBlank();
+        return !this.targetElementIdentifier.isBlank() && !this.uniqueMarkerName.isBlank();
     }
 
     private static String normalize(@Nullable String value) {
@@ -66,4 +66,5 @@ public class MarkerRemovalConfig {
         }
         return value.trim();
     }
+
 }
