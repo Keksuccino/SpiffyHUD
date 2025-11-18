@@ -568,12 +568,13 @@ public class CompassEditorElement extends AbstractEditorElement {
                 .setStackable(false)
                 .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.hostile_dots.y_offset.desc")));
 
-        this.addIntegerInputContextMenuEntryTo(this.rightClickMenu, "hostile_dots_range",
+        this.addStringInputContextMenuEntryTo(this.rightClickMenu, "hostile_dots_range",
                         CompassEditorElement.class,
                         consumes -> consumes.getElement().hostileDotsRange,
-                        (editorElement, value) -> editorElement.getElement().hostileDotsRange = Math.max(0, value),
+                        (editorElement, value) -> editorElement.getElement().hostileDotsRange = (value == null || value.isBlank()) ? CompassElement.DEFAULT_HOSTILE_DOT_RANGE_STRING : value,
+                        null, false, true,
                         Component.translatable("spiffyhud.elements.compass.hostile_dots.range"),
-                        true, 200, null, null)
+                        true, CompassElement.DEFAULT_HOSTILE_DOT_RANGE_STRING, null, null)
                 .setStackable(false)
                 .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.hostile_dots.range.desc")));
 
@@ -630,12 +631,13 @@ public class CompassEditorElement extends AbstractEditorElement {
                 .setStackable(false)
                 .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.passive_dots.y_offset.desc")));
 
-        this.addIntegerInputContextMenuEntryTo(this.rightClickMenu, "passive_dots_range",
+        this.addStringInputContextMenuEntryTo(this.rightClickMenu, "passive_dots_range",
                         CompassEditorElement.class,
                         consumes -> consumes.getElement().passiveDotsRange,
-                        (editorElement, value) -> editorElement.getElement().passiveDotsRange = Math.max(0, value),
+                        (editorElement, value) -> editorElement.getElement().passiveDotsRange = (value == null || value.isBlank()) ? CompassElement.DEFAULT_PASSIVE_DOT_RANGE_STRING : value,
+                        null, false, true,
                         Component.translatable("spiffyhud.elements.compass.passive_dots.range"),
-                        true, 200, null, null)
+                        true, CompassElement.DEFAULT_PASSIVE_DOT_RANGE_STRING, null, null)
                 .setStackable(false)
                 .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.passive_dots.range.desc")));
 

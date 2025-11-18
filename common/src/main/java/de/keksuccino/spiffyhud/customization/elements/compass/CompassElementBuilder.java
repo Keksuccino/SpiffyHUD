@@ -128,8 +128,8 @@ public class CompassElementBuilder extends ElementBuilder<CompassElement, Compas
         element.hostileDotsEnabled = deserializeBoolean(element.hostileDotsEnabled, serialized.getValue("hostile_dots_enabled"));
         element.passiveDotsEnabled = deserializeBoolean(element.passiveDotsEnabled, serialized.getValue("passive_dots_enabled"));
         element.mobDotsMoveUpDown = deserializeBoolean(element.mobDotsMoveUpDown, serialized.getValue("mob_dots_move_up_down"));
-        element.hostileDotsRange = deserializeInteger(element.hostileDotsRange, serialized.getValue("hostile_dots_range"));
-        element.passiveDotsRange = deserializeInteger(element.passiveDotsRange, serialized.getValue("passive_dots_range"));
+        element.hostileDotsRange = Objects.requireNonNullElse(serialized.getValue("hostile_dots_range"), element.hostileDotsRange);
+        element.passiveDotsRange = Objects.requireNonNullElse(serialized.getValue("passive_dots_range"), element.passiveDotsRange);
         element.hostileDotsShowHeads = deserializeBoolean(element.hostileDotsShowHeads, serialized.getValue("hostile_dots_heads_enabled"));
         element.passiveDotsShowHeads = deserializeBoolean(element.passiveDotsShowHeads, serialized.getValue("passive_dots_heads_enabled"));
 
@@ -250,22 +250,11 @@ public class CompassElementBuilder extends ElementBuilder<CompassElement, Compas
         serializeTo.putProperty("hostile_dots_enabled", "" + element.hostileDotsEnabled);
         serializeTo.putProperty("passive_dots_enabled", "" + element.passiveDotsEnabled);
         serializeTo.putProperty("mob_dots_move_up_down", Boolean.toString(element.mobDotsMoveUpDown));
-        serializeTo.putProperty("hostile_dots_range", Integer.toString(element.hostileDotsRange));
-        serializeTo.putProperty("passive_dots_range", Integer.toString(element.passiveDotsRange));
+        serializeTo.putProperty("hostile_dots_range", element.hostileDotsRange);
+        serializeTo.putProperty("passive_dots_range", element.passiveDotsRange);
         serializeTo.putProperty("hostile_dots_heads_enabled", Boolean.toString(element.hostileDotsShowHeads));
         serializeTo.putProperty("passive_dots_heads_enabled", Boolean.toString(element.passiveDotsShowHeads));
         return serializeTo;
-    }
-
-    private int deserializeInteger(int fallback, @Nullable String value) {
-        if (value == null || value.isBlank()) {
-            return fallback;
-        }
-        try {
-            return Integer.parseInt(value.trim());
-        } catch (NumberFormatException ignored) {
-            return fallback;
-        }
     }
 
     @Override

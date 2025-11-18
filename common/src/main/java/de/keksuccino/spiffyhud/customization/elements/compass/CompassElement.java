@@ -83,6 +83,10 @@ public class CompassElement extends AbstractElement {
     public static final String DEFAULT_TEXT_SCALE_STRING = "1.0";
     public static final String DEFAULT_TICK_OFFSET_STRING = "0";
     public static final String DEFAULT_TEXT_OFFSET_STRING = "0";
+    public static final String DEFAULT_HOSTILE_DOT_RANGE_STRING = "200";
+    public static final String DEFAULT_PASSIVE_DOT_RANGE_STRING = "200";
+    private static final double DEFAULT_HOSTILE_DOT_RANGE = Double.parseDouble(DEFAULT_HOSTILE_DOT_RANGE_STRING);
+    private static final double DEFAULT_PASSIVE_DOT_RANGE = Double.parseDouble(DEFAULT_PASSIVE_DOT_RANGE_STRING);
 
     @NotNull public String backgroundColor = DEFAULT_BACKGROUND_COLOR_STRING;
     @NotNull public String barColor = DEFAULT_BAR_COLOR_STRING;
@@ -149,8 +153,8 @@ public class CompassElement extends AbstractElement {
     public boolean passiveDotsEnabled = true;
     @NotNull public String hostileDotsColor = DEFAULT_HOSTILE_DOT_COLOR_STRING;
     @NotNull public String passiveDotsColor = DEFAULT_PASSIVE_DOT_COLOR_STRING;
-    public int hostileDotsRange = 200;
-    public int passiveDotsRange = 200;
+    @NotNull public String hostileDotsRange = DEFAULT_HOSTILE_DOT_RANGE_STRING;
+    @NotNull public String passiveDotsRange = DEFAULT_PASSIVE_DOT_RANGE_STRING;
     public boolean hostileDotsShowHeads = false;
     public boolean passiveDotsShowHeads = false;
     public boolean mobDotsMoveUpDown = true;
@@ -974,6 +978,24 @@ public class CompassElement extends AbstractElement {
         return this.resolveClampedFloat(configured, DEFAULT_DOT_SCALE, MIN_DOT_SCALE, MAX_DOT_SCALE);
     }
 
+    private double resolveMobDotsRange(@Nullable String configured, double fallback) {
+        if (configured == null || configured.isBlank()) {
+            return Math.max(0.0D, fallback);
+        }
+        String replaced = PlaceholderParser.replacePlaceholders(configured).trim();
+        if (!replaced.isEmpty() && MathUtils.isDouble(replaced)) {
+            try {
+                double parsed = Double.parseDouble(replaced);
+                if (!Double.isFinite(parsed)) {
+                    return Math.max(0.0D, fallback);
+                }
+                return Math.max(0.0D, parsed);
+            } catch (NumberFormatException ignored) {
+            }
+        }
+        return Math.max(0.0D, fallback);
+    }
+
     private float resolveClampedFloat(@Nullable String configured, float fallback, float min, float max) {
         if (configured == null || configured.isBlank()) {
             return fallback;
@@ -1085,8 +1107,8 @@ public class CompassElement extends AbstractElement {
         if (player == null) {
             return MobDots.EMPTY;
         }
-        double hostileRange = Math.max(0.0D, this.hostileDotsRange);
-        double passiveRange = Math.max(0.0D, this.passiveDotsRange);
+        double hostileRange = this.resolveMobDotsRange(this.hostileDotsRange, DEFAULT_HOSTILE_DOT_RANGE);
+        double passiveRange = this.resolveMobDotsRange(this.passiveDotsRange, DEFAULT_PASSIVE_DOT_RANGE);
         double maxRange = Math.max(hostileRange, passiveRange);
         if (maxRange <= 0.0D) {
             return MobDots.EMPTY;
