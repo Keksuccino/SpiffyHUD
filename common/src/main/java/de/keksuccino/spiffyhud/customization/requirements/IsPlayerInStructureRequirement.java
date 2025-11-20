@@ -13,6 +13,8 @@ import de.keksuccino.spiffyhud.networking.packets.structure.structures.Structure
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import org.apache.logging.log4j.LogManager;
@@ -139,15 +141,15 @@ public class IsPlayerInStructureRequirement extends LoadingRequirement {
         }
 
         @Override
-        public void render(GuiGraphics graphics, int mouseX, int mouseY, float partial) {
+        public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partial) {
             super.render(graphics, mouseX, mouseY, partial);
             this.structureKeySuggestions.render(graphics, mouseX, mouseY);
         }
 
         @Override
-        public boolean keyPressed(int $$0, int $$1, int $$2) {
-            if (this.structureKeySuggestions.keyPressed($$0, $$1, $$2)) return true;
-            return super.keyPressed($$0, $$1, $$2);
+        public boolean keyPressed(@NotNull KeyEvent event) {
+            if (this.structureKeySuggestions.keyPressed(event)) return true;
+            return super.keyPressed(event);
         }
 
         @Override
@@ -157,9 +159,9 @@ public class IsPlayerInStructureRequirement extends LoadingRequirement {
         }
 
         @Override
-        public boolean mouseClicked(double $$0, double $$1, int $$2) {
-            if (this.structureKeySuggestions.mouseClicked($$0, $$1, $$2)) return true;
-            return super.mouseClicked($$0, $$1, $$2);
+        public boolean mouseClicked(@NotNull MouseButtonEvent event, boolean isDoubleClick) {
+            if (this.structureKeySuggestions.mouseClicked(event)) return true;
+            return super.mouseClicked(event, isDoubleClick);
         }
 
         @Override
