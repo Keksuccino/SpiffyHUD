@@ -2,9 +2,16 @@ package de.keksuccino.spiffyhud.customization.elements;
 
 import de.keksuccino.fancymenu.customization.element.ElementRegistry;
 import de.keksuccino.spiffyhud.customization.elements.chatcustomizer.ChatCustomizerElementBuilder;
+import de.keksuccino.spiffyhud.customization.elements.compass.CompassElementBuilder;
+import de.keksuccino.spiffyhud.customization.elements.eraser.EraserElementBuilder;
 import de.keksuccino.spiffyhud.customization.elements.overlayremover.OverlayRemoverElementBuilder;
 import de.keksuccino.spiffyhud.customization.elements.player.PlayerElementBuilder;
+import de.keksuccino.spiffyhud.customization.elements.playerairbar.PlayerAirBubbleBarElementBuilder;
+import de.keksuccino.spiffyhud.customization.elements.playermounthealthbar.PlayerMountHealthBarElementBuilder;
 import de.keksuccino.spiffyhud.customization.elements.playernbthelper.PlayerNbtHelperElementBuilder;
+import de.keksuccino.spiffyhud.customization.elements.playerheartbar.PlayerHeartHealthBarElementBuilder;
+import de.keksuccino.spiffyhud.customization.elements.playerfoodbar.PlayerFoodBarElementBuilder;
+import de.keksuccino.spiffyhud.customization.elements.playerarmorbar.PlayerArmorBarElementBuilder;
 import de.keksuccino.spiffyhud.customization.elements.singlelinetext.SingleLineTextElementBuilder;
 import de.keksuccino.spiffyhud.customization.elements.slot.SlotElementBuilder;
 import de.keksuccino.spiffyhud.customization.elements.vanillalike.air.VanillaLikePlayerAirElementBuilder;
@@ -39,6 +46,13 @@ public class Elements {
     public static final ChatCustomizerElementBuilder CHAT_CUSTOMIZER = new ChatCustomizerElementBuilder();
     public static final PlayerNbtHelperElementBuilder PLAYER_NBT_HELPER = new PlayerNbtHelperElementBuilder();
     public static final SingleLineTextElementBuilder SINGLE_LINE_TEXT = new SingleLineTextElementBuilder();
+    public static final PlayerHeartHealthBarElementBuilder PLAYER_HEART_HEALTH_BAR = new PlayerHeartHealthBarElementBuilder();
+    public static final PlayerFoodBarElementBuilder PLAYER_FOOD_BAR = new PlayerFoodBarElementBuilder();
+    public static final PlayerArmorBarElementBuilder PLAYER_ARMOR_BAR = new PlayerArmorBarElementBuilder();
+    public static final PlayerAirBubbleBarElementBuilder PLAYER_AIR_BUBBLE_BAR = new PlayerAirBubbleBarElementBuilder();
+    public static final PlayerMountHealthBarElementBuilder PLAYER_MOUNT_HEALTH_BAR = new PlayerMountHealthBarElementBuilder();
+    public static final CompassElementBuilder PLAYER_COMPASS = new CompassElementBuilder();
+    public static final EraserElementBuilder ERASER = new EraserElementBuilder();
 
     public static void registerAll() {
 
@@ -60,6 +74,13 @@ public class Elements {
         ElementRegistry.register(CHAT_CUSTOMIZER);
         ElementRegistry.register(PLAYER_NBT_HELPER);
         ElementRegistry.register(SINGLE_LINE_TEXT);
+        ElementRegistry.register(PLAYER_HEART_HEALTH_BAR);
+        ElementRegistry.register(PLAYER_FOOD_BAR);
+        ElementRegistry.register(PLAYER_ARMOR_BAR);
+        ElementRegistry.register(PLAYER_AIR_BUBBLE_BAR);
+        ElementRegistry.register(PLAYER_MOUNT_HEALTH_BAR);
+        ElementRegistry.register(PLAYER_COMPASS);
+        ElementRegistry.register(ERASER);
 
     }
 

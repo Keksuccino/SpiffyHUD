@@ -12,6 +12,16 @@ import net.minecraft.util.ARGB;
 
 public class SpiffyRenderUtils {
 
+    private static boolean blendLocked = false;
+
+    public static void lockBlend(boolean lock) {
+        blendLocked = true;
+    }
+
+    public static boolean isBlendLocked() {
+        return blendLocked;
+    }
+
     /**
      * Draws a textured quad with the U texture coordinates swapped so that the image appears mirrored horizontally.
      * In 1.21.6, this uses the mixin implementation for proper UV coordinate mirroring.
