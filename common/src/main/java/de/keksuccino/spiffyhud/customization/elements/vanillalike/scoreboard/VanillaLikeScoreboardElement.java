@@ -1,20 +1,16 @@
 package de.keksuccino.spiffyhud.customization.elements.vanillalike.scoreboard;
 
-import com.google.common.collect.Lists;
 import de.keksuccino.fancymenu.customization.element.AbstractElement;
 import de.keksuccino.fancymenu.customization.element.ElementBuilder;
 import de.keksuccino.fancymenu.util.rendering.DrawableColor;
-import de.keksuccino.fancymenu.util.rendering.RenderingUtils;
 import de.keksuccino.spiffyhud.util.SpiffyAlignment;
 import de.keksuccino.spiffyhud.util.rendering.SpiffyRenderUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.numbers.StyledFormat;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.scores.*;
@@ -23,7 +19,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import java.awt.*;
 import java.util.*;
 import java.util.Comparator;

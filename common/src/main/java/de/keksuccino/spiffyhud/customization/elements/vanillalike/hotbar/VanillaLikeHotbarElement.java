@@ -6,7 +6,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
@@ -186,19 +185,17 @@ public class VanillaLikeHotbarElement extends AbstractElement {
             int barColor = stack.getBarColor();
             int barX = slotX + 2;
             int barY = slotY + 13;
-            graphics.fill(RenderType.guiOverlay(), barX, barY, barX + 13, barY + 2, 0xFF000000);
-            graphics.fill(RenderType.guiOverlay(), barX, barY, barX + barWidth, barY + 1, barColor | 0xFF000000);
+            graphics.fill(RenderPipelines.GUI, barX, barY, barX + 13, barY + 2, 0xFF000000);
+            graphics.fill(RenderPipelines.GUI, barX, barY, barX + barWidth, barY + 1, ARGB.opaque(barColor));
         }
 
         if (player != null) {
-            float cooldownProgress = player.getCooldowns().getCooldownPercent(
-                    stack.getItem(),
-                    minecraft.getTimer().getGameTimeDeltaPartialTick(true)
-            );
+            float cooldownProgress = player.getCooldowns()
+                    .getCooldownPercent(stack, minecraft.getDeltaTracker().getGameTimeDeltaPartialTick(true));
             if (cooldownProgress > 0.0F) {
                 int overlayTop = slotY + Mth.floor(16.0F * (1.0F - cooldownProgress));
                 int overlayBottom = overlayTop + Mth.ceil(16.0F * cooldownProgress);
-                graphics.fill(RenderType.guiOverlay(), slotX, overlayTop, slotX + 16, overlayBottom, Integer.MAX_VALUE);
+                graphics.fill(RenderPipelines.GUI, slotX, overlayTop, slotX + 16, overlayBottom, Integer.MAX_VALUE);
             }
         }
 

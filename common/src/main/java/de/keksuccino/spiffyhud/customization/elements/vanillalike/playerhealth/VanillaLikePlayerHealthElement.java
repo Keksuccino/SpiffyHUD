@@ -1,5 +1,6 @@
 package de.keksuccino.spiffyhud.customization.elements.vanillalike.playerhealth;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import de.keksuccino.fancymenu.customization.element.AbstractElement;
 import de.keksuccino.fancymenu.customization.element.ElementBuilder;
 import de.keksuccino.fancymenu.util.rendering.RenderingUtils;
@@ -12,7 +13,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
@@ -29,8 +29,8 @@ import org.jetbrains.annotations.Nullable;
 public class VanillaLikePlayerHealthElement extends AbstractElement {
 
     private static final Logger LOGGER = LogManager.getLogger();
-    
-    // Sprite resources for hearts in 1.21.5
+
+    // Sprite resources for hearts in 1.21.1
     private static final ResourceLocation HEART_CONTAINER_SPRITE = ResourceLocation.withDefaultNamespace("hud/heart/container");
     private static final ResourceLocation HEART_CONTAINER_BLINKING_SPRITE = ResourceLocation.withDefaultNamespace("hud/heart/container_blinking");
     private static final ResourceLocation HEART_CONTAINER_HARDCORE_SPRITE = ResourceLocation.withDefaultNamespace("hud/heart/container_hardcore");
@@ -93,6 +93,9 @@ public class VanillaLikePlayerHealthElement extends AbstractElement {
         // === Second Pass: Draw the Hearts Bar at the Computed Absolute Position ===
         this.shouldRenderBar = true;
         this.renderPlayerHealthInternal(graphics, alignedBarX, alignedBarY);
+
+        RenderingUtils.resetShaderColor(graphics);
+
     }
 
     /**
@@ -112,8 +115,7 @@ public class VanillaLikePlayerHealthElement extends AbstractElement {
 
         // Compute current health (rounded up) and determine blink status.
         int currentHealthCeil = Mth.ceil(player.getHealth());
-        boolean heartBlink = (this.healthBlinkTime > (long)this.tickCount) &&
-                (((this.healthBlinkTime - (long)this.tickCount) / 3L) % 2L == 1L);
+        boolean heartBlink = (this.healthBlinkTime > (long)this.tickCount) && (((this.healthBlinkTime - (long)this.tickCount) / 3L) % 2L == 1L);
         long currentTime = Util.getMillis();
 
         if (currentHealthCeil < this.lastHealth && player.invulnerableTime > 0) {
@@ -137,8 +139,7 @@ public class VanillaLikePlayerHealthElement extends AbstractElement {
         int baseY = originY;
 
         // Compute max health and absorption values.
-        float maxHealth = Math.max((float) player.getAttributeValue(Attributes.MAX_HEALTH),
-                (float) Math.max(this.displayHealth, currentHealthCeil));
+        float maxHealth = Math.max((float) player.getAttributeValue(Attributes.MAX_HEALTH), (float) Math.max(this.displayHealth, currentHealthCeil));
         int absorptionHalfHearts = Mth.ceil(player.getAbsorptionAmount());
         int totalHealthHearts = Mth.ceil(maxHealth / 2.0f);
         int totalHearts = totalHealthHearts + toFullHearts(absorptionHalfHearts);
@@ -178,9 +179,6 @@ public class VanillaLikePlayerHealthElement extends AbstractElement {
         Gui.HeartType baseHeartType = Gui.HeartType.forPlayer(player);
         boolean isHardcore = player.level().getLevelData().isHardcore();
 
-        // Calculate color with opacity
-        int color = ARGB.color(Math.round(this.opacity * 255f), 255, 255, 255);
-
         // Recorder to capture the bounds of the hearts bar.
         SizeAndPositionRecorder recorder = new SizeAndPositionRecorder();
         recorder.setWidthOffset(9);
@@ -196,30 +194,23 @@ public class VanillaLikePlayerHealthElement extends AbstractElement {
         for (int m = totalHearts - 1; m >= 0; m--) {
             int rawRow = m / fullRowSlots;
             int row;
-            if (this.spiffyAlignment == SpiffyAlignment.TOP_LEFT ||
-                    this.spiffyAlignment == SpiffyAlignment.TOP_CENTERED ||
-                    this.spiffyAlignment == SpiffyAlignment.TOP_RIGHT) {
+            if (this.spiffyAlignment == SpiffyAlignment.TOP_LEFT || this.spiffyAlignment == SpiffyAlignment.TOP_CENTERED || this.spiffyAlignment == SpiffyAlignment.TOP_RIGHT) {
                 row = rawRow;
             } else {
                 row = numRows - 1 - rawRow;
             }
             // For the incomplete (top) row, determine how many hearts are in that row.
-            int heartsInRow = (rawRow == (totalHearts - 1) / fullRowSlots) ?
-                    totalHearts - rawRow * fullRowSlots : fullRowSlots;
+            int heartsInRow = (rawRow == (totalHearts - 1) / fullRowSlots) ? totalHearts - rawRow * fullRowSlots : fullRowSlots;
             // Compute alignment offset for centered alignment only (left and right alignments need no offset)
             int alignmentOffset = 0;
             if (rawRow == (totalHearts - 1) / fullRowSlots) {
-                if (this.spiffyAlignment == SpiffyAlignment.TOP_CENTERED ||
-                        this.spiffyAlignment == SpiffyAlignment.MID_CENTERED ||
-                        this.spiffyAlignment == SpiffyAlignment.BOTTOM_CENTERED) {
+                if (this.spiffyAlignment == SpiffyAlignment.TOP_CENTERED || this.spiffyAlignment == SpiffyAlignment.MID_CENTERED || this.spiffyAlignment == SpiffyAlignment.BOTTOM_CENTERED) {
                     alignmentOffset = (fullRowSlots - heartsInRow) / 2;
                 }
             }
             int col;
             // For right-based orientations, reverse the column index so hearts render from the right.
-            if (this.spiffyAlignment == SpiffyAlignment.TOP_RIGHT ||
-                    this.spiffyAlignment == SpiffyAlignment.MID_RIGHT ||
-                    this.spiffyAlignment == SpiffyAlignment.BOTTOM_RIGHT) {
+            if (this.spiffyAlignment == SpiffyAlignment.TOP_RIGHT || this.spiffyAlignment == SpiffyAlignment.MID_RIGHT || this.spiffyAlignment == SpiffyAlignment.BOTTOM_RIGHT) {
                 col = fullRowSlots - 1 - (m % fullRowSlots);
             } else {
                 col = m % fullRowSlots;
@@ -243,7 +234,7 @@ public class VanillaLikePlayerHealthElement extends AbstractElement {
 
             // Render the container (empty heart) for every slot.
             if (this.shouldRenderBar) {
-                renderEmptyHeart(graphics, heartX, heartY, heartBlink, isHardcore, color);
+                renderEmptyHeart(graphics, heartX, heartY, heartBlink, isHardcore);
             }
 
             int heartValue = m * 2; // Each heart slot represents 2 health points.
@@ -254,9 +245,7 @@ public class VanillaLikePlayerHealthElement extends AbstractElement {
                 if (absorptionIndex < absorptionHalfHearts) {
                     boolean isLastAbsorption = (absorptionIndex + 1 == absorptionHalfHearts);
                     if (this.shouldRenderBar) {
-                        renderHeart(graphics,
-                                baseHeartType == Gui.HeartType.WITHERED ? baseHeartType : Gui.HeartType.ABSORBING,
-                                heartX, heartY, false, isHardcore, isLastAbsorption, color);
+                        renderHeart(graphics, baseHeartType == Gui.HeartType.WITHERED ? baseHeartType : Gui.HeartType.ABSORBING, heartX, heartY, false, isHardcore, isLastAbsorption);
                     }
                 }
             }
@@ -264,14 +253,14 @@ public class VanillaLikePlayerHealthElement extends AbstractElement {
             if (heartBlink && heartValue < displayedHealth) {
                 boolean isLastHighlight = (heartValue + 1 == displayedHealth);
                 if (this.shouldRenderBar) {
-                    renderHeart(graphics, baseHeartType, heartX, heartY, true, isHardcore, isLastHighlight, color);
+                    renderHeart(graphics, baseHeartType, heartX, heartY, true, isHardcore, isLastHighlight);
                 }
             }
             // Render normal (filled) heart if player's health covers this slot.
             if (heartValue < currentHealthCeil) {
                 boolean isLastHeart = (heartValue + 1 == currentHealthCeil);
                 if (this.shouldRenderBar) {
-                    renderHeart(graphics, baseHeartType, heartX, heartY, false, isHardcore, isLastHeart, color);
+                    renderHeart(graphics, baseHeartType, heartX, heartY, false, isHardcore, isLastHeart);
                 }
             }
         }
@@ -284,44 +273,25 @@ public class VanillaLikePlayerHealthElement extends AbstractElement {
             this.barWidth = 1;
             this.barHeight = 9;
         }
+
     }
 
     /**
      * Renders a heart container (empty heart)
      */
-    private void renderEmptyHeart(GuiGraphics graphics, int x, int y, boolean blinking, boolean hardcore, int color) {
+    private void renderEmptyHeart(GuiGraphics graphics, int x, int y, boolean blinking, boolean hardcore) {
         ResourceLocation spriteLocation;
-        
+
         if (hardcore) {
             spriteLocation = blinking ? HEART_CONTAINER_HARDCORE_BLINKING_SPRITE : HEART_CONTAINER_HARDCORE_SPRITE;
         } else {
             spriteLocation = blinking ? HEART_CONTAINER_BLINKING_SPRITE : HEART_CONTAINER_SPRITE;
         }
-        
-        boolean shouldMirror = this.spiffyAlignment == SpiffyAlignment.TOP_RIGHT ||
-                this.spiffyAlignment == SpiffyAlignment.MID_RIGHT ||
-                this.spiffyAlignment == SpiffyAlignment.BOTTOM_RIGHT;
-                
-        if (shouldMirror) {
-            SpiffyRenderUtils.blitSpriteMirrored(
-                graphics,
-                spriteLocation, 
-                x, 
-                y, 
-                9, 
-                9, 
-                color
-            );
+
+        if (this.spiffyAlignment == SpiffyAlignment.TOP_RIGHT || this.spiffyAlignment == SpiffyAlignment.MID_RIGHT || this.spiffyAlignment == SpiffyAlignment.BOTTOM_RIGHT) {
+            SpiffyRenderUtils.blitSpriteMirrored(graphics, spriteLocation, x, y, 9, 9, ARGB.white(this.opacity));
         } else {
-            graphics.blitSprite(
-                RenderPipelines.GUI_TEXTURED,
-                spriteLocation, 
-                x, 
-                y, 
-                9, 
-                9, 
-                color
-            );
+            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, spriteLocation, x, y, 9, 9, ARGB.white(this.opacity));
         }
     }
 
@@ -335,36 +305,14 @@ public class VanillaLikePlayerHealthElement extends AbstractElement {
      * @param blinking    Whether the heart should be blinking.
      * @param hardcore    Whether to use hardcore sprites.
      * @param halfHeart   Whether to render a half heart.
-     * @param color       The color to render the heart with.
      */
-    private void renderHeart(GuiGraphics graphics, Gui.HeartType heartType, int x, int y, boolean blinking, 
-                             boolean hardcore, boolean halfHeart, int color) {
+    private void renderHeart(GuiGraphics graphics, Gui.HeartType heartType, int x, int y, boolean blinking, boolean hardcore, boolean halfHeart) {
         ResourceLocation spriteLocation = heartType.getSprite(hardcore, halfHeart, blinking);
 
-        if (this.spiffyAlignment == SpiffyAlignment.TOP_RIGHT ||
-                this.spiffyAlignment == SpiffyAlignment.MID_RIGHT ||
-                this.spiffyAlignment == SpiffyAlignment.BOTTOM_RIGHT;
-                
-        if (shouldMirror) {
-            SpiffyRenderUtils.blitSpriteMirrored(
-                graphics,
-                spriteLocation, 
-                x, 
-                y, 
-                9, 
-                9, 
-                color
-            );
+        if (this.spiffyAlignment == SpiffyAlignment.TOP_RIGHT || this.spiffyAlignment == SpiffyAlignment.MID_RIGHT || this.spiffyAlignment == SpiffyAlignment.BOTTOM_RIGHT) {
+            SpiffyRenderUtils.blitSpriteMirrored(graphics, spriteLocation, x, y, 9, 9, ARGB.white(this.opacity));
         } else {
-            graphics.blitSprite(
-                RenderPipelines.GUI_TEXTURED,
-                spriteLocation, 
-                x, 
-                y, 
-                9, 
-                9, 
-                color
-            );
+            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, spriteLocation, x, y, 9, 9, ARGB.white(this.opacity));
         }
     }
 
@@ -386,4 +334,5 @@ public class VanillaLikePlayerHealthElement extends AbstractElement {
     public int getAbsoluteHeight() {
         return this.barHeight;
     }
+
 }

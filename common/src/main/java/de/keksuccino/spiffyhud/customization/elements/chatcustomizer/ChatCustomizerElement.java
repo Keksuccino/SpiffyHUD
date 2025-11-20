@@ -1,12 +1,10 @@
 package de.keksuccino.spiffyhud.customization.elements.chatcustomizer;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import de.keksuccino.fancymenu.customization.element.AbstractElement;
 import de.keksuccino.fancymenu.customization.element.ElementBuilder;
 import de.keksuccino.fancymenu.customization.placeholder.PlaceholderParser;
 import de.keksuccino.fancymenu.util.MathUtils;
 import de.keksuccino.fancymenu.util.rendering.DrawableColor;
-import de.keksuccino.fancymenu.util.rendering.RenderingUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import org.apache.logging.log4j.LogManager;
