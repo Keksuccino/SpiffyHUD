@@ -334,10 +334,10 @@ public class VanillaLikeContextualBarElement extends AbstractElement {
             }
         } else {
             // Render actual waypoints
-            Level level = this.minecraft.cameraEntity.level();
-            this.minecraft.player.connection.getWaypointManager().forEachWaypoint(this.minecraft.cameraEntity, (waypoint) -> {
+            Level level = this.minecraft.getCameraEntity().level();
+            this.minecraft.player.connection.getWaypointManager().forEachWaypoint(this.minecraft.getCameraEntity(), (waypoint) -> {
                 if (!isPlayerWaypoint(waypoint)) {
-                    double yawAngle = waypoint.yawAngleToCamera(level, this.minecraft.gameRenderer.getMainCamera());
+                    double yawAngle = waypoint.yawAngleToCamera(level, this.minecraft.gameRenderer.getMainCamera(), entity -> this.minecraft.gameRenderer.getMainCamera().getPartialTickTime());
                     if (yawAngle > -VISIBLE_DEGREE_RANGE - 1 && yawAngle <= VISIBLE_DEGREE_RANGE) {
                         renderWaypoint(graphics, waypoint, x, y, width, yawAngle, level);
                     }
@@ -351,7 +351,7 @@ public class VanillaLikeContextualBarElement extends AbstractElement {
      */
     private boolean isPlayerWaypoint(TrackedWaypoint waypoint) {
         return waypoint.id().left()
-            .map(uuid -> uuid.equals(this.minecraft.cameraEntity.getUUID()))
+            .map(uuid -> uuid.equals(this.minecraft.getCameraEntity().getUUID()))
             .orElse(false);
     }
 
@@ -362,7 +362,7 @@ public class VanillaLikeContextualBarElement extends AbstractElement {
         int centerX = barX + barWidth / 2;
         Waypoint.Icon icon = waypoint.icon();
         WaypointStyle style = this.minecraft.getWaypointStyles().get(icon.style);
-        float distance = Mth.sqrt((float) waypoint.distanceSquared(this.minecraft.cameraEntity));
+        float distance = Mth.sqrt((float) waypoint.distanceSquared(this.minecraft.getCameraEntity()));
         ResourceLocation sprite = style.sprite(distance);
         
         // Calculate waypoint color
@@ -393,7 +393,7 @@ public class VanillaLikeContextualBarElement extends AbstractElement {
         );
         
         // Draw directional arrow if needed
-        TrackedWaypoint.PitchDirection pitchDirection = waypoint.pitchDirectionToCamera(level, this.minecraft.gameRenderer);
+        TrackedWaypoint.PitchDirection pitchDirection = waypoint.pitchDirectionToCamera(level, this.minecraft.gameRenderer, entity -> this.minecraft.gameRenderer.getMainCamera().getPartialTickTime());
         if (pitchDirection != TrackedWaypoint.PitchDirection.NONE) {
             int arrowY;
             ResourceLocation arrowSprite;

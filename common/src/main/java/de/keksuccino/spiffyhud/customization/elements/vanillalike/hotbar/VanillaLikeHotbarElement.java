@@ -5,8 +5,10 @@ import de.keksuccino.fancymenu.customization.element.ElementBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
@@ -169,14 +171,13 @@ public class VanillaLikeHotbarElement extends AbstractElement {
      */
     private void renderSlotDecorations(GuiGraphics graphics, @Nullable Player player, ItemStack stack, int slotX, int slotY) {
 
-        graphics.pose().pushPose();
+        graphics.pose().pushMatrix();
 
         Minecraft minecraft = Minecraft.getInstance();
         Font font = minecraft.font;
 
         if (stack.getCount() != 1) {
             String countText = String.valueOf(stack.getCount());
-            graphics.pose().translate(0.0F, 0.0F, 200.0F);
             graphics.drawString(font, countText, slotX + 19 - 2 - font.width(countText), slotY + 6 + 3, 0xFFFFFF, true);
         }
 
@@ -201,7 +202,7 @@ public class VanillaLikeHotbarElement extends AbstractElement {
             }
         }
 
-        graphics.pose().popPose();
+        graphics.pose().popMatrix();
     }
 
     /**
