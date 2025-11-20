@@ -1,7 +1,5 @@
 package de.keksuccino.spiffyhud.customization.elements.playerfoodbar;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import de.keksuccino.fancymenu.customization.element.AbstractElement;
 import de.keksuccino.fancymenu.customization.element.ElementBuilder;
 import de.keksuccino.fancymenu.customization.placeholder.PlaceholderParser;
@@ -13,6 +11,8 @@ import de.keksuccino.spiffyhud.SpiffyUtils;
 import de.keksuccino.spiffyhud.util.SpiffyAlignment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffects;
@@ -22,7 +22,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
+import org.joml.Matrix3x2fStack;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -94,18 +94,15 @@ public class PlayerFoodBarElement extends AbstractElement {
                 metrics.bodyHeight
         );
 
-        RenderSystem.enableBlend();
-        graphics.setColor(1.0F, 1.0F, 1.0F, this.opacity);
         this.drawFood(graphics, aligned[0], aligned[1], data, metrics, scale);
         RenderingUtils.resetShaderColor(graphics);
     }
 
-    private void drawFood(@NotNull GuiGraphics graphics, int originX, int originY, @NotNull PlayerData data,
-                          @NotNull RenderMetrics metrics, float scale) {
+    private void drawFood(@NotNull GuiGraphics graphics, int originX, int originY, @NotNull PlayerData data, @NotNull RenderMetrics metrics, float scale) {
 
-        PoseStack pose = graphics.pose();
-        pose.pushPose();
-        pose.translate(originX, originY, 0);
+        Matrix3x2fStack pose = graphics.pose();
+        pose.pushMatrix();
+        pose.translate(originX, originY);
 
         long now = System.currentTimeMillis();
         boolean shake = this.shouldShake(data.currentFood);
@@ -119,7 +116,7 @@ public class PlayerFoodBarElement extends AbstractElement {
             this.renderSingleIcon(graphics, metrics, placement, logicalIndex, textureKind, appliedShake, scale);
         }
 
-        pose.popPose();
+        pose.popMatrix();
     }
 
     private FoodTextureKind resolveTextureKind(int logicalIndex, @NotNull PlayerData data, long now) {
@@ -142,8 +139,7 @@ public class PlayerFoodBarElement extends AbstractElement {
         return this.textureFromFill(fillValue, data.visualStyle);
     }
 
-    private void renderSingleIcon(@NotNull GuiGraphics graphics, @NotNull RenderMetrics metrics, @NotNull SlotPlacement placement,
-                                   int logicalIndex, @NotNull FoodTextureKind textureKind, float shakeStrengthBase, float scale) {
+    private void renderSingleIcon(@NotNull GuiGraphics graphics, @NotNull RenderMetrics metrics, @NotNull SlotPlacement placement, int logicalIndex, @NotNull FoodTextureKind textureKind, float shakeStrengthBase, float scale) {
 
         float gap = this.iconGap;
         float baseSpacingX = (metrics.baseIconSize + gap) * scale;
@@ -159,12 +155,12 @@ public class PlayerFoodBarElement extends AbstractElement {
             offsetY = offsets[1];
         }
 
-        PoseStack pose = graphics.pose();
-        pose.pushPose();
-        pose.translate(baseX + offsetX, baseY + offsetY, 0);
-        pose.scale(scale, scale, 1.0F);
+        Matrix3x2fStack pose = graphics.pose();
+        pose.pushMatrix();
+        pose.translate(baseX + offsetX, baseY + offsetY);
+        pose.scale(scale, scale);
         this.drawFoodTexture(graphics, textureKind, metrics.baseIconSize);
-        pose.popPose();
+        pose.popMatrix();
     }
 
     private float[] computeShakeOffset(int logicalIndex, float shakeStrengthBase) {
@@ -180,8 +176,7 @@ public class PlayerFoodBarElement extends AbstractElement {
             try {
                 ITexture texture = supplier.get();
                 if ((texture != null) && texture.isReady() && (texture.getResourceLocation() != null)) {
-                    RenderSystem.enableBlend();
-                    graphics.blit(texture.getResourceLocation(), 0, 0, 0.0F, 0.0F, size, size, size, size);
+                    graphics.blit(RenderPipelines.GUI_TEXTURED, texture.getResourceLocation(), 0, 0, 0.0F, 0.0F, size, size, size, size, ARGB.white(this.opacity));
                     return;
                 }
             } catch (Exception ex) {
@@ -321,8 +316,7 @@ public class PlayerFoodBarElement extends AbstractElement {
     private record BlinkState(float previousFill, long endTimeMs) {
     }
 
-    private record RenderMetrics(int iconsPerRow, int baseIconSize, int totalSlots, int bodyWidth, int bodyHeight,
-                                 int rows, int horizontalGap, int verticalGap) {
+    private record RenderMetrics(int iconsPerRow, int baseIconSize, int totalSlots, int bodyWidth, int bodyHeight, int rows, int horizontalGap, int verticalGap) {
     }
 
     private SlotPlacement computeSlotPlacement(int logicalIndex, RenderMetrics metrics) {

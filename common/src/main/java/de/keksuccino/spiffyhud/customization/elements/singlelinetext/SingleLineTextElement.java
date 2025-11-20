@@ -14,6 +14,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix3x2fStack;
 
 public class SingleLineTextElement extends AbstractElement {
 
@@ -47,12 +48,12 @@ public class SingleLineTextElement extends AbstractElement {
                 this.baseWidth = 10;
             }
 
-            PoseStack pose = graphics.pose();
-            pose.pushPose();
-            pose.translate(this.getAbsoluteX(), this.getAbsoluteY(), 0);
-            pose.scale(scale, scale, 1.0F);
+            Matrix3x2fStack pose = graphics.pose();
+            pose.pushMatrix();
+            pose.translate(this.getAbsoluteX(), this.getAbsoluteY());
+            pose.scale(scale, scale);
             graphics.drawString(Minecraft.getInstance().font, c, 0, 0, DrawableColor.WHITE.getColorIntWithAlpha(this.opacity));
-            pose.popPose();
+            pose.popMatrix();
 
         } else {
             this.baseWidth = 100;

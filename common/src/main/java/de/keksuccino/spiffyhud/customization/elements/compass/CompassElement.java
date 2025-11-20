@@ -21,6 +21,7 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobCategory;
@@ -1164,7 +1165,7 @@ public class CompassElement extends AbstractElement {
             return null;
         }
         EntityType<? extends Mob> type = hostile ? EntityType.ZOMBIE : EntityType.COW;
-        Mob created = type.create(MC.level);
+        Mob created = type.create(MC.level, EntitySpawnReason.SPAWN_ITEM_USE);
         if (created == null) {
             return null;
         }

@@ -1,7 +1,5 @@
 package de.keksuccino.spiffyhud.customization.elements.playerairbar;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import de.keksuccino.fancymenu.customization.element.AbstractElement;
 import de.keksuccino.fancymenu.customization.element.ElementBuilder;
 import de.keksuccino.fancymenu.customization.placeholder.PlaceholderParser;
@@ -13,6 +11,8 @@ import de.keksuccino.spiffyhud.SpiffyUtils;
 import de.keksuccino.spiffyhud.util.SpiffyAlignment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
@@ -20,7 +20,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
+import org.joml.Matrix3x2fStack;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -92,18 +92,15 @@ public class PlayerAirBubbleBarElement extends AbstractElement {
                 metrics.bodyHeight
         );
 
-        RenderSystem.enableBlend();
-        graphics.setColor(1.0F, 1.0F, 1.0F, this.opacity);
         this.drawBubbles(graphics, aligned[0], aligned[1], data, metrics, scale);
         RenderingUtils.resetShaderColor(graphics);
     }
 
-    private void drawBubbles(@NotNull GuiGraphics graphics, int originX, int originY, @NotNull PlayerData data,
-                             @NotNull RenderMetrics metrics, float scale) {
+    private void drawBubbles(@NotNull GuiGraphics graphics, int originX, int originY, @NotNull PlayerData data, @NotNull RenderMetrics metrics, float scale) {
 
-        PoseStack pose = graphics.pose();
-        pose.pushPose();
-        pose.translate(originX, originY, 0);
+        Matrix3x2fStack pose = graphics.pose();
+        pose.pushMatrix();
+        pose.translate(originX, originY);
 
         long now = System.currentTimeMillis();
         boolean shake = this.shouldShake(data);
@@ -117,7 +114,7 @@ public class PlayerAirBubbleBarElement extends AbstractElement {
             this.renderSingleBubble(graphics, metrics, placement, logicalIndex, textureKind, appliedShake, scale);
         }
 
-        pose.popPose();
+        pose.popMatrix();
     }
 
     private AirTextureKind resolveTextureKind(int logicalIndex, @NotNull PlayerData data, long now) {
@@ -141,8 +138,7 @@ public class PlayerAirBubbleBarElement extends AbstractElement {
         return AirTextureKind.EMPTY;
     }
 
-    private void renderSingleBubble(@NotNull GuiGraphics graphics, @NotNull RenderMetrics metrics, @NotNull SlotPlacement placement,
-                                    int logicalIndex, @NotNull AirTextureKind textureKind, float shakeStrengthBase, float scale) {
+    private void renderSingleBubble(@NotNull GuiGraphics graphics, @NotNull RenderMetrics metrics, @NotNull SlotPlacement placement, int logicalIndex, @NotNull AirTextureKind textureKind, float shakeStrengthBase, float scale) {
 
         float gap = this.bubbleGap;
         float baseSpacingX = (metrics.baseBubbleSize + gap) * scale;
@@ -158,12 +154,13 @@ public class PlayerAirBubbleBarElement extends AbstractElement {
             offsetY = offsets[1];
         }
 
-        PoseStack pose = graphics.pose();
-        pose.pushPose();
-        pose.translate(baseX + offsetX, baseY + offsetY, 0);
-        pose.scale(scale, scale, 1.0F);
+        Matrix3x2fStack pose = graphics.pose();
+        pose.pushMatrix();
+        pose.translate(baseX + offsetX, baseY + offsetY);
+        pose.scale(scale, scale);
         this.drawBubbleTexture(graphics, textureKind, metrics.baseBubbleSize);
-        pose.popPose();
+        pose.popMatrix();
+
     }
 
     private float[] computeShakeOffset(int logicalIndex, float shakeStrengthBase) {
@@ -179,8 +176,7 @@ public class PlayerAirBubbleBarElement extends AbstractElement {
             try {
                 ITexture texture = supplier.get();
                 if ((texture != null) && texture.isReady() && (texture.getResourceLocation() != null)) {
-                    RenderSystem.enableBlend();
-                    graphics.blit(texture.getResourceLocation(), 0, 0, 0.0F, 0.0F, size, size, size, size);
+                    graphics.blit(RenderPipelines.GUI_TEXTURED, texture.getResourceLocation(), 0, 0, 0.0F, 0.0F, size, size, size, size, ARGB.white(this.opacity));
                     return;
                 }
             } catch (Exception ex) {
@@ -340,8 +336,7 @@ public class PlayerAirBubbleBarElement extends AbstractElement {
     private record BubbleCounts(int full, int popping) {
     }
 
-    private record RenderMetrics(int bubblesPerRow, int baseBubbleSize, int totalSlots, int bodyWidth, int bodyHeight,
-                                 int rows, int horizontalGap, int verticalGap) {
+    private record RenderMetrics(int bubblesPerRow, int baseBubbleSize, int totalSlots, int bodyWidth, int bodyHeight, int rows, int horizontalGap, int verticalGap) {
     }
 
     private SlotPlacement computeSlotPlacement(int logicalIndex, RenderMetrics metrics) {
