@@ -2,6 +2,7 @@ package de.keksuccino.spiffyhud.mixin.mixins.common.client;
 
 import de.keksuccino.spiffyhud.customization.SpiffyGui;
 import de.keksuccino.spiffyhud.customization.elements.chatcustomizer.ChatCustomizerHandler;
+import de.keksuccino.spiffyhud.util.death.DeathPointStorage;
 import de.keksuccino.spiffyhud.util.player.CameraRotationObserver;
 import de.keksuccino.spiffyhud.util.player.PlayerPositionObserver;
 import net.minecraft.client.Minecraft;
@@ -20,6 +21,7 @@ public class MixinMinecraft {
             CameraRotationObserver.tick();
             PlayerPositionObserver.tick();
             ChatCustomizerHandler.tick();
+            DeathPointStorage.tick(Minecraft.getInstance().player);
             SpiffyGui.INSTANCE.tick();
         }
     }

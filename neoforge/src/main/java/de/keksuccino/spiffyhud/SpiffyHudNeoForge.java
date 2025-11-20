@@ -10,6 +10,8 @@ public class SpiffyHudNeoForge {
     public SpiffyHudNeoForge(@NotNull IEventBus eventBus) {
 
         SpiffyHud.init();
+
+        SpiffyHudNeoForgeServerEvents.registerAll();
         
     }
 

@@ -5,8 +5,11 @@ import de.keksuccino.fancymenu.customization.element.AbstractElement;
 import de.keksuccino.fancymenu.customization.element.ElementBuilder;
 import de.keksuccino.fancymenu.util.rendering.RenderingUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -171,9 +174,49 @@ public class VanillaLikeHotbarElement extends AbstractElement {
             graphics.pose().popPose();
         }
 
-        // Render additional item decorations such as count overlays.
-        graphics.renderItemDecorations(Minecraft.getInstance().font, stack, slotX, slotY);
+        // Render additional item decorations such as count overlays and cooldown shading.
+        renderSlotDecorations(graphics, player, stack, slotX, slotY);
 
+    }
+
+    /**
+     * Renders stack count, durability bar, and cooldown overlay for a single slot.
+     */
+    private void renderSlotDecorations(GuiGraphics graphics, @Nullable Player player, ItemStack stack, int slotX, int slotY) {
+
+        graphics.pose().pushPose();
+
+        Minecraft minecraft = Minecraft.getInstance();
+        Font font = minecraft.font;
+
+        if (stack.getCount() != 1) {
+            String countText = String.valueOf(stack.getCount());
+            graphics.pose().translate(0.0F, 0.0F, 200.0F);
+            graphics.drawString(font, countText, slotX + 19 - 2 - font.width(countText), slotY + 6 + 3, 0xFFFFFF, true);
+        }
+
+        if (stack.isBarVisible()) {
+            int barWidth = stack.getBarWidth();
+            int barColor = stack.getBarColor();
+            int barX = slotX + 2;
+            int barY = slotY + 13;
+            graphics.fill(RenderType.guiOverlay(), barX, barY, barX + 13, barY + 2, 0xFF000000);
+            graphics.fill(RenderType.guiOverlay(), barX, barY, barX + barWidth, barY + 1, barColor | 0xFF000000);
+        }
+
+        if (player != null) {
+            float cooldownProgress = player.getCooldowns().getCooldownPercent(
+                    stack.getItem(),
+                    minecraft.getTimer().getGameTimeDeltaPartialTick(true)
+            );
+            if (cooldownProgress > 0.0F) {
+                int overlayTop = slotY + Mth.floor(16.0F * (1.0F - cooldownProgress));
+                int overlayBottom = overlayTop + Mth.ceil(16.0F * cooldownProgress);
+                graphics.fill(RenderType.guiOverlay(), slotX, overlayTop, slotX + 16, overlayBottom, Integer.MAX_VALUE);
+            }
+        }
+
+        graphics.pose().popPose();
     }
 
     /**

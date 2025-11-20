@@ -11,6 +11,16 @@ import org.joml.Matrix4f;
 
 public class SpiffyRenderUtils {
 
+    private static boolean blendLocked = false;
+
+    public static void lockBlend(boolean lock) {
+        blendLocked = true;
+    }
+
+    public static boolean isBlendLocked() {
+        return blendLocked;
+    }
+
     /**
      * Draws a textured quad with the U texture coordinates swapped so that the image appears mirrored horizontally.
      *

@@ -38,7 +38,7 @@ public class IsPlayerUsingItemRequirement extends LoadingRequirement {
     }
 
     public String getCategory() {
-        return I18n.get("fancymenu.editor.loading_requirement.category.world");
+        return I18n.get("fancymenu.requirements.categories.world");
     }
 
     public String getValueDisplayName() {
