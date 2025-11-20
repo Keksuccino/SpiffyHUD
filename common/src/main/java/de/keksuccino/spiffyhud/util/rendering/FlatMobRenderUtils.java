@@ -1,13 +1,18 @@
 package de.keksuccino.spiffyhud.util.rendering;
 
-import com.mojang.blaze3d.platform.Lighting;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.ProblemReporter;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -36,8 +41,6 @@ public class FlatMobRenderUtils {
             return false;
         }
         graphics.enableScissor(left, top, left + size, top + size);
-        float centerX = left + size / 2.0F;
-        float centerY = top + size / 2.0F;
         MobBounds bounds = captureBounds(renderMob);
         float scale = computeScale(bounds, size);
         Vector3f offset = new Vector3f(0.0F, bounds.height * HALF, 0.0F);
@@ -61,10 +64,7 @@ public class FlatMobRenderUtils {
         renderMob.setYHeadRot(180.0F);
         renderMob.yHeadRotO = 180.0F;
 
-        graphics.pose().pushMatrix();
-        renderEntity(graphics, centerX, centerY, scale, offset, baseRotation, renderMob);
-        graphics.pose().popMatrix();
-        Lighting.setupFor3DItems();
+        renderEntity(graphics, left, top, size, scale, offset, baseRotation, renderMob);
 
         renderMob.setYBodyRot(originalBody);
         renderMob.yBodyRotO = originalBodyO;
@@ -79,18 +79,36 @@ public class FlatMobRenderUtils {
         return true;
     }
 
-    private static void renderEntity(@NotNull GuiGraphics graphics, float centerX, float centerY, float scale, @NotNull Vector3f offset, @NotNull Quaternionf modelRotation, @NotNull Mob mob) {
-        graphics.pose().translate(centerX, centerY, 50.0);
-        graphics.pose().scale(scale, scale, -scale);
-        graphics.pose().translate(offset.x, offset.y, offset.z);
-        graphics.pose().mulPose(modelRotation);
-        Lighting.setupForEntityInInventory();
-        var dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
-        dispatcher.setRenderShadow(false);
-        RenderSystem.runAsFancy(() -> dispatcher.render(mob, 0.0, 0.0, 0.0, 0.0F, 1.0F, graphics.pose(), graphics.bufferSource(), 15728880));
-        graphics.flush();
-        dispatcher.setRenderShadow(true);
-        Lighting.setupFor3DItems();
+    private static void renderEntity(
+            @NotNull GuiGraphics graphics,
+            int left,
+            int top,
+            int size,
+            float scale,
+            @NotNull Vector3f offset,
+            @NotNull Quaternionf modelRotation,
+            @NotNull Mob mob
+    ) {
+        EntityRenderDispatcher dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
+        EntityRenderer<? super Mob, ?> renderer = dispatcher.getRenderer(mob);
+        EntityRenderState renderState = renderer.createRenderState(mob, 1.0F);
+        renderState.lightCoords = 15728880;
+        renderState.hitboxesRenderState = null;
+        renderState.serverHitboxesRenderState = null;
+        renderState.shadowPieces.clear();
+        renderState.outlineColor = EntityRenderState.NO_OUTLINE;
+
+        graphics.submitEntityRenderState(
+                renderState,
+                scale,
+                offset,
+                modelRotation,
+                null,
+                left,
+                top,
+                left + size,
+                top + size
+        );
     }
 
     @NotNull
@@ -153,8 +171,8 @@ public class FlatMobRenderUtils {
         if (level == null) {
             return null;
         }
-        var created = source.getType().create(level);
-        if (!(created instanceof Mob copy)) {
+        Mob copy = (Mob) source.getType().create(level, EntitySpawnReason.LOAD);
+        if (copy == null) {
             return null;
         }
         copy.setNoGravity(true);
@@ -166,10 +184,11 @@ public class FlatMobRenderUtils {
     }
 
     private static void copyMobData(@NotNull Mob source, @NotNull Mob target) {
-        CompoundTag tag = new CompoundTag();
-        source.saveWithoutId(tag);
+        TagValueOutput tagOutput = TagValueOutput.createWithoutContext(ProblemReporter.DISCARDING);
+        source.saveWithoutId(tagOutput);
+        CompoundTag tag = tagOutput.buildResult();
         tag.putBoolean("PersistenceRequired", false);
-        target.load(tag);
+        target.load(TagValueInput.create(ProblemReporter.DISCARDING, target.registryAccess(), tag));
         target.setNoGravity(true);
         target.setNoAi(true);
         target.noPhysics = true;
