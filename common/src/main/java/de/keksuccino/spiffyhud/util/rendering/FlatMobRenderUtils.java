@@ -61,12 +61,9 @@ public class FlatMobRenderUtils {
         renderMob.setYHeadRot(180.0F);
         renderMob.yHeadRotO = 180.0F;
 
-        RenderSystem.enableBlend();
-        graphics.setColor(1.0F, 1.0F, 1.0F, opacity);
-        graphics.pose().pushPose();
+        graphics.pose().pushMatrix();
         renderEntity(graphics, centerX, centerY, scale, offset, baseRotation, renderMob);
-        graphics.pose().popPose();
-        graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+        graphics.pose().popMatrix();
         Lighting.setupFor3DItems();
 
         renderMob.setYBodyRot(originalBody);
