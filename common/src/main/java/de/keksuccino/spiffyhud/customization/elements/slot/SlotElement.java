@@ -12,6 +12,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -128,6 +129,21 @@ public class SlotElement extends AbstractElement {
                           barX + barWidth, barY + 1,
                     SpiffyRenderUtils.colorWithAlpha(barColor | 0xFF000000, this.opacity));
         }
+
+        // Render item cooldown overlay similar to vanilla hotbar slots.
+        if (Minecraft.getInstance().player != null) {
+            float cooldownProgress = Minecraft.getInstance().player.getCooldowns().getCooldownPercent(
+                    stack.getItem(),
+                    Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true)
+            );
+            if (cooldownProgress > 0.0F) {
+                int overlayTop = Mth.floor(16.0F * (1.0F - cooldownProgress));
+                int overlayBottom = overlayTop + Mth.ceil(16.0F * cooldownProgress);
+                graphics.fill(RenderType.guiOverlay(), 0, overlayTop, 16, overlayBottom, Integer.MAX_VALUE);
+            }
+        }
+
+        graphics.setColor(1.0f, 1.0f, 1.0f, 1.0f);
 
         // Restore the previous transformation state.
         pose.popMatrix();

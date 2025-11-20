@@ -23,6 +23,7 @@ public class SpiffyGui implements Renderable {
 
     private static boolean initialized = false;
     private static SpiffyOverlayScreen spiffyOverlayScreen = new SpiffyOverlayScreen(false);
+    private boolean renderingHudContext = false;
 
     private SpiffyGui() {
 
@@ -76,6 +77,15 @@ public class SpiffyGui implements Renderable {
         ScreenCustomizationLayer l = ScreenCustomizationLayerHandler.getLayerOfScreen(spiffyOverlayScreen);
         if (l != null) l.loadEarly = true;
         return l;
+    }
+
+    @NotNull
+    public SpiffyOverlayScreen getOverlayScreen() {
+        return spiffyOverlayScreen;
+    }
+
+    public boolean isRenderingHudContext() {
+        return this.renderingHudContext;
     }
 
     public void onResize() {
@@ -135,8 +145,13 @@ public class SpiffyGui implements Renderable {
             Screen current = Minecraft.getInstance().screen;
             if (!(current instanceof SpiffyOverlayScreen)) {
                 Minecraft.getInstance().screen = spiffyOverlayScreen;
-                run.run();
-                Minecraft.getInstance().screen = current;
+                this.renderingHudContext = true;
+                try {
+                    run.run();
+                } finally {
+                    this.renderingHudContext = false;
+                    Minecraft.getInstance().screen = current;
+                }
             }
             ScreenCustomization.setScreenCustomizationEnabled(customizationEnabled);
         } catch (Exception ex) {

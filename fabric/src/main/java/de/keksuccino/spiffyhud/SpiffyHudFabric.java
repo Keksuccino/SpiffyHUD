@@ -13,6 +13,8 @@ public class SpiffyHudFabric implements ModInitializer {
 
         // SpiffyHud.init(); moved to MixinScreenCustomization in common
 
+        SpiffyHudFabricServerEvents.registerAll();
+
     }
 
 }

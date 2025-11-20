@@ -9,7 +9,9 @@ public class SpiffyHudNeoForge {
     
     public SpiffyHudNeoForge(@NotNull IEventBus eventBus) {
 
-        // SpiffyHud.init(); moved to MixinScreenCustomization in common
+        SpiffyHud.init();
+
+        SpiffyHudNeoForgeServerEvents.registerAll();
         
     }
 

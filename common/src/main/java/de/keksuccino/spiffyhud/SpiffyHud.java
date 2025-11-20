@@ -5,6 +5,8 @@ import de.keksuccino.fancymenu.customization.layout.LayoutHandler;
 import de.keksuccino.fancymenu.customization.overlay.CustomizationOverlay;
 import de.keksuccino.spiffyhud.customization.SpiffyOverlayScreen;
 import de.keksuccino.spiffyhud.customization.actions.Actions;
+import de.keksuccino.spiffyhud.customization.actions.marker.MarkerEditorScreen;
+import de.keksuccino.spiffyhud.customization.actions.marker.MarkerRemovalScreen;
 import de.keksuccino.spiffyhud.customization.elements.Elements;
 import de.keksuccino.spiffyhud.customization.elements.playernbthelper.PlayerNbtPathHelpScreen;
 import de.keksuccino.spiffyhud.customization.elements.slot.SlotIdHelpScreen;
@@ -26,10 +28,11 @@ public class SpiffyHud {
 
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	public static final String VERSION = "3.0.2";
+	public static final String VERSION = "3.1.0";
 	public static final String MOD_LOADER = Services.PLATFORM.getPlatformName();
 	public static final String MOD_ID = "spiffyhud";
 	public static final File MOD_DIR = createDirectory(new File(GameDirectoryUtils.getGameDirectory(), "/config/spiffyhud"));
+    public static final File INSTANCE_DIR = createDirectory(new File(GameDirectoryUtils.getGameDirectory(), "/spiffy_instance_data"));
 
 	private static Options options;
 
@@ -41,6 +44,10 @@ public class SpiffyHud {
 			LOGGER.info("[SPIFFY HUD] Loading v" + VERSION + " in server-side mode on " + MOD_LOADER.toUpperCase() + "!");
 		}
 
+        if (!INSTANCE_DIR.exists()) {
+            INSTANCE_DIR.mkdirs();
+        }
+
 		if (Services.PLATFORM.isOnClient()) {
 
 			EventHandler.INSTANCE.registerListenersOf(new SpiffyEvents());
@@ -51,6 +58,8 @@ public class SpiffyHud {
 			//Disable customization for all Spiffy screens that shouldn't be editable
 			ScreenCustomization.addScreenBlacklistRule(s -> s.equals(SlotIdHelpScreen.class.getName()));
 			ScreenCustomization.addScreenBlacklistRule(s -> s.equals(PlayerNbtPathHelpScreen.class.getName()));
+            ScreenCustomization.addScreenBlacklistRule(s -> s.equals(MarkerEditorScreen.class.getName()));
+            ScreenCustomization.addScreenBlacklistRule(s -> s.equals(MarkerRemovalScreen.class.getName()));
 
 			//Register custom placeholders
 			Placeholders.registerAll();
