@@ -1,10 +1,7 @@
 package de.keksuccino.spiffyhud.mixin.mixins.neoforge.client;
 
-import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import de.keksuccino.fancymenu.customization.element.AbstractElement;
 import de.keksuccino.fancymenu.customization.layer.ScreenCustomizationLayer;
 import de.keksuccino.fancymenu.customization.layer.ScreenCustomizationLayerHandler;
@@ -114,11 +111,9 @@ public class MixinGui {
         if (this.spiffyGui == null) this.spiffyGui = SpiffyGui.INSTANCE;
 
         if (!Minecraft.getInstance().options.hideGui) {
-            RenderSystem.enableBlend();
-            graphics.pose().pushPose();
+            graphics.pose().pushMatrix();
             this.spiffyGui.render(graphics, -10000000, -10000000, deltaTracker.getGameTimeDeltaTicks());
-            graphics.pose().popPose();
-            RenderSystem.disableBlend();
+            graphics.pose().popMatrix();
         }
 
     }
@@ -197,23 +192,21 @@ public class MixinGui {
     /**
      * @reason Hide the title message when hidden by Spiffy HUD.
      */
-    @WrapOperation(method = "renderTitle", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawStringWithBackdrop(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;IIII)I", ordinal = 0))
-    private int wrap_drawStringWithBackdrop_title_Spiffy(GuiGraphics instance, Font font, Component component, int i1, int i2, int i3, int i4, Operation<Integer> original) {
-        if (this.spiffyHud$shouldRenderTitleComponent(component, this.title, VanillaHudElements.TITLE_IDENTIFIER)) {
-            return original.call(instance, font, component, i1, i2, i3, i4);
+    @WrapOperation(method = "renderTitle", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawStringWithBackdrop(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;IIII)V", ordinal = 0))
+    private void wrap_drawStringWithBackdrop_title_Spiffy(GuiGraphics instance, Font font, Component text, int x, int y, int width, int color, Operation<Void> original) {
+        if (this.spiffyHud$shouldRenderTitleComponent(text, this.title, VanillaHudElements.TITLE_IDENTIFIER)) {
+            original.call(instance, font, text, x, y, width, color);
         }
-        return 0;
     }
 
     /**
      * @reason Hide the subtitle message when hidden by Spiffy HUD.
      */
-    @WrapOperation(method = "renderTitle", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawStringWithBackdrop(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;IIII)I", ordinal = 1))
-    private int wrap_drawStringWithBackdrop_subtitle_Spiffy(GuiGraphics instance, Font font, Component component, int i1, int i2, int i3, int i4, Operation<Integer> original) {
-        if (this.spiffyHud$shouldRenderTitleComponent(component, this.subtitle, VanillaHudElements.SUBTITLE_IDENTIFIER)) {
-            return original.call(instance, font, component, i1, i2, i3, i4);
+    @WrapOperation(method = "renderTitle", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawStringWithBackdrop(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;IIII)V", ordinal = 1))
+    private void wrap_drawStringWithBackdrop_subtitle_Spiffy(GuiGraphics instance, Font font, Component text, int x, int y, int width, int color, Operation<Void> original) {
+        if (this.spiffyHud$shouldRenderTitleComponent(text, this.subtitle, VanillaHudElements.SUBTITLE_IDENTIFIER)) {
+            original.call(instance, font, text, x, y, width, color);
         }
-        return 0;
     }
 
     /**
