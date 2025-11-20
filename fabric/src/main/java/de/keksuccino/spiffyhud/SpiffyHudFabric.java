@@ -13,6 +13,8 @@ public class SpiffyHudFabric implements ModInitializer {
 
         SpiffyHud.init();
 
+        SpiffyHudFabricServerEvents.registerAll();
+
     }
 
 }

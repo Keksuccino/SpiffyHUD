@@ -143,7 +143,7 @@ public class VanillaLikePlayerHealthElement extends AbstractElement {
                 (float) Math.max(this.displayHealth, currentHealthCeil));
         int absorptionHalfHearts = Mth.ceil(player.getAbsorptionAmount());
         int totalHealthHearts = Mth.ceil(maxHealth / 2.0f);
-        int totalHearts = totalHealthHearts + absorptionHalfHearts;
+        int totalHearts = totalHealthHearts + toFullHearts(absorptionHalfHearts);
         int displayedHealth = this.displayHealth;
 
         // --- Editor Preview Override ---
@@ -153,7 +153,7 @@ public class VanillaLikePlayerHealthElement extends AbstractElement {
             displayedHealth = 9;
             absorptionHalfHearts = 5;
             totalHealthHearts = Mth.ceil(maxHealth / 2.0f);
-            totalHearts = totalHealthHearts + absorptionHalfHearts;
+            totalHearts = totalHealthHearts + toFullHearts(absorptionHalfHearts);
         }
         if (this.isUsedAsDummy) {
             maxHealth = 20;
@@ -161,7 +161,7 @@ public class VanillaLikePlayerHealthElement extends AbstractElement {
             displayedHealth = 9;
             absorptionHalfHearts = 0;
             totalHealthHearts = Mth.ceil(maxHealth / 2.0f);
-            totalHearts = totalHealthHearts + absorptionHalfHearts;
+            totalHearts = totalHealthHearts + toFullHearts(absorptionHalfHearts);
         }
 
         // Determine number of slots per row (max 10) and total number of rows.
@@ -299,7 +299,9 @@ public class VanillaLikePlayerHealthElement extends AbstractElement {
      * @param renderHighlight Whether to render a highlight overlay.
      * @param halfHeart       Whether to render a half heart.
      */
-    private void renderHeart(GuiGraphics graphics, Gui.HeartType heartType, int x, int y, int textureYOffset, boolean renderHighlight, boolean halfHeart) {
+    private void renderHeart(GuiGraphics graphics, Gui.HeartType heartType, int x, int y, boolean blinking, boolean hardcore, boolean halfHeart) {
+        ResourceLocation spriteLocation = heartType.getSprite(hardcore, halfHeart, blinking);
+
         if (this.spiffyAlignment == SpiffyAlignment.TOP_RIGHT ||
                 this.spiffyAlignment == SpiffyAlignment.MID_RIGHT ||
                 this.spiffyAlignment == SpiffyAlignment.BOTTOM_RIGHT) {
@@ -307,6 +309,10 @@ public class VanillaLikePlayerHealthElement extends AbstractElement {
         } else {
             graphics.blit(GUI_ICONS_LOCATION, x, y, heartType.getX(halfHeart, renderHighlight), textureYOffset, 9, 9);
         }
+    }
+
+    private static int toFullHearts(int halfHearts) {
+        return (halfHearts + 1) / 2;
     }
 
     @Nullable

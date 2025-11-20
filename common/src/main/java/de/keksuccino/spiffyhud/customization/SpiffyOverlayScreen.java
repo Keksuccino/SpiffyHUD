@@ -315,8 +315,10 @@ public class SpiffyOverlayScreen extends Screen {
         int textY = ((this.height - 68) - 4) - 18;
         return new SpiffyRendererWidget(textX - 2, textY - 2, messageWidth + 4, font.lineHeight + 4, (graphics, mX, mY, partial, gx, gy, gwidth, gheight, widget) -> {
             RenderSystem.enableBlend();
-            // Use a dummy animated color calculation
-            int animatedTextColor = Mth.hsvToRgb(Mth.clamp((60 - partial) / 50.0f, 0.0f, 1.0f), 0.7f, 0.6f) & 0xFFFFFF;
+            // Update the animated tick value by incrementing it
+            animatedTickHolder.set(animatedTickHolder.get() + 0.005f);
+            // Use the animated tick value to create a color cycle
+            int animatedTextColor = Mth.hsvToRgb(Mth.clamp(animatedTickHolder.get() % 1.0f, 0.0f, 1.0f), 0.7f, 0.6f) | 0xFF000000;
             graphics.drawString(Minecraft.getInstance().font, message, textX, textY, animatedTextColor);
             RenderingUtils.resetShaderColor(graphics);
         }).setWidgetIdentifierFancyMenu(VanillaHudElements.OVERLAY_MESSAGE_IDENTIFIER);
