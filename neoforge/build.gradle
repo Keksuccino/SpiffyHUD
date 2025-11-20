@@ -65,7 +65,7 @@ dependencies {
 	implementation "maven.modrinth:konkrete:1.9.9-1.21-neoforge"
     implementation "maven.modrinth:melody:1.0.10-1.21-neoforge"
 	//implementation "maven.modrinth:fancymenu:3.8.0-1.21.1-neoforge"
-	implementation "flatdir:fancymenu:3.8.0"
+	implementation "flatdir:fancymenu:3.8.0.3"
     compileOnly project(":common")
 }
 
