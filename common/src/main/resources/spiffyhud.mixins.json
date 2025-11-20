@@ -20,10 +20,8 @@
     "client.MixinLivingEntityRenderer",
     "client.MixinLocalPlayer",
     "client.MixinMinecraft",
-    "client.MixinRenderSystem",
     "client.MixinScreenCustomization",
     "client.MixinScreenCustomizationLayer",
-    "client.MixinSpectatorGui",
     "client.MixinVanillaWidgetEditorElement"
   ],
   "mixins": [

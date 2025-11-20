@@ -2,10 +2,10 @@ package de.keksuccino.spiffyhud.util.rendering;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import de.keksuccino.spiffyhud.mixin.mixins.common.client.IMixinGuiGraphics;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.metadata.gui.GuiMetadataSection;
 import net.minecraft.client.resources.metadata.gui.GuiSpriteScaling;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
@@ -121,7 +121,8 @@ public class SpiffyRenderUtils {
 
         RenderSystem.assertOnRenderThread();
         
-        TextureAtlasSprite atlasSprite = Minecraft.getInstance().getGuiSprites().getSprite(sprite);
+        IMixinGuiGraphics mixinGraphics = (IMixinGuiGraphics) graphics;
+        TextureAtlasSprite atlasSprite = mixinGraphics.get_guiSprites_Spiffy().getSprite(sprite);
         ResourceLocation atlasLocation = atlasSprite.atlasLocation();
         
         // Get the sprite's UV coordinates
@@ -130,10 +131,9 @@ public class SpiffyRenderUtils {
         float u1 = atlasSprite.getU1();
         float v1 = atlasSprite.getV1();
         
-        // Calculate the texture dimensions from the UV coordinates
-        // Since UV coordinates are normalized (0-1), we need to denormalize them
-        int atlasWidth = 256; // Default atlas size, adjust if needed
-        int atlasHeight = 256;
+        // Derive atlas dimensions from the normalized UV range
+        int atlasWidth = (int) (atlasSprite.contents().width() / (u1 - u0));
+        int atlasHeight = (int) (atlasSprite.contents().height() / (v1 - v0));
         
         // Calculate the actual pixel coordinates in the atlas
         float uPixel = u0 * atlasWidth;
@@ -196,8 +196,8 @@ public class SpiffyRenderUtils {
             int color
     ) {
         IMixinGuiGraphics mixinGraphics = (IMixinGuiGraphics) graphics;
-        TextureAtlasSprite textureAtlasSprite = mixinGraphics.get_sprites_Spiffy().getSprite(sprite);
-        GuiSpriteScaling guiSpriteScaling = mixinGraphics.get_sprites_Spiffy().getSpriteScaling(textureAtlasSprite);
+        TextureAtlasSprite textureAtlasSprite = mixinGraphics.get_guiSprites_Spiffy().getSprite(sprite);
+        GuiSpriteScaling guiSpriteScaling = getSpriteScaling(textureAtlasSprite);
         
         if (guiSpriteScaling instanceof GuiSpriteScaling.Stretch) {
             mixinGraphics.invoke_private_blitSprite_Spiffy(
@@ -283,6 +283,10 @@ public class SpiffyRenderUtils {
         int blue = ARGB.blue(color);
         // Create new color with the specified alpha
         return ARGB.color(alphaComponent, red, green, blue);
+    }
+
+    private static GuiSpriteScaling getSpriteScaling(TextureAtlasSprite sprite) {
+        return ((GuiMetadataSection)sprite.contents().getAdditionalMetadata(GuiMetadataSection.TYPE).orElse(GuiMetadataSection.DEFAULT)).scaling();
     }
 
 }
