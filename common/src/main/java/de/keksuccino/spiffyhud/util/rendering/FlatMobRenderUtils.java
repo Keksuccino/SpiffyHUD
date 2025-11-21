@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
@@ -89,10 +90,23 @@ public class FlatMobRenderUtils {
         graphics.pose().mulPose(modelRotation);
         Lighting.setupForEntityInInventory();
         var dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
+        var lightTexture = Minecraft.getInstance().gameRenderer.lightTexture();
+        int previousLightTexture = RenderSystem.getShaderTexture(2);
+        lightTexture.turnOnLightLayer(); // ensure the lightmap is bound when rendering inside GUI
+        // Add a temporary front-facing light to remove side shading in flat head renders.
+        Vector3f frontLight = new Vector3f(0.0F, 0.0F, 1.0F).normalize();
+        RenderSystem.setShaderLights(frontLight, frontLight);
         dispatcher.setRenderShadow(false);
-        RenderSystem.runAsFancy(() -> dispatcher.render(mob, 0.0, 0.0, 0.0, 0.0F, 1.0F, graphics.pose(), graphics.bufferSource(), 15728880));
+        // Use the same fullbright lightmap value that InventoryScreen relies on.
+        RenderSystem.runAsFancy(() -> dispatcher.render(mob, 0.0, 0.0, 0.0, 0.0F, 1.0F, graphics.pose(), graphics.bufferSource(), LightTexture.FULL_BRIGHT));
         graphics.flush();
         dispatcher.setRenderShadow(true);
+        // restore previous light texture binding to avoid leaking state into other GUI renders
+        if (previousLightTexture == 0) {
+            lightTexture.turnOffLightLayer();
+        } else {
+            RenderSystem.setShaderTexture(2, previousLightTexture);
+        }
         Lighting.setupFor3DItems();
     }
 
