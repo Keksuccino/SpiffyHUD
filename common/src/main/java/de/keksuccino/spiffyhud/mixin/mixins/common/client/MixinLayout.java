@@ -19,7 +19,7 @@ public class MixinLayout {
     /**
      * @reason Set Spiffy layouts to always render behind Vanilla elements.
      */
-    @Inject(method = "<init>(Lnet/minecraft/client/gui/screens/Screen;)V", at = @At("RETURN"))
+    @Inject(method = "<init>(Lnet/minecraft/client/gui/screens/Screen;)V", at = @At("RETURN"), remap = false)
     private void return_initWithScreen_Spiffy(Screen screen, CallbackInfo info) {
         if (screen instanceof SpiffyOverlayScreen) {
             this.renderElementsBehindVanilla = true;

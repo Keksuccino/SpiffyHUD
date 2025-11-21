@@ -154,6 +154,8 @@ subprojects {
                 "fabric_loader_version": fabric_loader_version,
                 "neoforge_version": neoforge_version,
                 "neoforge_loader_version": neoforge_loader_version,
+                "forge_loader_version": forge_loader_version,
+                "forge_version": forge_version,
                 "fer_version": fer_version,
                 "fer_mc_version": fer_mc_version,
                 "parchment_version": parchment_version,
