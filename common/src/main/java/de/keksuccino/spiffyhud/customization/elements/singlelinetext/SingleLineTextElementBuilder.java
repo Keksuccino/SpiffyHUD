@@ -13,6 +13,8 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 public class SingleLineTextElementBuilder extends ElementBuilder<SingleLineTextElement, SingleLineTextEditorElement> {
 
     private static final Logger LOGGER = LogManager.getLogger();
@@ -37,6 +39,7 @@ public class SingleLineTextElementBuilder extends ElementBuilder<SingleLineTextE
         SingleLineTextElement element = this.buildDefaultInstance();
 
         element.text = serialized.getValue("text");
+        element.textScale = Objects.requireNonNullElse(serialized.getValue("text_scale"), element.textScale);
 
         return element;
 
@@ -58,6 +61,7 @@ public class SingleLineTextElementBuilder extends ElementBuilder<SingleLineTextE
         if (element.text != null) {
             serializeTo.putProperty("text", element.text);
         }
+        serializeTo.putProperty("text_scale", element.textScale);
 
         return serializeTo;
 

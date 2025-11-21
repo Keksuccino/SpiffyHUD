@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import de.keksuccino.fancymenu.customization.ScreenCustomization;
 import de.keksuccino.fancymenu.customization.element.anchor.ElementAnchorPoints;
 import de.keksuccino.fancymenu.customization.layout.editor.LayoutEditorScreen;
+import de.keksuccino.fancymenu.util.ObjectHolder;
 import de.keksuccino.fancymenu.util.rendering.RenderingUtils;
 import de.keksuccino.fancymenu.util.rendering.ui.widget.RendererWidget;
 import de.keksuccino.spiffyhud.customization.elements.Elements;
@@ -313,10 +314,13 @@ public class SpiffyOverlayScreen extends Screen {
         int messageWidth = font.width(message);
         int textX = (this.width / 2) - (messageWidth / 2);
         int textY = ((this.height - 68) - 4) - 18;
+        ObjectHolder<Float> animatedTickHolder = ObjectHolder.of(0.0f);
         return new SpiffyRendererWidget(textX - 2, textY - 2, messageWidth + 4, font.lineHeight + 4, (graphics, mX, mY, partial, gx, gy, gwidth, gheight, widget) -> {
             RenderSystem.enableBlend();
-            // Use a dummy animated color calculation
-            int animatedTextColor = Mth.hsvToRgb(Mth.clamp((60 - partial) / 50.0f, 0.0f, 1.0f), 0.7f, 0.6f) & 0xFFFFFF;
+            // Update the animated tick value by incrementing it
+            animatedTickHolder.set(animatedTickHolder.get() + 0.005f);
+            // Use the animated tick value to create a color cycle
+            int animatedTextColor = Mth.hsvToRgb(Mth.clamp(animatedTickHolder.get() % 1.0f, 0.0f, 1.0f), 0.7f, 0.6f) | 0xFF000000;
             graphics.drawString(Minecraft.getInstance().font, message, textX, textY, animatedTextColor);
             RenderingUtils.resetShaderColor(graphics);
         }).setWidgetIdentifierFancyMenu(VanillaHudElements.OVERLAY_MESSAGE_IDENTIFIER);
