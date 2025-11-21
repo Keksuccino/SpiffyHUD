@@ -33,11 +33,15 @@ public class ExclusionAreaStack {
     
     public boolean isPointExcluded(float x, float y) {
         for (ScreenRectangle area : stack) {
-            if (area.containsPoint((int)x, (int)y)) {
+            if (containsPoint(area, (int)x, (int)y)) {
                 return true;
             }
         }
         return false;
+    }
+
+    private static boolean containsPoint(ScreenRectangle area, int i, int j) {
+        return i >= area.left() && i < area.right() && j >= area.top() && j < area.bottom();
     }
     
     public boolean isRectangleFullyExcluded(float minX, float minY, float maxX, float maxY) {

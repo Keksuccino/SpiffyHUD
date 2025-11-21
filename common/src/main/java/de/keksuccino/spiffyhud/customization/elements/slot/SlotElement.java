@@ -143,10 +143,7 @@ public class SlotElement extends AbstractElement {
 
         // Render item cooldown overlay similar to vanilla hotbar slots.
         if (Minecraft.getInstance().player != null) {
-            float cooldownProgress = Minecraft.getInstance().player.getCooldowns().getCooldownPercent(
-                    stack.getItem(),
-                    Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true)
-            );
+            float cooldownProgress = Minecraft.getInstance().player.getCooldowns().getCooldownPercent(stack.getItem(), Minecraft.getInstance().getFrameTime());
             if (cooldownProgress > 0.0F) {
                 int overlayTop = Mth.floor(16.0F * (1.0F - cooldownProgress));
                 int overlayBottom = overlayTop + Mth.ceil(16.0F * cooldownProgress);

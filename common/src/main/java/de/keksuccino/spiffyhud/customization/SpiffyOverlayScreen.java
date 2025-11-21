@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import de.keksuccino.fancymenu.customization.ScreenCustomization;
 import de.keksuccino.fancymenu.customization.element.anchor.ElementAnchorPoints;
 import de.keksuccino.fancymenu.customization.layout.editor.LayoutEditorScreen;
+import de.keksuccino.fancymenu.util.ObjectHolder;
 import de.keksuccino.fancymenu.util.rendering.RenderingUtils;
 import de.keksuccino.fancymenu.util.rendering.ui.widget.RendererWidget;
 import de.keksuccino.spiffyhud.customization.elements.Elements;
@@ -313,6 +314,7 @@ public class SpiffyOverlayScreen extends Screen {
         int messageWidth = font.width(message);
         int textX = (this.width / 2) - (messageWidth / 2);
         int textY = ((this.height - 68) - 4) - 18;
+        ObjectHolder<Float> animatedTickHolder = ObjectHolder.of(0.0f);
         return new SpiffyRendererWidget(textX - 2, textY - 2, messageWidth + 4, font.lineHeight + 4, (graphics, mX, mY, partial, gx, gy, gwidth, gheight, widget) -> {
             RenderSystem.enableBlend();
             // Update the animated tick value by incrementing it

@@ -28,11 +28,8 @@ public class VanillaLikePlayerHealthElement extends AbstractElement {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    // Sprite resources for hearts in 1.21.1
-    private static final ResourceLocation HEART_CONTAINER_SPRITE = new ResourceLocation("hud/heart/container");
-    private static final ResourceLocation HEART_CONTAINER_BLINKING_SPRITE = new ResourceLocation("hud/heart/container_blinking");
-    private static final ResourceLocation HEART_CONTAINER_HARDCORE_SPRITE = new ResourceLocation("hud/heart/container_hardcore");
-    private static final ResourceLocation HEART_CONTAINER_HARDCORE_BLINKING_SPRITE = new ResourceLocation("hud/heart/container_hardcore_blinking");
+    // Vanilla heart sheet used in 1.20.1
+    private static final ResourceLocation GUI_ICONS_LOCATION = new ResourceLocation("textures/gui/icons.png");
 
     private final Minecraft minecraft = Minecraft.getInstance();
     protected final RandomSource random = RandomSource.create();
@@ -289,18 +286,13 @@ public class VanillaLikePlayerHealthElement extends AbstractElement {
      * Renders a heart container (empty heart)
      */
     private void renderEmptyHeart(GuiGraphics graphics, int x, int y, boolean blinking, boolean hardcore) {
-        ResourceLocation spriteLocation;
-
-        if (hardcore) {
-            spriteLocation = blinking ? HEART_CONTAINER_HARDCORE_BLINKING_SPRITE : HEART_CONTAINER_HARDCORE_SPRITE;
-        } else {
-            spriteLocation = blinking ? HEART_CONTAINER_BLINKING_SPRITE : HEART_CONTAINER_SPRITE;
-        }
+        int textureYOffset = hardcore ? 45 : 0;
+        int textureX = Gui.HeartType.CONTAINER.getX(false, blinking);
 
         if (this.spiffyAlignment == SpiffyAlignment.TOP_RIGHT || this.spiffyAlignment == SpiffyAlignment.MID_RIGHT || this.spiffyAlignment == SpiffyAlignment.BOTTOM_RIGHT) {
-            SpiffyRenderUtils.blitSpriteMirrored(graphics, spriteLocation, x, y, 9, 9);
+            SpiffyRenderUtils.blitMirrored(graphics, GUI_ICONS_LOCATION, x, y, 0, textureX, textureYOffset, 9, 9, 256, 256);
         } else {
-            graphics.blitSprite(spriteLocation, x, y, 9, 9);
+            graphics.blit(GUI_ICONS_LOCATION, x, y, textureX, textureYOffset, 9, 9);
         }
     }
 
@@ -316,12 +308,13 @@ public class VanillaLikePlayerHealthElement extends AbstractElement {
      * @param halfHeart   Whether to render a half heart.
      */
     private void renderHeart(GuiGraphics graphics, Gui.HeartType heartType, int x, int y, boolean blinking, boolean hardcore, boolean halfHeart) {
-        ResourceLocation spriteLocation = heartType.getSprite(hardcore, halfHeart, blinking);
+        int textureYOffset = hardcore ? 45 : 0;
+        int textureX = heartType.getX(halfHeart, blinking);
 
         if (this.spiffyAlignment == SpiffyAlignment.TOP_RIGHT || this.spiffyAlignment == SpiffyAlignment.MID_RIGHT || this.spiffyAlignment == SpiffyAlignment.BOTTOM_RIGHT) {
-            SpiffyRenderUtils.blitSpriteMirrored(graphics, spriteLocation, x, y, 9, 9);
+            SpiffyRenderUtils.blitMirrored(graphics, GUI_ICONS_LOCATION, x, y, 0, textureX, textureYOffset, 9, 9, 256, 256);
         } else {
-            graphics.blitSprite(spriteLocation, x, y, 9, 9);
+            graphics.blit(GUI_ICONS_LOCATION, x, y, textureX, textureYOffset, 9, 9);
         }
     }
 
@@ -343,4 +336,5 @@ public class VanillaLikePlayerHealthElement extends AbstractElement {
     public int getAbsoluteHeight() {
         return this.barHeight;
     }
+
 }
