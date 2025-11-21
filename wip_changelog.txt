@@ -48,3 +48,4 @@ CHANGELOG | SPIFFYHUD v3.1.0 [ !!  WIP !! NOT FINISHED YET !! WIP !! ]
 - Fixed "Vanilla-Like Player Health" element showing an additional empty row of hearts when the player has absorption hearts (#43)
 - Fixed "Vanilla-Like Hotbar" and "Inventory Slot" elements not showing item cooldowns from Ender Pearls, Crossbows, etc. (#51)
 - Fixed NeoForge 1.21.8+ crashing when a player entity is rendered on screen (#49)
+- Fixed Vanilla Experience Bar still visible in HUD after deleting in editor in NeoForge 1.21.8+ (#50)
