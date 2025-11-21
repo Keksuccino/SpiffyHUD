@@ -221,15 +221,6 @@ public abstract class MixinGuiGraphics implements IGuiGraphicsExclusionArea {
         }
     }
     
-    @Inject(method = "renderFakeItem(Lnet/minecraft/world/item/ItemStack;III)V", at = @At("HEAD"), cancellable = true)
-    private void spiffyHud$checkRenderFakeItem2(ItemStack stack, int x, int y, int seed, CallbackInfo ci) {
-        if (!spiffyHud$exclusionAreaStack.isEmpty()) {
-            if (spiffyHud$exclusionAreaStack.isRectangleFullyExcluded(x, y, x + 16, y + 16)) {
-                ci.cancel();
-            }
-        }
-    }
-    
     @Inject(method = "renderItem(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;III)V", at = @At("HEAD"), cancellable = true)
     private void spiffyHud$checkRenderItemEntity(LivingEntity entity, ItemStack stack, int x, int y, int seed, CallbackInfo ci) {
         if (!spiffyHud$exclusionAreaStack.isEmpty()) {

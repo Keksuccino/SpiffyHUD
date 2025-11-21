@@ -11,16 +11,17 @@
     "client.MixinChatScreen",
     "client.MixinCustomizationOverlayUI",
     "client.MixinEditorElementSettings",
+    "client.MixinGui",
     "client.MixinGuiGraphics",
     "client.MixinLayout",
     "client.MixinLayoutEditorUI",
-    "client.MixinMinecraft",
     "client.MixinLocalPlayer",
+    "client.MixinMinecraft",
+    "client.MixinRenderSystem",
     "client.MixinScreenCustomization",
     "client.MixinScreenCustomizationLayer",
     "client.MixinSpectatorGui",
-    "client.MixinVanillaWidgetEditorElement",
-    "client.MixinRenderSystem"
+    "client.MixinVanillaWidgetEditorElement"
   ],
   "mixins": [
     "client.IMixinSynchedEntityData"

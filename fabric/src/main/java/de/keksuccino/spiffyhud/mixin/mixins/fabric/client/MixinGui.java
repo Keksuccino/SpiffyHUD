@@ -1,10 +1,9 @@
 package de.keksuccino.spiffyhud.mixin.mixins.fabric.client;
 
-import com.llamalad7.mixinextras.injector.WrapWithCondition;
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import de.keksuccino.fancymenu.customization.element.AbstractElement;
 import de.keksuccino.fancymenu.customization.layer.ScreenCustomizationLayer;
 import de.keksuccino.fancymenu.customization.layer.ScreenCustomizationLayerHandler;
@@ -14,9 +13,7 @@ import de.keksuccino.spiffyhud.customization.SpiffyOverlayScreen;
 import de.keksuccino.spiffyhud.customization.VanillaHudElements;
 import de.keksuccino.spiffyhud.customization.elements.eraser.EraserElement;
 import de.keksuccino.spiffyhud.customization.elements.overlayremover.OverlayRemoverElement;
-import de.keksuccino.spiffyhud.util.rendering.SpiffyRenderUtils;
 import de.keksuccino.spiffyhud.util.rendering.exclusion.ExclusionAreaUtil;
-import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
@@ -69,7 +66,7 @@ public abstract class MixinGui {
      * @reason Apply eraser exclusion areas before Vanilla rendering begins.
      */
     @Inject(method = "render", at = @At("HEAD"), order = -1000)
-    private void before_render_Spiffy(GuiGraphics graphics, DeltaTracker deltaTracker, CallbackInfo info) {
+    private void before_render_Spiffy(GuiGraphics graphics, float partialTick, CallbackInfo info) {
 
         this.aggressionLevelNormalCount_Spiffy = 0;
         this.aggressionLevelAggressiveCount_Spiffy = 0;
@@ -133,7 +130,7 @@ public abstract class MixinGui {
     }
 
     @Inject(method = "render", at = @At("TAIL"), order = 20000)
-    private void after_render_Spiffy(GuiGraphics graphics, DeltaTracker deltaTracker, CallbackInfo info) {
+    private void after_render_Spiffy(GuiGraphics graphics, float partial, CallbackInfo info) {
 
         while (this.aggressionLevelAggressiveCount_Spiffy > 0) {
             ExclusionAreaUtil.popExclusionArea(graphics);
