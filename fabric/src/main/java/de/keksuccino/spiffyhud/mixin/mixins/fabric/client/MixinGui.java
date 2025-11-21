@@ -15,9 +15,9 @@ import de.keksuccino.spiffyhud.customization.elements.eraser.EraserElement;
 import de.keksuccino.spiffyhud.customization.elements.overlayremover.OverlayRemoverElement;
 import de.keksuccino.spiffyhud.util.rendering.exclusion.ExclusionAreaUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.BossHealthOverlay;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
@@ -45,14 +45,13 @@ public abstract class MixinGui {
     @Shadow private Component title;
     @Shadow private Component subtitle;
 
-    @Unique
-    private static final Logger LOGGER_SPIFFY = LogManager.getLogger();
-    @Unique
-    private SpiffyGui spiffyGui = null;
-    @Unique
-    private int aggressionLevelNormalCount_Spiffy = 0;
-    @Unique
-    private int aggressionLevelAggressiveCount_Spiffy = 0;
+    @Unique private static final Logger LOGGER_SPIFFY = LogManager.getLogger();
+    @Unique private SpiffyGui spiffyGui = null;
+    @Unique private int aggressionLevelNormalCount_Spiffy = 0;
+    @Unique private int aggressionLevelAggressiveCount_Spiffy = 0;
+    @Unique private Component cached_overlayMessageString_Spiffy = null;
+    @Unique private Component cached_title_Spiffy = null;
+    @Unique private Component cached_subtitle_Spiffy = null;
 
     @Shadow protected abstract int getVehicleMaxHearts(LivingEntity $$0);
 
@@ -109,8 +108,8 @@ public abstract class MixinGui {
 
     }
 
-    @Inject(method = "renderChat", at = @At("HEAD"))
-    private void before_renderChat_Spiffy(GuiGraphics graphics, DeltaTracker deltaTracker, CallbackInfo info) {
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/ChatComponent;render(Lnet/minecraft/client/gui/GuiGraphics;III)V"))
+    private void before_renderChat_in_render_Spiffy(GuiGraphics graphics, float partial, CallbackInfo info) {
 
         while (this.aggressionLevelNormalCount_Spiffy > 0) {
             ExclusionAreaUtil.popExclusionArea(graphics);
@@ -122,7 +121,7 @@ public abstract class MixinGui {
         if (!Minecraft.getInstance().options.hideGui) {
             RenderSystem.enableBlend();
             graphics.pose().pushPose();
-            this.spiffyGui.render(graphics, -10000000, -10000000, deltaTracker.getGameTimeDeltaTicks());
+            this.spiffyGui.render(graphics, -10000000, -10000000, partial);
             graphics.pose().popPose();
             RenderSystem.disableBlend();
         }
@@ -142,8 +141,8 @@ public abstract class MixinGui {
     /**
      * @reason Hide the hotbar when hidden by Spiffy HUD.
      */
-    @Inject(method = "renderHotbarAndDecorations", at = @At(value = "HEAD"), cancellable = true)
-    private void before_renderHotbarAndDecorations_Spiffy(GuiGraphics graphics, DeltaTracker deltaTracker, CallbackInfo info) {
+    @Inject(method = "renderHotbar", at = @At(value = "HEAD"), cancellable = true)
+    private void before_renderHotbarAndDecorations_Spiffy(float partialTick, GuiGraphics guiGraphics, CallbackInfo info) {
         if (VanillaHudElements.isHidden(VanillaHudElements.HOTBAR_IDENTIFIER)) info.cancel();
     }
 
@@ -191,7 +190,7 @@ public abstract class MixinGui {
      * @reason Hide the boss overlay when hidden by Spiffy HUD.
      */
     @WrapWithCondition(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/BossHealthOverlay;render(Lnet/minecraft/client/gui/GuiGraphics;)V"))
-    private boolean wrap_BossOverlay_render_in_render_Spiffy(BossHealthOverlay instance, GuiGraphics $$0) {
+    private boolean wrap_BossOverlay_render_in_render_Spiffy(BossHealthOverlay instance, GuiGraphics guiGraphics) {
         return !VanillaHudElements.isHidden(VanillaHudElements.BOSS_BARS_IDENTIFIER);
     }
 
@@ -206,31 +205,24 @@ public abstract class MixinGui {
     /**
      * @reason Hide the overlay message, title and subtitle when hidden by Spiffy HUD.
      */
-    @Inject(method = "renderOverlayMessage", at = @At(value = "HEAD"), cancellable = true)
-    private void before_renderOverlayMessage_Spiffy(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo info) {
-        if (VanillaHudElements.isHidden(VanillaHudElements.OVERLAY_MESSAGE_IDENTIFIER)) info.cancel();
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;renderEffects(Lnet/minecraft/client/gui/GuiGraphics;)V", shift = At.Shift.AFTER))
+    private void after_renderEffects_in_render_Spiffy(GuiGraphics graphics, float partial, CallbackInfo info) {
+        this.cached_overlayMessageString_Spiffy = this.overlayMessageString;
+        this.cached_title_Spiffy = this.title;
+        this.cached_subtitle_Spiffy = this.subtitle;
+        if (VanillaHudElements.isHidden(VanillaHudElements.OVERLAY_MESSAGE_IDENTIFIER)) this.overlayMessageString = null;
+        if (VanillaHudElements.isHidden(VanillaHudElements.TITLE_IDENTIFIER)) this.title = null;
+        if (VanillaHudElements.isHidden(VanillaHudElements.SUBTITLE_IDENTIFIER)) this.subtitle = null;
     }
 
     /**
-     * @reason Hide the title message when hidden by Spiffy HUD.
+     * @reason Restore the overlay message, title and subtitle.
      */
-    @WrapOperation(method = "renderTitle", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawStringWithBackdrop(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;IIII)I", ordinal = 0))
-    private int wrap_drawStringWithBackdrop_title_Spiffy(GuiGraphics instance, Font font, Component component, int i1, int i2, int i3, int i4, Operation<Integer> original) {
-        if (this.spiffyHud$shouldRenderTitleComponent(component, this.title, VanillaHudElements.TITLE_IDENTIFIER)) {
-            return original.call(instance, font, component, i1, i2, i3, i4);
-        }
-        return 0;
-    }
-
-    /**
-     * @reason Hide the subtitle message when hidden by Spiffy HUD.
-     */
-    @WrapOperation(method = "renderTitle", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawStringWithBackdrop(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;IIII)I", ordinal = 1))
-    private int wrap_drawStringWithBackdrop_subtitle_Spiffy(GuiGraphics instance, Font font, Component component, int i1, int i2, int i3, int i4, Operation<Integer> original) {
-        if (this.spiffyHud$shouldRenderTitleComponent(component, this.subtitle, VanillaHudElements.SUBTITLE_IDENTIFIER)) {
-            return original.call(instance, font, component, i1, i2, i3, i4);
-        }
-        return 0;
+    @Inject(method = "render", at = @At("RETURN"))
+    private void after_render_restore_fields_Spiffy(GuiGraphics graphics, float partial, CallbackInfo info) {
+        this.overlayMessageString = this.cached_overlayMessageString_Spiffy;
+        this.title = this.cached_title_Spiffy;
+        this.subtitle = this.cached_subtitle_Spiffy;
     }
 
     /**
@@ -300,14 +292,6 @@ public abstract class MixinGui {
     private float wrap_getAttackStrengthScale_in_renderHotbar_Spiffy(LocalPlayer instance, float v, Operation<Float> original) {
         if (VanillaHudElements.isHidden(VanillaHudElements.ATTACK_INDICATOR_IDENTIFIER)) return 1.0f; //indicator only gets rendered when attack strength is not at 100%
         return original.call(instance, v);
-    }
-
-    @Unique
-    private boolean spiffyHud$shouldRenderTitleComponent(Component component, Component expected, String identifier) {
-        if ((component != null) && (component == expected) && VanillaHudElements.isHidden(identifier)) {
-            return false;
-        }
-        return true;
     }
 
     /**
