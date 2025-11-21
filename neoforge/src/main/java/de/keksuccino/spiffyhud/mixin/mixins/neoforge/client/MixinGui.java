@@ -316,4 +316,27 @@ public class MixinGui {
         if (OverlayRemoverElement.isOverlayTypeHidden(OverlayRemoverElement.OverlayType.PORTAL)) info.cancel();
     }
 
+    // NeoForge: Layers call these dedicated methods, so cancel them directly when hidden
+    @Inject(method = "renderContextualInfoBarBackground", at = @At("HEAD"), cancellable = true, require = 0)
+    private void cancel_renderContextualInfoBarBackground_Spiffy(GuiGraphics graphics, DeltaTracker delta, CallbackInfo ci) {
+        if (this.isContextualBarHidden_Spiffy()) ci.cancel();
+    }
+
+    // NeoForge: Layers call these dedicated methods, so cancel them directly when hidden
+    @Inject(method = "renderContextualInfoBar", at = @At("HEAD"), cancellable = true, require = 0)
+    private void cancel_renderContextualInfoBar_Spiffy(GuiGraphics graphics, DeltaTracker delta, CallbackInfo ci) {
+        if (this.isContextualBarHidden_Spiffy()) ci.cancel();
+    }
+
+    // NeoForge: Layers call these dedicated methods, so cancel them directly when hidden
+    @Inject(method = "renderExperienceLevel", at = @At("HEAD"), cancellable = true, require = 0)
+    private void cancel_renderExperienceLevel_Spiffy(GuiGraphics graphics, DeltaTracker delta, CallbackInfo ci) {
+        if (this.isContextualBarHidden_Spiffy()) ci.cancel();
+    }
+
+    @Unique
+    private boolean isContextualBarHidden_Spiffy() {
+        return VanillaHudElements.isHidden(VanillaHudElements.CONTEXTUAL_BAR_IDENTIFIER);
+    }
+
 }

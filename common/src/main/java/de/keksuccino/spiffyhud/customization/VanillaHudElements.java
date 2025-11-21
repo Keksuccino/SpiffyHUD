@@ -45,8 +45,13 @@ public class VanillaHudElements {
         try {
             ScreenCustomizationLayer layer = ScreenCustomizationLayerHandler.getLayerOfScreen(SpiffyUtils.DUMMY_SPIFFY_OVERLAY_SCREEN);
             if (layer != null) {
-                if (layer.getElementByInstanceIdentifier(elementIdentifier) instanceof VanillaWidgetElement e) {
+                var element = layer.getElementByInstanceIdentifier(elementIdentifier);
+                if (element instanceof VanillaWidgetElement e) {
                     return e.isHidden();
+                }
+                // If the vanilla widget was removed from the layout entirely, treat it as hidden.
+                if (element == null) {
+                    return true;
                 }
             }
         } catch (Exception ex) {

@@ -334,4 +334,30 @@ public class MixinGui {
         if (OverlayRemoverElement.isOverlayTypeHidden(OverlayRemoverElement.OverlayType.PORTAL)) info.cancel();
     }
 
+    // Fabric/Vanilla: Skip contextual bar background when hidden
+    @WrapOperation(method = "renderHotbarAndDecorations", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/contextualbar/ContextualBarRenderer;renderBackground(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"), require = 0)
+    private void wrap_renderBackground_Spiffy(ContextualBarRenderer instance, GuiGraphics graphics, DeltaTracker deltaTracker, Operation<Void> original) {
+        if (this.isContextualBarHidden_Spiffy()) return;
+        original.call(instance, graphics, deltaTracker);
+    }
+
+    // Fabric/Vanilla: Skip contextual bar foreground when hidden
+    @WrapOperation(method = "renderHotbarAndDecorations", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/contextualbar/ContextualBarRenderer;render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"), require = 0)
+    private void wrap_renderContextualBar_Spiffy(ContextualBarRenderer renderer, GuiGraphics graphics, DeltaTracker delta, Operation<Void> original) {
+        if (this.isContextualBarHidden_Spiffy()) return;
+        original.call(renderer, graphics, delta);
+    }
+
+    // Fabric/Vanilla: Skip experience level number when hidden
+    @WrapOperation(method = "renderHotbarAndDecorations", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/contextualbar/ContextualBarRenderer;renderExperienceLevel(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Font;I)V"), require = 0)
+    private void wrap_renderExperienceLevel_Spiffy(GuiGraphics graphics, Font font, int level, Operation<Void> original) {
+        if (this.isContextualBarHidden_Spiffy()) return;
+        original.call(graphics, font, level);
+    }
+
+    @Unique
+    private boolean isContextualBarHidden_Spiffy() {
+        return VanillaHudElements.isHidden(VanillaHudElements.CONTEXTUAL_BAR_IDENTIFIER);
+    }
+
 }
