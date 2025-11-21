@@ -63,6 +63,14 @@ public class MixinGuiRenderer {
      */
     @WrapOperation(method = "preparePictureInPictureState", at = @At(value = "INVOKE", target = "Ljava/util/Map;get(Ljava/lang/Object;)Ljava/lang/Object;"))
     private <T extends PictureInPictureRenderState> Object wrap_List_get_in_preparePictureInPictureState_Spiffy(Map<Class<?>, PictureInPictureRenderer<?>> instance, Object key, Operation<Object> original, @Local T pictureInPictureRenderState) {
+        // NeoForge replaces vanilla's picture-in-picture renderer map with a pool map
+        // (values are net.neoforged.neoforge.client.gui.PictureInPictureRendererPool). Our fabric/vanilla
+        // workaround must not run there, otherwise the returned renderer is cast to a pool and crashes.
+        Object firstValue = instance.isEmpty() ? null : instance.values().iterator().next();
+        if (firstValue != null && "net.neoforged.neoforge.client.gui.PictureInPictureRendererPool".equals(firstValue.getClass().getName())) {
+            return original.call(instance, key);
+        }
+
         // Only act on GuiEntityRenderState, which is what our PlayerElement uses.
         if ((key == GuiEntityRenderState.class) && (pictureInPictureRenderState instanceof GuiEntityRenderState entityRenderState)) {
             // Use the entity's scale as the unique key for our cache.
