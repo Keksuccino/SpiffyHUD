@@ -91,7 +91,6 @@ public class PlayerArmorBarElement extends AbstractElement {
         );
         
         this.drawArmor(graphics, aligned[0], aligned[1], data, metrics, scale);
-        RenderingUtils.resetShaderColor(graphics);
     }
 
     private void drawArmor(@NotNull GuiGraphics graphics, int originX, int originY, @NotNull PlayerData data, @NotNull RenderMetrics metrics, float scale) {

@@ -93,7 +93,6 @@ public class PlayerAirBubbleBarElement extends AbstractElement {
         );
 
         this.drawBubbles(graphics, aligned[0], aligned[1], data, metrics, scale);
-        RenderingUtils.resetShaderColor(graphics);
     }
 
     private void drawBubbles(@NotNull GuiGraphics graphics, int originX, int originY, @NotNull PlayerData data, @NotNull RenderMetrics metrics, float scale) {

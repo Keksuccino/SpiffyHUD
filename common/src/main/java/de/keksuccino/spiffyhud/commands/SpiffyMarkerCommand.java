@@ -11,7 +11,7 @@ import com.mojang.brigadier.context.ParsedCommandNode;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import de.keksuccino.fancymenu.networking.PacketHandler;
-import de.keksuccino.konkrete.command.CommandUtils;
+import de.keksuccino.fancymenu.util.CommandUtils;
 import de.keksuccino.spiffyhud.customization.actions.marker.MarkerActionConfig;
 import de.keksuccino.spiffyhud.customization.actions.marker.MarkerRemovalConfig;
 import de.keksuccino.spiffyhud.networking.packets.markercommand.MarkerCommandEditField;
@@ -70,11 +70,11 @@ public class SpiffyMarkerCommand {
                         ServerPlayer player = context.getSource().getPlayerOrException();
                         List<String> values = Objects.requireNonNullElse(CACHED_GROUP_SUGGESTIONS.get(player.getUUID().toString()), List.of());
                         if (values.isEmpty()) {
-                            return CommandUtils.getStringSuggestions(builder, "<no_marker_groups>");
+                            return CommandUtils.buildStringSuggestionsList(context, "<no_marker_groups>");
                         }
-                        return CommandUtils.getStringSuggestions(builder, values.toArray(new String[0]));
+                        return CommandUtils.buildStringSuggestionsList(context, values.toArray(new String[0]));
                     } catch (CommandSyntaxException ex) {
-                        return CommandUtils.getStringSuggestions(builder, "<player_only>");
+                        return CommandUtils.buildStringSuggestionsList(context, "<player_only>");
                     }
                 });
     }

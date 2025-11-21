@@ -95,7 +95,6 @@ public class PlayerFoodBarElement extends AbstractElement {
         );
 
         this.drawFood(graphics, aligned[0], aligned[1], data, metrics, scale);
-        RenderingUtils.resetShaderColor(graphics);
     }
 
     private void drawFood(@NotNull GuiGraphics graphics, int originX, int originY, @NotNull PlayerData data, @NotNull RenderMetrics metrics, float scale) {

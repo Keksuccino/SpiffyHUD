@@ -230,7 +230,6 @@ public class CompassElement extends AbstractElement {
                 }
             }
             this.drawDeathNeedle(graphics, layout, reading, deathPointer, colors);
-            RenderingUtils.resetShaderColor(graphics);
         });
 
     }

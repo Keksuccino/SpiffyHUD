@@ -95,7 +95,6 @@ public class PlayerMountHealthBarElement extends AbstractElement {
         );
 
         this.drawHearts(graphics, aligned[0], aligned[1], data, metrics, scale);
-        RenderingUtils.resetShaderColor(graphics);
     }
 
     private void drawHearts(@NotNull GuiGraphics graphics, int originX, int originY, @NotNull MountData data, @NotNull RenderMetrics metrics, float scale) {

@@ -94,8 +94,6 @@ public class VanillaLikePlayerHealthElement extends AbstractElement {
         this.shouldRenderBar = true;
         this.renderPlayerHealthInternal(graphics, alignedBarX, alignedBarY);
 
-        RenderingUtils.resetShaderColor(graphics);
-
     }
 
     /**

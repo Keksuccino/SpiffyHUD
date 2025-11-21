@@ -4,7 +4,6 @@ import de.keksuccino.fancymenu.customization.element.AbstractElement;
 import de.keksuccino.fancymenu.customization.element.ElementBuilder;
 import de.keksuccino.fancymenu.customization.placeholder.PlaceholderParser;
 import de.keksuccino.fancymenu.util.MathUtils;
-import de.keksuccino.fancymenu.util.rendering.RenderingUtils;
 import de.keksuccino.fancymenu.util.resource.ResourceSupplier;
 import de.keksuccino.fancymenu.util.resource.resources.texture.ITexture;
 import de.keksuccino.spiffyhud.SpiffyUtils;
@@ -93,7 +92,6 @@ public class PlayerHeartHealthBarElement extends AbstractElement {
         );
 
         this.drawHearts(graphics, aligned[0], aligned[1], data, metrics, scale);
-        RenderingUtils.resetShaderColor(graphics);
     }
 
     private void drawHearts(@NotNull GuiGraphics graphics, int originX, int originY, @NotNull PlayerData data, @NotNull RenderMetrics metrics, float scale) {
