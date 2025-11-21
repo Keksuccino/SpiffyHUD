@@ -202,10 +202,7 @@ public class VanillaLikeHotbarElement extends AbstractElement {
         }
 
         if (player != null) {
-            float cooldownProgress = player.getCooldowns().getCooldownPercent(
-                    stack.getItem(),
-                    minecraft.getTimer().getGameTimeDeltaPartialTick(true)
-            );
+            float cooldownProgress = player.getCooldowns().getCooldownPercent(stack.getItem(), minecraft.getFrameTime());
             if (cooldownProgress > 0.0F) {
                 int overlayTop = slotY + Mth.floor(16.0F * (1.0F - cooldownProgress));
                 int overlayBottom = overlayTop + Mth.ceil(16.0F * cooldownProgress);
