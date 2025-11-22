@@ -3,7 +3,6 @@ package de.keksuccino.spiffyhud.customization.elements;
 import de.keksuccino.fancymenu.customization.element.ElementRegistry;
 import de.keksuccino.spiffyhud.customization.elements.chatcustomizer.ChatCustomizerElementBuilder;
 import de.keksuccino.spiffyhud.customization.elements.compass.CompassElementBuilder;
-import de.keksuccino.spiffyhud.customization.elements.eraser.EraserElementBuilder;
 import de.keksuccino.spiffyhud.customization.elements.overlayremover.OverlayRemoverElementBuilder;
 import de.keksuccino.spiffyhud.customization.elements.player.PlayerElementBuilder;
 import de.keksuccino.spiffyhud.customization.elements.playerairbar.PlayerAirBubbleBarElementBuilder;
@@ -54,7 +53,6 @@ public class Elements {
     public static final PlayerAirBubbleBarElementBuilder PLAYER_AIR_BUBBLE_BAR = new PlayerAirBubbleBarElementBuilder();
     public static final PlayerMountHealthBarElementBuilder PLAYER_MOUNT_HEALTH_BAR = new PlayerMountHealthBarElementBuilder();
     public static final CompassElementBuilder PLAYER_COMPASS = new CompassElementBuilder();
-    public static final EraserElementBuilder ERASER = new EraserElementBuilder();
 
     public static void registerAll() {
 
@@ -83,7 +81,6 @@ public class Elements {
         ElementRegistry.register(PLAYER_AIR_BUBBLE_BAR);
         ElementRegistry.register(PLAYER_MOUNT_HEALTH_BAR);
         ElementRegistry.register(PLAYER_COMPASS);
-        ElementRegistry.register(ERASER);
 
     }
 

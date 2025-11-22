@@ -4,28 +4,20 @@ import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.systems.RenderSystem;
-import de.keksuccino.fancymenu.customization.element.AbstractElement;
-import de.keksuccino.fancymenu.customization.layer.ScreenCustomizationLayer;
-import de.keksuccino.fancymenu.customization.layer.ScreenCustomizationLayerHandler;
-import de.keksuccino.spiffyhud.SpiffyUtils;
+import com.mojang.blaze3d.vertex.PoseStack;
 import de.keksuccino.spiffyhud.customization.SpiffyGui;
-import de.keksuccino.spiffyhud.customization.SpiffyOverlayScreen;
 import de.keksuccino.spiffyhud.customization.VanillaHudElements;
-import de.keksuccino.spiffyhud.customization.elements.eraser.EraserElement;
 import de.keksuccino.spiffyhud.customization.elements.overlayremover.OverlayRemoverElement;
-import de.keksuccino.spiffyhud.util.rendering.exclusion.ExclusionAreaUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import de.keksuccino.fancymenu.util.rendering.gui.GuiGraphics;
 import net.minecraft.client.gui.components.BossHealthOverlay;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.PlayerRideableJumping;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.scores.Objective;
 import org.apache.logging.log4j.LogManager;
@@ -41,14 +33,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Gui.class)
 public abstract class MixinGui {
 
+    @Shadow @Final private static ResourceLocation PUMPKIN_BLUR_LOCATION;
+    @Shadow @Final private static ResourceLocation POWDER_SNOW_OUTLINE_LOCATION;
     @Shadow private Component overlayMessageString;
     @Shadow private Component title;
     @Shadow private Component subtitle;
 
     @Unique private static final Logger LOGGER_SPIFFY = LogManager.getLogger();
     @Unique private SpiffyGui spiffyGui = null;
-    @Unique private int aggressionLevelNormalCount_Spiffy = 0;
-    @Unique private int aggressionLevelAggressiveCount_Spiffy = 0;
     @Unique private Component cached_overlayMessageString_Spiffy = null;
     @Unique private Component cached_title_Spiffy = null;
     @Unique private Component cached_subtitle_Spiffy = null;
@@ -57,66 +49,12 @@ public abstract class MixinGui {
 
     @Shadow protected abstract LivingEntity getPlayerVehicleWithHealth();
 
-    @Shadow @Final private static ResourceLocation PUMPKIN_BLUR_LOCATION;
-
-    @Shadow @Final private static ResourceLocation POWDER_SNOW_OUTLINE_LOCATION;
-
-    /**
-     * @reason Apply eraser exclusion areas before Vanilla rendering begins.
-     */
-    @Inject(method = "render", at = @At("HEAD"), order = -1000)
-    private void before_render_Spiffy(GuiGraphics graphics, float partialTick, CallbackInfo info) {
-
-        this.aggressionLevelNormalCount_Spiffy = 0;
-        this.aggressionLevelAggressiveCount_Spiffy = 0;
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/ChatComponent;render(Lcom/mojang/blaze3d/vertex/PoseStack;I)V"))
+    private void before_renderChat_in_render_Spiffy(PoseStack pose, float partial, CallbackInfo info) {
 
         if (this.spiffyGui == null) this.spiffyGui = SpiffyGui.INSTANCE;
 
-        Minecraft minecraft = Minecraft.getInstance();
-        Screen previousScreen = minecraft.screen;
-        SpiffyOverlayScreen overlayScreen = null;
-        boolean swappedScreen = false;
-
-        try {
-            overlayScreen = this.spiffyGui.getOverlayScreen();
-            if ((overlayScreen != null) && (previousScreen != overlayScreen)) {
-                minecraft.screen = overlayScreen;
-                swappedScreen = true;
-            }
-            ScreenCustomizationLayer layer = ScreenCustomizationLayerHandler.getLayerOfScreen((overlayScreen != null) ? overlayScreen : SpiffyUtils.DUMMY_SPIFFY_OVERLAY_SCREEN);
-            if (layer != null) {
-                for (AbstractElement abstractElement : layer.allElements) {
-                    if ((abstractElement instanceof EraserElement eraser) && eraser.shouldRender() && (eraser.aggressionLevel == EraserElement.AggressionLevel.AGGRESSIVE)) {
-                        this.aggressionLevelAggressiveCount_Spiffy++;
-                        ExclusionAreaUtil.pushExclusionArea(graphics, eraser.getAbsoluteX(), eraser.getAbsoluteY(), eraser.getAbsoluteX() + eraser.getAbsoluteWidth(), eraser.getAbsoluteY() + eraser.getAbsoluteHeight());
-                    }
-                }
-                for (AbstractElement abstractElement : layer.allElements) {
-                    if ((abstractElement instanceof EraserElement eraser) && eraser.shouldRender() && (eraser.aggressionLevel == EraserElement.AggressionLevel.NORMAL)) {
-                        this.aggressionLevelNormalCount_Spiffy++;
-                        ExclusionAreaUtil.pushExclusionArea(graphics, eraser.getAbsoluteX(), eraser.getAbsoluteY(), eraser.getAbsoluteX() + eraser.getAbsoluteWidth(), eraser.getAbsoluteY() + eraser.getAbsoluteHeight());
-                    }
-                }
-            }
-        } catch (Exception ex) {
-            LOGGER_SPIFFY.error("[SPIFFY HUD] Failed to apply Eraser element areas to Gui!", ex);
-        } finally {
-            if (swappedScreen) {
-                minecraft.screen = previousScreen;
-            }
-        }
-
-    }
-
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/ChatComponent;render(Lnet/minecraft/client/gui/GuiGraphics;III)V"))
-    private void before_renderChat_in_render_Spiffy(GuiGraphics graphics, float partial, CallbackInfo info) {
-
-        while (this.aggressionLevelNormalCount_Spiffy > 0) {
-            ExclusionAreaUtil.popExclusionArea(graphics);
-            this.aggressionLevelNormalCount_Spiffy--;
-        }
-
-        if (this.spiffyGui == null) this.spiffyGui = SpiffyGui.INSTANCE;
+        GuiGraphics graphics = GuiGraphics.currentGraphics();
 
         if (!Minecraft.getInstance().options.hideGui) {
             RenderSystem.enableBlend();
@@ -128,21 +66,11 @@ public abstract class MixinGui {
 
     }
 
-    @Inject(method = "render", at = @At("TAIL"), order = 20000)
-    private void after_render_Spiffy(GuiGraphics graphics, float partial, CallbackInfo info) {
-
-        while (this.aggressionLevelAggressiveCount_Spiffy > 0) {
-            ExclusionAreaUtil.popExclusionArea(graphics);
-            this.aggressionLevelAggressiveCount_Spiffy--;
-        }
-
-    }
-
     /**
      * @reason Hide the hotbar when hidden by Spiffy HUD.
      */
     @Inject(method = "renderHotbar", at = @At(value = "HEAD"), cancellable = true)
-    private void before_renderHotbarAndDecorations_Spiffy(float partialTick, GuiGraphics guiGraphics, CallbackInfo info) {
+    private void before_renderHotbarAndDecorations_Spiffy(float partialTick, PoseStack poseStack, CallbackInfo info) {
         if (VanillaHudElements.isHidden(VanillaHudElements.HOTBAR_IDENTIFIER)) info.cancel();
     }
 
@@ -189,8 +117,8 @@ public abstract class MixinGui {
     /**
      * @reason Hide the boss overlay when hidden by Spiffy HUD.
      */
-    @WrapWithCondition(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/BossHealthOverlay;render(Lnet/minecraft/client/gui/GuiGraphics;)V"))
-    private boolean wrap_BossOverlay_render_in_render_Spiffy(BossHealthOverlay instance, GuiGraphics guiGraphics) {
+    @WrapWithCondition(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/BossHealthOverlay;render(Lcom/mojang/blaze3d/vertex/PoseStack;)V"))
+    private boolean wrap_BossOverlay_render_in_render_Spiffy(BossHealthOverlay instance, PoseStack pose) {
         return !VanillaHudElements.isHidden(VanillaHudElements.BOSS_BARS_IDENTIFIER);
     }
 
@@ -205,8 +133,8 @@ public abstract class MixinGui {
     /**
      * @reason Hide the overlay message, title and subtitle when hidden by Spiffy HUD.
      */
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;renderEffects(Lnet/minecraft/client/gui/GuiGraphics;)V", shift = At.Shift.AFTER))
-    private void after_renderEffects_in_render_Spiffy(GuiGraphics graphics, float partial, CallbackInfo info) {
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;renderEffects(Lcom/mojang/blaze3d/vertex/PoseStack;)V", shift = At.Shift.AFTER))
+    private void after_renderEffects_in_render_Spiffy(PoseStack poseStack, float partial, CallbackInfo info) {
         this.cached_overlayMessageString_Spiffy = this.overlayMessageString;
         this.cached_title_Spiffy = this.title;
         this.cached_subtitle_Spiffy = this.subtitle;
@@ -219,7 +147,7 @@ public abstract class MixinGui {
      * @reason Restore the overlay message, title and subtitle.
      */
     @Inject(method = "render", at = @At("RETURN"))
-    private void after_render_restore_fields_Spiffy(GuiGraphics graphics, float partial, CallbackInfo info) {
+    private void after_render_restore_fields_Spiffy(PoseStack pose, float partial, CallbackInfo info) {
         this.overlayMessageString = this.cached_overlayMessageString_Spiffy;
         this.title = this.cached_title_Spiffy;
         this.subtitle = this.cached_subtitle_Spiffy;
