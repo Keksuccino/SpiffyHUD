@@ -9,6 +9,7 @@ import de.keksuccino.fancymenu.util.SerializationUtils;
 import de.keksuccino.fancymenu.util.rendering.AspectRatio;
 import de.keksuccino.fancymenu.util.rendering.DrawableColor;
 import de.keksuccino.fancymenu.util.rendering.RenderingUtils;
+import de.keksuccino.fancymenu.util.rendering.gui.GuiGraphics;
 import de.keksuccino.fancymenu.util.resource.ResourceSupplier;
 import de.keksuccino.fancymenu.util.resource.resources.texture.ITexture;
 import de.keksuccino.spiffyhud.customization.marker.MarkerData;
@@ -17,7 +18,6 @@ import de.keksuccino.spiffyhud.util.death.DeathPointStorage;
 import de.keksuccino.spiffyhud.util.rendering.FlatMobRenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
@@ -1075,7 +1075,7 @@ public class CompassElement extends AbstractElement {
             return null;
         }
         DeathPointStorage.StoredDeathPoint point = DeathPointStorage.get();
-        if (point == null || !point.dimensionMatches(player.level())) {
+        if (point == null || !point.dimensionMatches(player.level)) {
             return null;
         }
         if (point.squaredDistanceTo(player.getX(), player.getY(), player.getZ()) <= 1.0E-3D) {
@@ -1113,7 +1113,7 @@ public class CompassElement extends AbstractElement {
         if (maxRange <= 0.0D) {
             return MobDots.EMPTY;
         }
-        var level = player.level();
+        var level = player.level;
         if (level == null) {
             return MobDots.EMPTY;
         }
@@ -1212,7 +1212,7 @@ public class CompassElement extends AbstractElement {
     private Mob ensurePreviewMob(boolean hostile) {
         Mob cached = hostile ? this.previewHostileMob : this.previewPassiveMob;
         if (cached != null) {
-            if (cached.isRemoved() || cached.level() != MC.level) {
+            if (cached.isRemoved() || cached.level != MC.level) {
                 cached = null;
             }
         }

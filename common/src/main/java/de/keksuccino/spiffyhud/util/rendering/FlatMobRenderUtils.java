@@ -2,9 +2,10 @@ package de.keksuccino.spiffyhud.util.rendering;
 
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.math.Axis;
+import de.keksuccino.fancymenu.util.rendering.gui.Axis;
+import de.keksuccino.fancymenu.util.rendering.gui.GuiGraphics;
+import de.keksuccino.fancymenu.util.rendering.gui.QuaternionUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Mob;
@@ -14,7 +15,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
-
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -87,7 +87,7 @@ public class FlatMobRenderUtils {
         graphics.pose().translate(centerX, centerY, 50.0);
         graphics.pose().scale(scale, scale, -scale);
         graphics.pose().translate(offset.x, offset.y, offset.z);
-        graphics.pose().mulPose(modelRotation);
+        graphics.pose().mulPose(QuaternionUtils.toMojangQuaternion(modelRotation));
         Lighting.setupForEntityInInventory();
         var dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
         var lightTexture = Minecraft.getInstance().gameRenderer.lightTexture();
@@ -134,13 +134,13 @@ public class FlatMobRenderUtils {
             evict(source);
             return null;
         }
-        Level level = source.level();
+        Level level = source.level;
         if (level == null) {
             evict(source);
             return null;
         }
         Mob clone = RENDER_CLONES.get(source);
-        if (clone == null || clone.isRemoved() || clone.level() != level) {
+        if (clone == null || clone.isRemoved() || clone.level != level) {
             clone = createClone(source);
             if (clone == null) {
                 evict(source);
@@ -163,7 +163,7 @@ public class FlatMobRenderUtils {
 
     @Nullable
     private static Mob createClone(@NotNull Mob source) {
-        Level level = source.level();
+        Level level = source.level;
         if (level == null) {
             level = MC.level;
         }
