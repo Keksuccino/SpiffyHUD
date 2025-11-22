@@ -179,7 +179,7 @@ public class VanillaLikePlayerHealthElement extends AbstractElement {
 
         // Determine heart type.
         Gui.HeartType baseHeartType = Gui.HeartType.forPlayer(player);
-        boolean isHardcore = player.level().getLevelData().isHardcore();
+        boolean isHardcore = player.level.getLevelData().isHardcore();
 
         // Recorder to capture the bounds of the hearts bar.
         SizeAndPositionRecorder recorder = new SizeAndPositionRecorder();

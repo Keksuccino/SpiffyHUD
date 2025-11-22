@@ -64,7 +64,7 @@ public final class DeathPointStorage {
         if (point == null) {
             return;
         }
-        if (!point.dimensionMatches(player.level())) {
+        if (!point.dimensionMatches(player.level)) {
             return;
         }
         if (point.squaredDistanceTo(player.getX(), player.getY(), player.getZ()) <= CLEAR_DISTANCE_SQR) {

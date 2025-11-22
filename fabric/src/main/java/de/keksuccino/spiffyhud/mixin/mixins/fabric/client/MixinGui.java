@@ -1,6 +1,6 @@
 package de.keksuccino.spiffyhud.mixin.mixins.fabric.client;
 
-import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
+import com.llamalad7.mixinextras.injector.WrapWithCondition;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -9,6 +9,7 @@ import de.keksuccino.spiffyhud.customization.SpiffyGui;
 import de.keksuccino.spiffyhud.customization.VanillaHudElements;
 import de.keksuccino.spiffyhud.customization.elements.overlayremover.OverlayRemoverElement;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
 import de.keksuccino.fancymenu.util.rendering.gui.GuiGraphics;
 import net.minecraft.client.gui.components.BossHealthOverlay;
@@ -20,8 +21,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.scores.Objective;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -39,29 +38,21 @@ public abstract class MixinGui {
     @Shadow private Component title;
     @Shadow private Component subtitle;
 
-    @Unique private static final Logger LOGGER_SPIFFY = LogManager.getLogger();
     @Unique private SpiffyGui spiffyGui = null;
-    @Unique private Component cached_overlayMessageString_Spiffy = null;
-    @Unique private Component cached_title_Spiffy = null;
-    @Unique private Component cached_subtitle_Spiffy = null;
 
     @Shadow protected abstract int getVehicleMaxHearts(LivingEntity $$0);
 
     @Shadow protected abstract LivingEntity getPlayerVehicleWithHealth();
 
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/ChatComponent;render(Lcom/mojang/blaze3d/vertex/PoseStack;I)V"))
-    private void before_renderChat_in_render_Spiffy(PoseStack pose, float partial, CallbackInfo info) {
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;translate(DDD)V", ordinal = 2))
+    private void before_render_Chat_Spiffy(PoseStack pose, float partial, CallbackInfo info) {
 
         if (this.spiffyGui == null) this.spiffyGui = SpiffyGui.INSTANCE;
 
-        GuiGraphics graphics = GuiGraphics.currentGraphics();
-
         if (!Minecraft.getInstance().options.hideGui) {
+            spiffyGui.render(GuiGraphics.currentGraphics(), -10000000, -10000000, partial);
             RenderSystem.enableBlend();
-            graphics.pose().pushPose();
-            this.spiffyGui.render(graphics, -10000000, -10000000, partial);
-            graphics.pose().popPose();
-            RenderSystem.disableBlend();
+            RenderSystem.enableDepthTest();
         }
 
     }
@@ -69,9 +60,9 @@ public abstract class MixinGui {
     /**
      * @reason Hide the hotbar when hidden by Spiffy HUD.
      */
-    @Inject(method = "renderHotbar", at = @At(value = "HEAD"), cancellable = true)
-    private void before_renderHotbarAndDecorations_Spiffy(float partialTick, PoseStack poseStack, CallbackInfo info) {
-        if (VanillaHudElements.isHidden(VanillaHudElements.HOTBAR_IDENTIFIER)) info.cancel();
+    @WrapWithCondition(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;renderHotbar(FLcom/mojang/blaze3d/vertex/PoseStack;)V"))
+    private boolean wrap_renderHotbar_in_render_Spiffy(Gui instance, float l1, PoseStack j1) {
+        return !VanillaHudElements.isHidden(VanillaHudElements.HOTBAR_IDENTIFIER);
     }
 
     /**
@@ -118,7 +109,7 @@ public abstract class MixinGui {
      * @reason Hide the boss overlay when hidden by Spiffy HUD.
      */
     @WrapWithCondition(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/BossHealthOverlay;render(Lcom/mojang/blaze3d/vertex/PoseStack;)V"))
-    private boolean wrap_BossOverlay_render_in_render_Spiffy(BossHealthOverlay instance, PoseStack pose) {
+    private boolean wrap_BossOverlay_render_in_render_Spiffy(BossHealthOverlay instance, PoseStack l) {
         return !VanillaHudElements.isHidden(VanillaHudElements.BOSS_BARS_IDENTIFIER);
     }
 
@@ -133,24 +124,14 @@ public abstract class MixinGui {
     /**
      * @reason Hide the overlay message, title and subtitle when hidden by Spiffy HUD.
      */
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;renderEffects(Lcom/mojang/blaze3d/vertex/PoseStack;)V", shift = At.Shift.AFTER))
-    private void after_renderEffects_in_render_Spiffy(PoseStack poseStack, float partial, CallbackInfo info) {
-        this.cached_overlayMessageString_Spiffy = this.overlayMessageString;
-        this.cached_title_Spiffy = this.title;
-        this.cached_subtitle_Spiffy = this.subtitle;
-        if (VanillaHudElements.isHidden(VanillaHudElements.OVERLAY_MESSAGE_IDENTIFIER)) this.overlayMessageString = null;
-        if (VanillaHudElements.isHidden(VanillaHudElements.TITLE_IDENTIFIER)) this.title = null;
-        if (VanillaHudElements.isHidden(VanillaHudElements.SUBTITLE_IDENTIFIER)) this.subtitle = null;
-    }
-
-    /**
-     * @reason Restore the overlay message, title and subtitle.
-     */
-    @Inject(method = "render", at = @At("RETURN"))
-    private void after_render_restore_fields_Spiffy(PoseStack pose, float partial, CallbackInfo info) {
-        this.overlayMessageString = this.cached_overlayMessageString_Spiffy;
-        this.title = this.cached_title_Spiffy;
-        this.subtitle = this.cached_subtitle_Spiffy;
+    @WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Font;drawShadow(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/network/chat/Component;FFI)I"))
+    private int wrap_drawString_in_render_Spiffy(Font instance, PoseStack pose, Component component, float p_92766_, float p_92767_, int p_92768_, Operation<Integer> original) {
+        if (component != null) {
+            if ((component == this.overlayMessageString) && VanillaHudElements.isHidden(VanillaHudElements.OVERLAY_MESSAGE_IDENTIFIER)) return 0;
+            if ((component == this.title) && VanillaHudElements.isHidden(VanillaHudElements.TITLE_IDENTIFIER)) return 0;
+            if ((component == this.subtitle) && VanillaHudElements.isHidden(VanillaHudElements.SUBTITLE_IDENTIFIER)) return 0;
+        }
+        return original.call(instance, pose, component, p_92766_, p_92767_, p_92768_);
     }
 
     /**

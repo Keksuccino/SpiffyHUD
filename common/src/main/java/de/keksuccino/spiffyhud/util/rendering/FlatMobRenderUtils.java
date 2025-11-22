@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import de.keksuccino.fancymenu.util.rendering.gui.Axis;
 import de.keksuccino.fancymenu.util.rendering.gui.GuiGraphics;
 import de.keksuccino.fancymenu.util.rendering.gui.QuaternionUtils;
+import de.keksuccino.spiffyhud.util.VectorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.nbt.CompoundTag;
@@ -95,7 +96,8 @@ public class FlatMobRenderUtils {
         lightTexture.turnOnLightLayer(); // ensure the lightmap is bound when rendering inside GUI
         // Add a temporary front-facing light to remove side shading in flat head renders.
         Vector3f frontLight = new Vector3f(0.0F, 0.0F, 1.0F).normalize();
-        RenderSystem.setShaderLights(frontLight, frontLight);
+        com.mojang.math.Vector3f convertedFrontLight = VectorUtils.toMojangVector3f(frontLight);
+        RenderSystem.setShaderLights(convertedFrontLight, convertedFrontLight);
         dispatcher.setRenderShadow(false);
         // Use the same fullbright lightmap value that InventoryScreen relies on.
         RenderSystem.runAsFancy(() -> dispatcher.render(mob, 0.0, 0.0, 0.0, 0.0F, 1.0F, graphics.pose(), graphics.bufferSource(), LightTexture.FULL_BRIGHT));

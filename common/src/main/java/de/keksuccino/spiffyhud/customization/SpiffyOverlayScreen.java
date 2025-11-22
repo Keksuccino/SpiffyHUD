@@ -472,15 +472,6 @@ public class SpiffyOverlayScreen extends ModernScreen {
 
     @FunctionalInterface
     public interface SpiffyRendererWidgetBody extends RendererWidget.RendererWidgetBody {
-
-        void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partial, int x, int y, int width, int height, @NotNull RendererWidget renderer);
-
-        @Override
-        @Deprecated
-        default void render(@NotNull PoseStack pose, int mouseX, int mouseY, float partial, int x, int y, int width, int height, @NotNull RendererWidget renderer) {
-            this.render(GuiGraphics.currentGraphics(), mouseX, mouseY, partial, x, y, width, height, renderer);
-        }
-
     }
 
 }

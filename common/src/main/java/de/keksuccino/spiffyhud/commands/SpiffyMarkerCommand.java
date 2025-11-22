@@ -333,7 +333,7 @@ public class SpiffyMarkerCommand {
         packet.silenceClientFeedback = silence;
         PacketHandler.sendToClient(player, packet);
         if (!silence) {
-            source.sendSuccess(() -> Component.translatable(successTranslationKey, successArgs), true);
+            source.sendSuccess(Component.translatable(successTranslationKey, successArgs), true);
         }
         return 1;
     }
