@@ -2,7 +2,7 @@ CHANGELOG | SPIFFYHUD v3.1.0 [ !!  WIP !! NOT FINISHED YET !! WIP !! ]
 
 - Dropped support for (Lex)Forge for Minecraft 1.21+
 - Dropped support for Minecraft 1.18.2, 1.21.4, 1.21.8
-- Added "Eraser" element that allows you to hide/erase elements from the HUD without actually hiding the HUD element
+- Added "Eraser" element that allows you to hide/erase elements from the HUD without actually hiding the HUD element (Minecraft 1.20.1+)
   - This is useful to hide HUD elements from other mods that are not customizable with SpiffyHUD
   - The eraser works only when fully covering the area of the HUD element with it (the eraser needs to 100% cover the area where the HUD element gets rendered in)
   - Since you can't see mod elements in the editor, you basically need to guess where the element will be in the actual HUD
