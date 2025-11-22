@@ -1,4 +1,62 @@
 
+CHANGELOG | SPIFFYHUD v3.1.0
+
+- Dropped support for (Lex)Forge for Minecraft 1.21+
+- Dropped support for Minecraft 1.18.2, 1.21.4, 1.21.8
+- Added "Eraser" element that allows you to hide/erase elements from the HUD without actually hiding the HUD element (Minecraft 1.20.1+)
+  - This is useful to hide HUD elements from other mods that are not customizable with SpiffyHUD
+  - The eraser works only when fully covering the area of the HUD element with it (the eraser needs to 100% cover the area where the HUD element gets rendered in)
+  - Since you can't see mod elements in the editor, you basically need to guess where the element will be in the actual HUD
+  - The eraser has two aggression modes (Normal & Aggressive)
+    - Normal mode will try to only hide non-Spiffy elements
+    - Aggressive mode will try to erase EVERYTHING, including Spiffy elements, which should get used in cases where Normal is not enough to hide the target element
+- Added "Player Heart Health Bar" element that is a fully customizable health bar that works similar to the Vanilla one, with health points being displayed as individual icons (#56)
+  - Allows to set custom textures for all kinds of heart types (normal, absorption, frozen, poisoned, etc., including half heart versions for all of them)
+  - Customizable appearance (shaking, blinking, icons per row, etc.)
+  - Supports scaling
+- Added "Mount Heart Health Bar" element that is a fully customizable mount health bar that works similar to the Vanilla one, with health points being displayed as individual icons
+  - Allows to set custom textures for all kinds of heart icon types (normal, frozen, poisoned, etc., including half heart versions for all of them)
+  - Customizable appearance (shaking, blinking, icons per row, etc.)
+  - Supports scaling
+- Added "Player Food Icon Bar" element that is a fully customizable food bar that works similar to the Vanilla one, with food points being displayed as individual icons
+  - Allows to set custom textures for all kinds of food icon types (empty, half, full, half hungry, full hungry)
+  - Customizable appearance (shaking, blinking, icons per row, etc.)
+  - Supports scaling
+- Added "Player Armor Icon Bar" element that is a fully customizable armor bar that works similar to the Vanilla one, with armor points being displayed as individual icons
+  - Allows to set custom textures for all kinds of armor icon types (empty, half, full)
+  - Customizable appearance (shaking, blinking, icons per row, etc.)
+  - Supports scaling
+- Added "Player Air Bubble Bar" element that is a fully customizable air bar that works similar to the Vanilla one, with air points being displayed as individual icons
+  - Allows to set custom textures for all kinds of bubble icon types (empty, full, popping)
+  - Customizable appearance (shaking, popping, icons per row, etc.)
+  - Supports scaling
+- Added "Compass" element that renders an RPG-like compass bar
+- Added actions to add/edit/remove/clear markers for Compass elements (support placeholders to also dynamically update them)
+- Added "World Marker List" placeholder to get the names of all markers of a Compass element
+- Added "/spiffymarker" command to add/edit/remove/clear markers to/from Compass elements (can be used via /execute to remotely configure markers for other users)
+- Added/Updated the following translations:
+  - German (de_de)
+  - Greek (el_gr)
+  - Mexican Spanish (es_mx)
+  - French (fr_fr)
+  - Japanese (ja_jp)
+  - Russian (ru_ru)
+  - Simplified Chinese (zh_cn)
+  - Brazilian Portuguese (pt_br)
+- The "Single-Line Text" element now has an option to set its text scale
+- Fixed Vanilla-like hotbar renders items twice (#31)
+- Fixed crash related to Overlay Message widget's color calculation (#36)
+- Fixed "Vanilla-Like Player Health" element showing an additional empty row of hearts when the player has absorption hearts (#43)
+- Fixed "Vanilla-Like Hotbar" and "Inventory Slot" elements not showing item cooldowns from Ender Pearls, Crossbows, etc. (#51)
+- Fixed NeoForge 1.21.8+ crashing when a player entity is rendered on screen (#49)
+- Fixed Vanilla Experience Bar still visible in HUD after deleting in editor in MC 1.21.8+ (#50)
+- Fixed Spyglass overlay gets rendered after Spiffy elements in Minecraft 1.20.1 and below (#52)
+
+%changelog:end%
+
+
+
+
 CHANGELOG | SPIFFYHUD v3.0.2
 
 - Ported to Minecraft 1.21.6
