@@ -49,3 +49,4 @@ CHANGELOG | SPIFFYHUD v3.1.0 [ !!  WIP !! NOT FINISHED YET !! WIP !! ]
 - Fixed "Vanilla-Like Hotbar" and "Inventory Slot" elements not showing item cooldowns from Ender Pearls, Crossbows, etc. (#51)
 - Fixed NeoForge 1.21.8+ crashing when a player entity is rendered on screen (#49)
 - Fixed Vanilla Experience Bar still visible in HUD after deleting in editor in MC 1.21.8+ (#50)
+- Fixed Spyglass overlay gets rendered after Spiffy elements in Minecraft 1.20.1 and below (#52)
