@@ -1,9 +1,0 @@
-Release Candidate 3
-
-- Ported Spiffy v3 to MC 1.21.1
-- Improved the structure detection for structure-related things like the "Is Player In Structure" requirement
-
-KNOWN ISSUES:
-
-- On 1.21.1 Forge there is a render bug with transparent elements show as solid black when in the pause screen (Forge in a nutshell)
-- The 1.21.1 NeoForge version is not ready yet
