@@ -4,17 +4,19 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import de.keksuccino.fancymenu.util.rendering.gui.GuiGraphics;
 import de.keksuccino.spiffyhud.customization.SpiffyGui;
 import de.keksuccino.spiffyhud.customization.VanillaHudElements;
 import de.keksuccino.spiffyhud.customization.elements.overlayremover.OverlayRemoverElement;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
-import de.keksuccino.fancymenu.util.rendering.gui.GuiGraphics;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.client.gui.overlay.NamedGuiOverlay;
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -31,6 +33,7 @@ public class MixinForgeGui extends Gui {
         super(null, null);
     }
 
+    @Unique private static final Logger LOGGER_SPIFFY = LogManager.getLogger();
     @Unique private SpiffyGui spiffyGui = null;
     @Unique private float cachedPartial_Spiffy = 0;
 
@@ -62,8 +65,8 @@ public class MixinForgeGui extends Gui {
     @Inject(method = "pre", at = @At("HEAD"), cancellable = true, remap = false) //use HEAD to stop mods from rendering custom stuff to overlay elements if the element is hidden
     private void head_Pre_Spiffy(NamedGuiOverlay overlay, PoseStack poseStack, CallbackInfoReturnable<Boolean> info) {
 
-        // Renders Spiffy's overlay to the HUD
-        if (overlay == VanillaGuiOverlay.HOTBAR.type()) {
+        // Gets rendered after almost everything else
+        if (overlay == VanillaGuiOverlay.CHAT_PANEL.type()) {
 
             if (!Minecraft.getInstance().options.hideGui) {
                 spiffyGui.render(GuiGraphics.currentGraphics(), -10000000, -10000000, this.cachedPartial_Spiffy);
@@ -72,6 +75,8 @@ public class MixinForgeGui extends Gui {
             }
 
         }
+
+        // -----------------------------------------
 
         if ((overlay == VanillaGuiOverlay.HOTBAR.type()) && VanillaHudElements.isHidden(VanillaHudElements.HOTBAR_IDENTIFIER)) {
             info.setReturnValue(true);

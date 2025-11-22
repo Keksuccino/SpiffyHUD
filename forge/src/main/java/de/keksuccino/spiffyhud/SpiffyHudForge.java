@@ -9,6 +9,8 @@ public class SpiffyHudForge {
 
         SpiffyHud.init();
 
+        SpiffyHudForgeServerEvents.registerAll();
+
     }
 
 }

@@ -19,7 +19,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.PlayerRideableJumping;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.scores.Objective;
 import org.spongepowered.asm.mixin.Final;
@@ -33,6 +32,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Gui.class)
 public abstract class MixinGui {
 
+    @Shadow @Final private static ResourceLocation PUMPKIN_BLUR_LOCATION;
+    @Shadow @Final private static ResourceLocation POWDER_SNOW_OUTLINE_LOCATION;
     @Shadow private Component overlayMessageString;
     @Shadow private Component title;
     @Shadow private Component subtitle;
@@ -43,25 +44,8 @@ public abstract class MixinGui {
 
     @Shadow protected abstract LivingEntity getPlayerVehicleWithHealth();
 
-    @Shadow @Final private static ResourceLocation PUMPKIN_BLUR_LOCATION;
-
-    @Shadow @Final private static ResourceLocation POWDER_SNOW_OUTLINE_LOCATION;
-
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/spectator/SpectatorGui;renderHotbar(Lcom/mojang/blaze3d/vertex/PoseStack;)V"))
-    private void beforeRenderSpectatorHotbar_Spiffy(PoseStack pose, float partial, CallbackInfo info) {
-
-        if (this.spiffyGui == null) this.spiffyGui = SpiffyGui.INSTANCE;
-
-        if (!Minecraft.getInstance().options.hideGui) {
-            spiffyGui.render(GuiGraphics.currentGraphics(), -10000000, -10000000, partial);
-            RenderSystem.enableBlend();
-            RenderSystem.enableDepthTest();
-        }
-
-    }
-
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;renderHotbar(FLcom/mojang/blaze3d/vertex/PoseStack;)V"))
-    private void beforeRenderNormalHotbar_Spiffy(PoseStack pose, float partial, CallbackInfo info) {
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;translate(DDD)V", ordinal = 2))
+    private void before_render_Chat_Spiffy(PoseStack pose, float partial, CallbackInfo info) {
 
         if (this.spiffyGui == null) this.spiffyGui = SpiffyGui.INSTANCE;
 
