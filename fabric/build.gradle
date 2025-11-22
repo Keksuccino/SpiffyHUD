@@ -26,11 +26,14 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
     implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
     include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:${mixin_extras_version}")))
-    modImplementation "maven.modrinth:melody:1.0.4-1.20.1-1.20.4-fabric"
-    modImplementation "maven.modrinth:konkrete:1.8.1-1.20.1-fabric"
-    modImplementation "maven.modrinth:modmenu:7.2.2"
+    include(implementation 'org.joml:joml:1.10.8')
+    modImplementation "maven.modrinth:melody:1.0.1-1.19.2-fabric"
+    modImplementation "maven.modrinth:konkrete:1.8.0-1.19.1-1.19.2-fabric"
+    modImplementation "maven.modrinth:modmenu:4.2.0-beta.2"
+    //This is only to fix the missing dependency error in-dev
+    implementation group: 'ca.weblite', name: 'java-objc-bridge', version: '1.1'
 	modImplementation "flatdir:fancymenu:3.8.0"
-    implementation project(":common")
+	implementation project(":common")
 }
 
 loom {
