@@ -124,7 +124,7 @@ public class SpiffyGui implements Renderable {
                 spiffyOverlayScreen.height = Minecraft.getInstance().getWindow().getGuiScaledHeight();
                 EventHandler.INSTANCE.postEvent(new InitOrResizeScreenStartingEvent(spiffyOverlayScreen, resize ? InitOrResizeScreenEvent.InitializationPhase.RESIZE : InitOrResizeScreenEvent.InitializationPhase.INIT));
                 EventHandler.INSTANCE.postEvent(new InitOrResizeScreenEvent.Pre(spiffyOverlayScreen, resize ? InitOrResizeScreenEvent.InitializationPhase.RESIZE : InitOrResizeScreenEvent.InitializationPhase.INIT));
-                spiffyOverlayScreen.init(Minecraft.getInstance(), spiffyOverlayScreen.width, spiffyOverlayScreen.height);
+                spiffyOverlayScreen.init(spiffyOverlayScreen.width, spiffyOverlayScreen.height);
                 EventHandler.INSTANCE.postEvent(new InitOrResizeScreenEvent.Post(spiffyOverlayScreen, resize ? InitOrResizeScreenEvent.InitializationPhase.RESIZE : InitOrResizeScreenEvent.InitializationPhase.INIT));
                 EventHandler.INSTANCE.postEvent(new InitOrResizeScreenCompletedEvent(spiffyOverlayScreen, resize ? InitOrResizeScreenEvent.InitializationPhase.RESIZE : InitOrResizeScreenEvent.InitializationPhase.INIT));
                 if (!resize) {

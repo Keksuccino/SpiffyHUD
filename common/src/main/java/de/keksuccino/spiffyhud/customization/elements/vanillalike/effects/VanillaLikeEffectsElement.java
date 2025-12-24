@@ -55,7 +55,7 @@ public class VanillaLikeEffectsElement extends AbstractElement {
      */
     public static Identifier getMobEffectSprite(Holder<MobEffect> holder) {
         return holder.unwrapKey()
-                .map(ResourceKey::location)
+                .map(ResourceKey::identifier)
                 .map(resourceLocation -> resourceLocation.withPrefix("mob_effect/"))
                 .orElseGet(MissingTextureAtlasSprite::getLocation);
     }
