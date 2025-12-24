@@ -18,7 +18,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntitySpawnReason;
@@ -723,7 +723,7 @@ public class CompassElement extends AbstractElement {
             if (texture == null || !texture.isReady()) {
                 return null;
             }
-            ResourceLocation location = texture.getResourceLocation();
+            Identifier location = texture.getIdentifier();
             if (location == null) {
                 return null;
             }
@@ -1286,7 +1286,7 @@ public class CompassElement extends AbstractElement {
     private record DotBounds(int left, int top, int size) {
     }
 
-    private record TextureHandle(ResourceLocation location, int width, int height, @NotNull AspectRatio aspectRatio) {
+    private record TextureHandle(Identifier location, int width, int height, @NotNull AspectRatio aspectRatio) {
     }
 
     private void drawDeathNeedleStrips(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float centerX, int color, float offsetY) {

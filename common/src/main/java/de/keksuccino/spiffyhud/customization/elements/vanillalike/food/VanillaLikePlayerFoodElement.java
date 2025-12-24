@@ -8,7 +8,7 @@ import de.keksuccino.spiffyhud.util.rendering.SpiffyRenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffects;
@@ -24,12 +24,12 @@ public class VanillaLikePlayerFoodElement extends AbstractElement {
     private static final Logger LOGGER = LogManager.getLogger();
 
     // Sprite resources for food icons in 1.21.5 (same as 1.21.1)
-    private static final ResourceLocation FOOD_EMPTY_SPRITE = ResourceLocation.withDefaultNamespace("hud/food_empty");
-    private static final ResourceLocation FOOD_HALF_SPRITE = ResourceLocation.withDefaultNamespace("hud/food_half");
-    private static final ResourceLocation FOOD_FULL_SPRITE = ResourceLocation.withDefaultNamespace("hud/food_full");
-    private static final ResourceLocation FOOD_EMPTY_HUNGER_SPRITE = ResourceLocation.withDefaultNamespace("hud/food_empty_hunger");
-    private static final ResourceLocation FOOD_HALF_HUNGER_SPRITE = ResourceLocation.withDefaultNamespace("hud/food_half_hunger");
-    private static final ResourceLocation FOOD_FULL_HUNGER_SPRITE = ResourceLocation.withDefaultNamespace("hud/food_full_hunger");
+    private static final Identifier FOOD_EMPTY_SPRITE = Identifier.withDefaultNamespace("hud/food_empty");
+    private static final Identifier FOOD_HALF_SPRITE = Identifier.withDefaultNamespace("hud/food_half");
+    private static final Identifier FOOD_FULL_SPRITE = Identifier.withDefaultNamespace("hud/food_full");
+    private static final Identifier FOOD_EMPTY_HUNGER_SPRITE = Identifier.withDefaultNamespace("hud/food_empty_hunger");
+    private static final Identifier FOOD_HALF_HUNGER_SPRITE = Identifier.withDefaultNamespace("hud/food_half_hunger");
+    private static final Identifier FOOD_FULL_HUNGER_SPRITE = Identifier.withDefaultNamespace("hud/food_full_hunger");
 
     private static final int BAR_WIDTH = 81;
     private static final int BAR_HEIGHT = 9;
@@ -107,9 +107,9 @@ public class VanillaLikePlayerFoodElement extends AbstractElement {
         boolean mirrorIcons = shouldRenderIconsLeftToRight();
 
         // Determine which set of sprites to use based on hunger effect
-        ResourceLocation emptySprite;
-        ResourceLocation halfSprite;
-        ResourceLocation fullSprite;
+        Identifier emptySprite;
+        Identifier halfSprite;
+        Identifier fullSprite;
 
         if (player.hasEffect(MobEffects.HUNGER)) {
             emptySprite = FOOD_EMPTY_HUNGER_SPRITE;

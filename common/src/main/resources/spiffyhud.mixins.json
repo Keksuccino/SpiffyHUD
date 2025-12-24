@@ -25,7 +25,6 @@
     "client.MixinVanillaWidgetEditorElement"
   ],
   "mixins": [
-    "client.IMixinSynchedEntityData"
   ],
   "injectors": {
     "defaultRequire": 1

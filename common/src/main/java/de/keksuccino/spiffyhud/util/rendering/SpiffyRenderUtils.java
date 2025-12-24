@@ -7,7 +7,7 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.metadata.gui.GuiMetadataSection;
 import net.minecraft.client.resources.metadata.gui.GuiSpriteScaling;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 
 public class SpiffyRenderUtils {
@@ -40,7 +40,7 @@ public class SpiffyRenderUtils {
      */
     public static void blitMirrored(
             GuiGraphics graphics,
-            ResourceLocation atlasLocation,
+            Identifier atlasLocation,
             int x,
             int y,
             int u,
@@ -73,7 +73,7 @@ public class SpiffyRenderUtils {
      */
     public static void blitMirrored(
             GuiGraphics graphics,
-            ResourceLocation atlasLocation,
+            Identifier atlasLocation,
             int x,
             int y,
             int u,
@@ -112,7 +112,7 @@ public class SpiffyRenderUtils {
      */
     public static void blitSpriteMirrored(
             GuiGraphics graphics,
-            ResourceLocation sprite,
+            Identifier sprite,
             int x,
             int y,
             int width,
@@ -123,7 +123,7 @@ public class SpiffyRenderUtils {
         
         IMixinGuiGraphics mixinGraphics = (IMixinGuiGraphics) graphics;
         TextureAtlasSprite atlasSprite = mixinGraphics.get_guiSprites_Spiffy().getSprite(sprite);
-        ResourceLocation atlasLocation = atlasSprite.atlasLocation();
+        Identifier atlasLocation = atlasSprite.atlasLocation();
         
         // Get the sprite's UV coordinates
         float u0 = atlasSprite.getU0();
@@ -161,7 +161,7 @@ public class SpiffyRenderUtils {
      */
     public static void blitSpriteMirrored(
             GuiGraphics graphics,
-            ResourceLocation sprite,
+            Identifier sprite,
             int x,
             int y,
             int width,
@@ -184,7 +184,7 @@ public class SpiffyRenderUtils {
      */
     public static void blitSprite(
             GuiGraphics graphics,
-            ResourceLocation sprite,
+            Identifier sprite,
             int textureWidth,
             int textureHeight,
             int uPosition,
@@ -238,7 +238,7 @@ public class SpiffyRenderUtils {
      */
     public static void blitMirroredMatrix(
             GuiGraphics graphics,
-            ResourceLocation atlasLocation,
+            Identifier atlasLocation,
             int x,
             int y,
             int u,

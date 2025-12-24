@@ -18,7 +18,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.PauseScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -26,7 +26,7 @@ import org.jetbrains.annotations.NotNull;
 public class SpiffyEvents {
 
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final ResourceLocation EDIT_BUTTON_TEXTURE = ResourceLocation.fromNamespaceAndPath("spiffyhud", "textures/edit_button.png");
+    private static final Identifier EDIT_BUTTON_TEXTURE = Identifier.fromNamespaceAndPath("spiffyhud", "textures/edit_button.png");
 
     private ExtendedButton spiffyButton;
 

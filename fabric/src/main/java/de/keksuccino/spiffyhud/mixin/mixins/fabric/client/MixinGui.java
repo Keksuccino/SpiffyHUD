@@ -23,7 +23,7 @@ import net.minecraft.client.gui.contextualbar.ContextualBarRenderer;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
@@ -55,7 +55,7 @@ public class MixinGui {
     @Unique
     private int aggressionLevelAggressiveCount_Spiffy = 0;
 
-    @Shadow @Final private static ResourceLocation POWDER_SNOW_OUTLINE_LOCATION;
+    @Shadow @Final private static Identifier POWDER_SNOW_OUTLINE_LOCATION;
 
     /**
      * @reason Apply eraser exclusion areas before Vanilla rendering begins.
@@ -322,7 +322,7 @@ public class MixinGui {
      * @reason Hide the powder snow overlay when hidden by Spiffy HUD.
      */
     @Inject(method = "renderTextureOverlay", at = @At(value = "HEAD"), cancellable = true)
-    private void before_renderTextureOverlay_Spiffy(GuiGraphics guiGraphics, ResourceLocation location, float alpha, CallbackInfo info) {
+    private void before_renderTextureOverlay_Spiffy(GuiGraphics guiGraphics, Identifier location, float alpha, CallbackInfo info) {
         if ((location == POWDER_SNOW_OUTLINE_LOCATION) && OverlayRemoverElement.isOverlayTypeHidden(OverlayRemoverElement.OverlayType.POWDER_SNOW)) info.cancel();
     }
 

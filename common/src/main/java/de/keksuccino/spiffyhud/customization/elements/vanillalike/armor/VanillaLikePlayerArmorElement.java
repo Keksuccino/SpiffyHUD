@@ -10,7 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.player.Player;
 import org.apache.logging.log4j.LogManager;
@@ -23,9 +23,9 @@ public class VanillaLikePlayerArmorElement extends AbstractElement {
     private static final Logger LOGGER = LogManager.getLogger();
 
     // The sprite resources for armor in 1.21.5
-    private static final ResourceLocation ARMOR_EMPTY_SPRITE = ResourceLocation.withDefaultNamespace("hud/armor_empty");
-    private static final ResourceLocation ARMOR_HALF_SPRITE = ResourceLocation.withDefaultNamespace("hud/armor_half");
-    private static final ResourceLocation ARMOR_FULL_SPRITE = ResourceLocation.withDefaultNamespace("hud/armor_full");
+    private static final Identifier ARMOR_EMPTY_SPRITE = Identifier.withDefaultNamespace("hud/armor_empty");
+    private static final Identifier ARMOR_HALF_SPRITE = Identifier.withDefaultNamespace("hud/armor_half");
+    private static final Identifier ARMOR_FULL_SPRITE = Identifier.withDefaultNamespace("hud/armor_full");
 
     private static final int BAR_WIDTH = 81;
     private static final int BAR_HEIGHT = 9;
@@ -130,7 +130,7 @@ public class VanillaLikePlayerArmorElement extends AbstractElement {
             // - Full armor icon if the segment value is less than the armor value.
             // - Half armor icon if the segment value exactly equals the armor value.
             // - Otherwise, draw the empty armor icon background.
-            ResourceLocation armorSprite;
+            Identifier armorSprite;
             if (armorSegment < armorValue) {
                 // Full armor icon
                 armorSprite = ARMOR_FULL_SPRITE;

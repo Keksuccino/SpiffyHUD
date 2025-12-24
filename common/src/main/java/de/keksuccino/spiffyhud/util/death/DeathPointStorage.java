@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
 import de.keksuccino.spiffyhud.SpiffyHud;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.apache.logging.log4j.LogManager;
@@ -38,7 +38,7 @@ public final class DeathPointStorage {
     }
 
     public static synchronized void recordDeath(@NotNull Level level, double x, double y, double z) {
-        StoredDeathPoint point = new StoredDeathPoint(level.dimension().location().toString(), x, y, z);
+        StoredDeathPoint point = new StoredDeathPoint(level.dimension().identifier().toString(), x, y, z);
         cachedPoint = point;
         loaded = true;
         write(point);
@@ -132,13 +132,13 @@ public final class DeathPointStorage {
         }
 
         public boolean dimensionMatches(@NotNull Level level) {
-            ResourceLocation key = this.dimensionKey();
-            return key != null && key.equals(level.dimension().location());
+            Identifier key = this.dimensionKey();
+            return key != null && key.equals(level.dimension().identifier());
         }
 
         @Nullable
-        public ResourceLocation dimensionKey() {
-            return this.dimension == null ? null : ResourceLocation.tryParse(this.dimension);
+        public Identifier dimensionKey() {
+            return this.dimension == null ? null : Identifier.tryParse(this.dimension);
         }
 
         public double squaredDistanceTo(double px, double py, double pz) {

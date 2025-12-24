@@ -13,7 +13,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -31,10 +31,10 @@ public class VanillaLikePlayerHealthElement extends AbstractElement {
     private static final Logger LOGGER = LogManager.getLogger();
 
     // Sprite resources for hearts in 1.21.1
-    private static final ResourceLocation HEART_CONTAINER_SPRITE = ResourceLocation.withDefaultNamespace("hud/heart/container");
-    private static final ResourceLocation HEART_CONTAINER_BLINKING_SPRITE = ResourceLocation.withDefaultNamespace("hud/heart/container_blinking");
-    private static final ResourceLocation HEART_CONTAINER_HARDCORE_SPRITE = ResourceLocation.withDefaultNamespace("hud/heart/container_hardcore");
-    private static final ResourceLocation HEART_CONTAINER_HARDCORE_BLINKING_SPRITE = ResourceLocation.withDefaultNamespace("hud/heart/container_hardcore_blinking");
+    private static final Identifier HEART_CONTAINER_SPRITE = Identifier.withDefaultNamespace("hud/heart/container");
+    private static final Identifier HEART_CONTAINER_BLINKING_SPRITE = Identifier.withDefaultNamespace("hud/heart/container_blinking");
+    private static final Identifier HEART_CONTAINER_HARDCORE_SPRITE = Identifier.withDefaultNamespace("hud/heart/container_hardcore");
+    private static final Identifier HEART_CONTAINER_HARDCORE_BLINKING_SPRITE = Identifier.withDefaultNamespace("hud/heart/container_hardcore_blinking");
 
     private final Minecraft minecraft = Minecraft.getInstance();
     protected final RandomSource random = RandomSource.create();
@@ -278,7 +278,7 @@ public class VanillaLikePlayerHealthElement extends AbstractElement {
      * Renders a heart container (empty heart)
      */
     private void renderEmptyHeart(GuiGraphics graphics, int x, int y, boolean blinking, boolean hardcore) {
-        ResourceLocation spriteLocation;
+        Identifier spriteLocation;
 
         if (hardcore) {
             spriteLocation = blinking ? HEART_CONTAINER_HARDCORE_BLINKING_SPRITE : HEART_CONTAINER_HARDCORE_SPRITE;
@@ -305,7 +305,7 @@ public class VanillaLikePlayerHealthElement extends AbstractElement {
      * @param halfHeart   Whether to render a half heart.
      */
     private void renderHeart(GuiGraphics graphics, Gui.HeartType heartType, int x, int y, boolean blinking, boolean hardcore, boolean halfHeart) {
-        ResourceLocation spriteLocation = heartType.getSprite(hardcore, halfHeart, blinking);
+        Identifier spriteLocation = heartType.getSprite(hardcore, halfHeart, blinking);
 
         if (this.spiffyAlignment == SpiffyAlignment.TOP_RIGHT || this.spiffyAlignment == SpiffyAlignment.MID_RIGHT || this.spiffyAlignment == SpiffyAlignment.BOTTOM_RIGHT) {
             SpiffyRenderUtils.blitSpriteMirrored(graphics, spriteLocation, x, y, 9, 9, ARGB.white(this.opacity));

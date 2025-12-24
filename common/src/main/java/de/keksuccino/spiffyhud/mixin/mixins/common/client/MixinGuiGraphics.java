@@ -9,7 +9,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.render.TextureSetup;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -28,11 +28,11 @@ public abstract class MixinGuiGraphics implements IGuiGraphicsExclusionArea, Ext
     private final ExclusionAreaStack spiffyHud$exclusionAreaStack = new ExclusionAreaStack();
 
     @Shadow
-    protected abstract void innerBlit(RenderPipeline renderType, ResourceLocation resourceLocation, int x1, int x2, int y1, int y2, float u1, float u2, float v1, float v2, int color);
+    protected abstract void innerBlit(RenderPipeline renderType, Identifier resourceLocation, int x1, int x2, int y1, int y2, float u1, float u2, float v1, float v2, int color);
 
     @Override
     @Unique
-    public void blitMirrored_Spiffy(RenderPipeline renderType, ResourceLocation texture, int x, int y, int width, int height, float u, float v, float uWidth, float vHeight, int textureWidth, int textureHeight, int color) {
+    public void blitMirrored_Spiffy(RenderPipeline renderType, Identifier texture, int x, int y, int width, int height, float u, float v, float uWidth, float vHeight, int textureWidth, int textureHeight, int color) {
 
         RenderSystem.assertOnRenderThread();
 
@@ -49,7 +49,7 @@ public abstract class MixinGuiGraphics implements IGuiGraphicsExclusionArea, Ext
 
     @Override
     @Unique
-    public void blitMirroredMatrix_Spiffy(RenderPipeline renderType, ResourceLocation texture, int x, int y, int width, int height, float u, float v, float uWidth, float vHeight, int textureWidth, int textureHeight, int color) {
+    public void blitMirroredMatrix_Spiffy(RenderPipeline renderType, Identifier texture, int x, int y, int width, int height, float u, float v, float uWidth, float vHeight, int textureWidth, int textureHeight, int color) {
 
         GuiGraphics self = (GuiGraphics)(Object)this;
 
@@ -157,8 +157,8 @@ public abstract class MixinGuiGraphics implements IGuiGraphicsExclusionArea, Ext
     
     // ===== BLIT & SPRITE METHODS =====
 
-    @Inject(method = "innerBlit(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIIIFFFFI)V", at = @At("HEAD"), cancellable = true)
-    private void spiffyHud$checkInnerBlit(RenderPipeline pipeline, ResourceLocation atlasLocation, int x0, int x1, int y0, int y1,
+    @Inject(method = "innerBlit(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIIIFFFFI)V", at = @At("HEAD"), cancellable = true)
+    private void spiffyHud$checkInnerBlit(RenderPipeline pipeline, Identifier atlasLocation, int x0, int x1, int y0, int y1,
                                           float minU, float maxU, float minV, float maxV, int color, CallbackInfo ci) {
         if (this.spiffyHud$shouldSkipRect(x0, y0, x1, y1)) {
             ci.cancel();
@@ -183,7 +183,7 @@ public abstract class MixinGuiGraphics implements IGuiGraphicsExclusionArea, Ext
     
     // ===== OTHER RENDERING METHODS =====
     
-    @Inject(method = "submitOutline", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "renderOutline", at = @At("HEAD"), cancellable = true)
     private void spiffyHud$checkSubmitOutline(int x, int y, int width, int height, int color, CallbackInfo ci) {
         if (!spiffyHud$exclusionAreaStack.isEmpty() && spiffyHud$exclusionAreaStack.isRectangleFullyExcluded(x, y, x + width, y + height)) {
             ci.cancel();

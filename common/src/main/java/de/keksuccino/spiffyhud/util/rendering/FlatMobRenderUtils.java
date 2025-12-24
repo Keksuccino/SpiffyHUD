@@ -93,8 +93,6 @@ public class FlatMobRenderUtils {
         EntityRenderer<? super Mob, ?> renderer = dispatcher.getRenderer(mob);
         EntityRenderState renderState = renderer.createRenderState(mob, 1.0F);
         renderState.lightCoords = 15728880;
-        renderState.hitboxesRenderState = null;
-        renderState.serverHitboxesRenderState = null;
         renderState.shadowPieces.clear();
         renderState.outlineColor = EntityRenderState.NO_OUTLINE;
 

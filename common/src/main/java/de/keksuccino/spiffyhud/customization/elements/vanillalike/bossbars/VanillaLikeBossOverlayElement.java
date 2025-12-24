@@ -12,7 +12,7 @@ import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.BossEvent;
@@ -28,38 +28,38 @@ public class VanillaLikeBossOverlayElement extends AbstractElement {
     private static final Logger LOGGER = LogManager.getLogger();
 
     // Sprite resources for boss bars in 1.21.5
-    private static final ResourceLocation[] BAR_BACKGROUND_SPRITES = new ResourceLocation[]{
-        ResourceLocation.withDefaultNamespace("boss_bar/pink_background"),
-        ResourceLocation.withDefaultNamespace("boss_bar/blue_background"),
-        ResourceLocation.withDefaultNamespace("boss_bar/red_background"),
-        ResourceLocation.withDefaultNamespace("boss_bar/green_background"),
-        ResourceLocation.withDefaultNamespace("boss_bar/yellow_background"),
-        ResourceLocation.withDefaultNamespace("boss_bar/purple_background"),
-        ResourceLocation.withDefaultNamespace("boss_bar/white_background")
+    private static final Identifier[] BAR_BACKGROUND_SPRITES = new Identifier[]{
+        Identifier.withDefaultNamespace("boss_bar/pink_background"),
+        Identifier.withDefaultNamespace("boss_bar/blue_background"),
+        Identifier.withDefaultNamespace("boss_bar/red_background"),
+        Identifier.withDefaultNamespace("boss_bar/green_background"),
+        Identifier.withDefaultNamespace("boss_bar/yellow_background"),
+        Identifier.withDefaultNamespace("boss_bar/purple_background"),
+        Identifier.withDefaultNamespace("boss_bar/white_background")
     };
 
-    private static final ResourceLocation[] BAR_PROGRESS_SPRITES = new ResourceLocation[]{
-        ResourceLocation.withDefaultNamespace("boss_bar/pink_progress"),
-        ResourceLocation.withDefaultNamespace("boss_bar/blue_progress"),
-        ResourceLocation.withDefaultNamespace("boss_bar/red_progress"),
-        ResourceLocation.withDefaultNamespace("boss_bar/green_progress"),
-        ResourceLocation.withDefaultNamespace("boss_bar/yellow_progress"),
-        ResourceLocation.withDefaultNamespace("boss_bar/purple_progress"),
-        ResourceLocation.withDefaultNamespace("boss_bar/white_progress")
+    private static final Identifier[] BAR_PROGRESS_SPRITES = new Identifier[]{
+        Identifier.withDefaultNamespace("boss_bar/pink_progress"),
+        Identifier.withDefaultNamespace("boss_bar/blue_progress"),
+        Identifier.withDefaultNamespace("boss_bar/red_progress"),
+        Identifier.withDefaultNamespace("boss_bar/green_progress"),
+        Identifier.withDefaultNamespace("boss_bar/yellow_progress"),
+        Identifier.withDefaultNamespace("boss_bar/purple_progress"),
+        Identifier.withDefaultNamespace("boss_bar/white_progress")
     };
 
-    private static final ResourceLocation[] OVERLAY_BACKGROUND_SPRITES = new ResourceLocation[]{
-        ResourceLocation.withDefaultNamespace("boss_bar/notched_6_background"),
-        ResourceLocation.withDefaultNamespace("boss_bar/notched_10_background"),
-        ResourceLocation.withDefaultNamespace("boss_bar/notched_12_background"),
-        ResourceLocation.withDefaultNamespace("boss_bar/notched_20_background")
+    private static final Identifier[] OVERLAY_BACKGROUND_SPRITES = new Identifier[]{
+        Identifier.withDefaultNamespace("boss_bar/notched_6_background"),
+        Identifier.withDefaultNamespace("boss_bar/notched_10_background"),
+        Identifier.withDefaultNamespace("boss_bar/notched_12_background"),
+        Identifier.withDefaultNamespace("boss_bar/notched_20_background")
     };
 
-    private static final ResourceLocation[] OVERLAY_PROGRESS_SPRITES = new ResourceLocation[]{
-        ResourceLocation.withDefaultNamespace("boss_bar/notched_6_progress"),
-        ResourceLocation.withDefaultNamespace("boss_bar/notched_10_progress"),
-        ResourceLocation.withDefaultNamespace("boss_bar/notched_12_progress"),
-        ResourceLocation.withDefaultNamespace("boss_bar/notched_20_progress")
+    private static final Identifier[] OVERLAY_PROGRESS_SPRITES = new Identifier[]{
+        Identifier.withDefaultNamespace("boss_bar/notched_6_progress"),
+        Identifier.withDefaultNamespace("boss_bar/notched_10_progress"),
+        Identifier.withDefaultNamespace("boss_bar/notched_12_progress"),
+        Identifier.withDefaultNamespace("boss_bar/notched_20_progress")
     };
 
     private static final int BAR_WIDTH = 182;
@@ -235,7 +235,7 @@ public class VanillaLikeBossOverlayElement extends AbstractElement {
      * @param overlaySprites   Array of overlay sprites for different notch patterns.
      * @param color            The color to use for rendering (includes opacity).
      */
-    private void drawBar(GuiGraphics graphics, int barX, int barY, BossEvent bossEvent, int progress, ResourceLocation[] barSprites, ResourceLocation[] overlaySprites, int color) {
+    private void drawBar(GuiGraphics graphics, int barX, int barY, BossEvent bossEvent, int progress, Identifier[] barSprites, Identifier[] overlaySprites, int color) {
         SpiffyRenderUtils.blitSprite(graphics, barSprites[bossEvent.getColor().ordinal()], BAR_WIDTH, BAR_HEIGHT, 0, 0, barX, barY, progress, BAR_HEIGHT, color);
         if (bossEvent.getOverlay() != BossBarOverlay.PROGRESS) {
             SpiffyRenderUtils.blitSprite(graphics, overlaySprites[bossEvent.getOverlay().ordinal() - 1], BAR_WIDTH, BAR_HEIGHT, 0, 0, barX, barY, progress, BAR_HEIGHT, color);

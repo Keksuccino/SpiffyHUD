@@ -10,7 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
@@ -25,9 +25,9 @@ public class VanillaLikePlayerAirElement extends AbstractElement {
     private static final Logger LOGGER = LogManager.getLogger();
 
     // Updated sprite resources for 1.21.5
-    private static final ResourceLocation AIR_SPRITE = ResourceLocation.withDefaultNamespace("hud/air");
-    private static final ResourceLocation AIR_POPPING_SPRITE = ResourceLocation.withDefaultNamespace("hud/air_bursting");
-    private static final ResourceLocation AIR_EMPTY_SPRITE = ResourceLocation.withDefaultNamespace("hud/air_empty");
+    private static final Identifier AIR_SPRITE = Identifier.withDefaultNamespace("hud/air");
+    private static final Identifier AIR_POPPING_SPRITE = Identifier.withDefaultNamespace("hud/air_bursting");
+    private static final Identifier AIR_EMPTY_SPRITE = Identifier.withDefaultNamespace("hud/air_empty");
 
     // Define constants for bubble dimensions.
     private static final int BUBBLE_SIZE = 9;      // The width (and height) of a bubble in pixels.
@@ -139,7 +139,7 @@ public class VanillaLikePlayerAirElement extends AbstractElement {
             int bubbleY = offsetY;
 
             if (this.shouldRenderBar) {
-                ResourceLocation bubbleSprite;
+                Identifier bubbleSprite;
                 if (i <= currentAirBubble) {
                     // Full air bubble
                     bubbleSprite = AIR_SPRITE;

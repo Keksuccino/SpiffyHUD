@@ -10,7 +10,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.WaypointStyle;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.PlayerRideableJumping;
@@ -26,18 +26,18 @@ public class VanillaLikeContextualBarElement extends AbstractElement {
     private static final Logger LOGGER = LogManager.getLogger();
 
     // Experience bar sprites
-    private static final ResourceLocation EXPERIENCE_BAR_BACKGROUND_SPRITE = ResourceLocation.withDefaultNamespace("hud/experience_bar_background");
-    private static final ResourceLocation EXPERIENCE_BAR_PROGRESS_SPRITE = ResourceLocation.withDefaultNamespace("hud/experience_bar_progress");
+    private static final Identifier EXPERIENCE_BAR_BACKGROUND_SPRITE = Identifier.withDefaultNamespace("hud/experience_bar_background");
+    private static final Identifier EXPERIENCE_BAR_PROGRESS_SPRITE = Identifier.withDefaultNamespace("hud/experience_bar_progress");
 
     // Jump bar sprites
-    private static final ResourceLocation JUMP_BAR_BACKGROUND_SPRITE = ResourceLocation.withDefaultNamespace("hud/jump_bar_background");
-    private static final ResourceLocation JUMP_BAR_COOLDOWN_SPRITE = ResourceLocation.withDefaultNamespace("hud/jump_bar_cooldown");
-    private static final ResourceLocation JUMP_BAR_PROGRESS_SPRITE = ResourceLocation.withDefaultNamespace("hud/jump_bar_progress");
+    private static final Identifier JUMP_BAR_BACKGROUND_SPRITE = Identifier.withDefaultNamespace("hud/jump_bar_background");
+    private static final Identifier JUMP_BAR_COOLDOWN_SPRITE = Identifier.withDefaultNamespace("hud/jump_bar_cooldown");
+    private static final Identifier JUMP_BAR_PROGRESS_SPRITE = Identifier.withDefaultNamespace("hud/jump_bar_progress");
 
     // Locator bar sprites
-    private static final ResourceLocation LOCATOR_BAR_BACKGROUND = ResourceLocation.withDefaultNamespace("hud/locator_bar_background");
-    private static final ResourceLocation LOCATOR_BAR_ARROW_UP = ResourceLocation.withDefaultNamespace("hud/locator_bar_arrow_up");
-    private static final ResourceLocation LOCATOR_BAR_ARROW_DOWN = ResourceLocation.withDefaultNamespace("hud/locator_bar_arrow_down");
+    private static final Identifier LOCATOR_BAR_BACKGROUND = Identifier.withDefaultNamespace("hud/locator_bar_background");
+    private static final Identifier LOCATOR_BAR_ARROW_UP = Identifier.withDefaultNamespace("hud/locator_bar_arrow_up");
+    private static final Identifier LOCATOR_BAR_ARROW_DOWN = Identifier.withDefaultNamespace("hud/locator_bar_arrow_down");
 
     private static final int BAR_WIDTH = 182;
     private static final int BAR_HEIGHT = 5;
@@ -363,7 +363,7 @@ public class VanillaLikeContextualBarElement extends AbstractElement {
         Waypoint.Icon icon = waypoint.icon();
         WaypointStyle style = this.minecraft.getWaypointStyles().get(icon.style);
         float distance = Mth.sqrt((float) waypoint.distanceSquared(this.minecraft.getCameraEntity()));
-        ResourceLocation sprite = style.sprite(distance);
+        Identifier sprite = style.sprite(distance);
         
         // Calculate waypoint color
         int waypointColor = icon.color.orElseGet(() -> 
@@ -396,7 +396,7 @@ public class VanillaLikeContextualBarElement extends AbstractElement {
         TrackedWaypoint.PitchDirection pitchDirection = waypoint.pitchDirectionToCamera(level, this.minecraft.gameRenderer, entity -> this.minecraft.gameRenderer.getMainCamera().getPartialTickTime());
         if (pitchDirection != TrackedWaypoint.PitchDirection.NONE) {
             int arrowY;
-            ResourceLocation arrowSprite;
+            Identifier arrowSprite;
             
             if (pitchDirection == TrackedWaypoint.PitchDirection.DOWN) {
                 arrowY = barY + 6;

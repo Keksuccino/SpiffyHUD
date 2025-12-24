@@ -13,7 +13,7 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffect;
@@ -28,8 +28,8 @@ import java.util.Objects;
 public class VanillaLikeEffectsElement extends AbstractElement {
 
     // Sprite resources for effect backgrounds in 1.21.6
-    private static final ResourceLocation EFFECT_BACKGROUND_AMBIENT_SPRITE = ResourceLocation.withDefaultNamespace("hud/effect_background_ambient");
-    private static final ResourceLocation EFFECT_BACKGROUND_SPRITE = ResourceLocation.withDefaultNamespace("hud/effect_background");
+    private static final Identifier EFFECT_BACKGROUND_AMBIENT_SPRITE = Identifier.withDefaultNamespace("hud/effect_background_ambient");
+    private static final Identifier EFFECT_BACKGROUND_SPRITE = Identifier.withDefaultNamespace("hud/effect_background");
 
     private final Minecraft minecraft = Minecraft.getInstance();
     protected int tickCount;
@@ -50,10 +50,10 @@ public class VanillaLikeEffectsElement extends AbstractElement {
     }
 
     /**
-     * Gets the sprite ResourceLocation for a mob effect.
+     * Gets the sprite Identifier for a mob effect.
      * This follows the same pattern as vanilla 1.21.6.
      */
-    public static ResourceLocation getMobEffectSprite(Holder<MobEffect> holder) {
+    public static Identifier getMobEffectSprite(Holder<MobEffect> holder) {
         return holder.unwrapKey()
                 .map(ResourceKey::location)
                 .map(resourceLocation -> resourceLocation.withPrefix("mob_effect/"))
@@ -226,7 +226,7 @@ public class VanillaLikeEffectsElement extends AbstractElement {
             }
             
             Holder<MobEffect> effectHolder = effectInstance.getEffect();
-            ResourceLocation effectSprite = getMobEffectSprite(effectHolder);
+            Identifier effectSprite = getMobEffectSprite(effectHolder);
             recorder.updateX(finalIconX);
             recorder.updateY(beneficialRowY);
             
@@ -274,7 +274,7 @@ public class VanillaLikeEffectsElement extends AbstractElement {
             }
             
             Holder<MobEffect> effectHolder = effectInstance.getEffect();
-            ResourceLocation effectSprite = getMobEffectSprite(effectHolder);
+            Identifier effectSprite = getMobEffectSprite(effectHolder);
             recorder.updateX(finalIconX);
             recorder.updateY(harmfulRowY);
             
