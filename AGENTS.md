@@ -2,7 +2,6 @@
 
 ## Project Structure & Module Organization
 - SpiffyHUD is a Minecraft Java 26.1.1 mod (the version number is not a typo) that uses the MultiLoader layout with shared logic under `common` and loader-specific wrappers under `fabric` and `neoforge`.
-- It also has a special `earlywindow` submodule for NeoForge's "Early Loading Screen".
 - Place shared Java sources in `common/src/main/java` and assets such as menu JSON, translations, or textures in `common/src/main/resources` so they ship with every loader build.
 - Loader-only hooks belong inside each module's `src/main/java` tree; keep local run directories like `run_client` and `run_server` for iterative testing but never depend on them for assets.
 
