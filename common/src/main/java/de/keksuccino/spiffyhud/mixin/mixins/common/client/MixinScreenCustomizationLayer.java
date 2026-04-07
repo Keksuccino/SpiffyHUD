@@ -8,7 +8,7 @@ import de.keksuccino.spiffyhud.customization.SpiffyGui;
 import de.keksuccino.spiffyhud.customization.SpiffyOverlayScreen;
 import de.keksuccino.spiffyhud.customization.elements.eraser.EraserElement;
 import de.keksuccino.spiffyhud.util.rendering.exclusion.ExclusionAreaUtil;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
@@ -37,7 +37,7 @@ public abstract class MixinScreenCustomizationLayer {
             return;
         }
 
-        GuiGraphics graphics = event.getGraphics();
+        GuiGraphicsExtractor graphics = event.getGraphics();
         this.spiffyHud$aggressiveEraserDepth = 0;
 
         for (AbstractElement abstractElement : this.allElements) {
@@ -55,7 +55,7 @@ public abstract class MixinScreenCustomizationLayer {
             return;
         }
 
-        GuiGraphics graphics = event.getGraphics();
+        GuiGraphicsExtractor graphics = event.getGraphics();
         while (this.spiffyHud$aggressiveEraserDepth-- > 0) {
             ExclusionAreaUtil.popExclusionArea(graphics);
         }

@@ -6,7 +6,7 @@ import de.keksuccino.fancymenu.util.rendering.ui.UIBase;
 import de.keksuccino.fancymenu.util.rendering.ui.widget.button.ExtendedButton;
 import java.util.List;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
@@ -47,7 +47,7 @@ public class SlotIdHelpScreen extends Screen {
 
     }
 
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partial) {
+    public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partial) {
 
         if (!this.textSet) {
             StringBuilder lineString = new StringBuilder();
@@ -61,7 +61,7 @@ public class SlotIdHelpScreen extends Screen {
         graphics.fill(0, 0, this.width, this.height, UIBase.getUIColorTheme().screen_background_color_darker.getColorInt());
         graphics.fill(0, this.height - this.footerHeight, this.width, this.height, UIBase.getUIColorTheme().area_background_color.getColorInt());
 
-        super.render(graphics, mouseX, mouseY, partial);
+        super.extractRenderState(graphics, mouseX, mouseY, partial);
 
     }
 

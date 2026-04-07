@@ -19,7 +19,7 @@ import de.keksuccino.spiffyhud.util.SpiffyAlignment;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -110,21 +110,21 @@ public class SpiffyOverlayScreen extends Screen {
     }
 
     @Override
-    public void render(@NotNull GuiGraphics $$0, int $$1, int $$2, float $$3) {
+    public void extractRenderState(@NotNull GuiGraphicsExtractor $$0, int $$1, int $$2, float $$3) {
 
         //Don't render widgets when not in the editor
         if (!(Minecraft.getInstance().screen instanceof LayoutEditorScreen)) return;
 
         this.children().forEach(guiEventListener -> {
             if (guiEventListener instanceof Renderable renderable) {
-                renderable.render($$0, $$1, $$2, $$3);
+                renderable.extractRenderState($$0, $$1, $$2, $$3);
             }
         });
 
     }
 
     @Override
-    public void renderBackground(GuiGraphics $$0, int $$1, int $$2, float $$3) {
+    public void extractBackground(GuiGraphicsExtractor $$0, int $$1, int $$2, float $$3) {
     }
 
     protected RendererWidget buildHotbarWidget() {
@@ -137,7 +137,7 @@ public class SpiffyOverlayScreen extends Screen {
             HOTBAR_ELEMENT.anchorPoint = ElementAnchorPoints.TOP_LEFT;
             HOTBAR_ELEMENT.posOffsetX = gx;
             HOTBAR_ELEMENT.posOffsetY = gy - 2;
-            HOTBAR_ELEMENT.render(graphics, mX, mY, partial);
+            HOTBAR_ELEMENT.extractRenderState(graphics, mX, mY, partial);
         }).setWidgetIdentifierFancyMenu(VanillaHudElements.HOTBAR_IDENTIFIER);
     }
 
@@ -151,7 +151,7 @@ public class SpiffyOverlayScreen extends Screen {
             CONTEXTUAL_BAR_ELEMENT.anchorPoint = ElementAnchorPoints.TOP_LEFT;
             CONTEXTUAL_BAR_ELEMENT.posOffsetX = gx;
             CONTEXTUAL_BAR_ELEMENT.posOffsetY = gy;
-            CONTEXTUAL_BAR_ELEMENT.render(graphics, mX, mY, partial);
+            CONTEXTUAL_BAR_ELEMENT.extractRenderState(graphics, mX, mY, partial);
         }).setWidgetIdentifierFancyMenu(VanillaHudElements.CONTEXTUAL_BAR_IDENTIFIER);
     }
 
@@ -165,7 +165,7 @@ public class SpiffyOverlayScreen extends Screen {
         return new SpiffyRendererWidget(textX, textY, textWidth, font.lineHeight,
                 (graphics, mouseX, mouseY, partial, x, y, width, height, widget) -> {
                     graphics.fill(textX - 2, textY - 2, textX + textWidth + 2, textY + font.lineHeight + 2, Minecraft.getInstance().options.getBackgroundColor(0));
-                    graphics.drawString(font, mutableComponent, textX, textY, -1);
+                    graphics.text(font, mutableComponent, textX, textY, -1);
                 }
         ).setWidgetIdentifierFancyMenu(VanillaHudElements.SELECTED_ITEM_NAME_IDENTIFIER);
 
@@ -216,13 +216,13 @@ public class SpiffyOverlayScreen extends Screen {
                     //Render lines background
                     graphics.fill(sidebarXStart - 2, sidebarYBase - 1, sidebarXEnd, sidebarYEnd, backgroundColorNormal);
                     //Render title
-                    graphics.drawString(font, title, sidebarXStart + finalTotalSidebarWidth / 2 - titleWidth / 2, sidebarYBase - font.lineHeight, -1, false);
+                    graphics.text(font, title, sidebarXStart + finalTotalSidebarWidth / 2 - titleWidth / 2, sidebarYBase - font.lineHeight, -1, false);
                     //Render lines
                     for (int t = 0; t < linesCount; ++t) {
                         DisplayEntry entry = entries[t];
                         int u = sidebarYEnd - (linesCount - t) * font.lineHeight;
-                        graphics.drawString(font, entry.name, sidebarXStart, u, -1, false);
-                        graphics.drawString(font, entry.score, sidebarXEnd - entry.scoreWidth, u, -1, false);
+                        graphics.text(font, entry.name, sidebarXStart, u, -1, false);
+                        graphics.text(font, entry.score, sidebarXEnd - entry.scoreWidth, u, -1, false);
                     }
                 }
         ).setWidgetIdentifierFancyMenu(VanillaHudElements.SCOREBOARD_SIDEBAR_IDENTIFIER);
@@ -237,7 +237,7 @@ public class SpiffyOverlayScreen extends Screen {
             FOOD_ELEMENT.posOffsetX = gx;
             FOOD_ELEMENT.posOffsetY = gy;
             FOOD_ELEMENT.spiffyAlignment = SpiffyAlignment.MID_RIGHT;
-            FOOD_ELEMENT.render(graphics, mX, mY, partial);
+            FOOD_ELEMENT.extractRenderState(graphics, mX, mY, partial);
         }).setWidgetIdentifierFancyMenu(VanillaHudElements.FOOD_BAR_IDENTIFIER);
     }
 
@@ -249,7 +249,7 @@ public class SpiffyOverlayScreen extends Screen {
             ARMOR_ELEMENT.posOffsetX = gx;
             ARMOR_ELEMENT.posOffsetY = gy;
             ARMOR_ELEMENT.spiffyAlignment = SpiffyAlignment.MID_LEFT;
-            ARMOR_ELEMENT.render(graphics, mX, mY, partial);
+            ARMOR_ELEMENT.extractRenderState(graphics, mX, mY, partial);
         }).setWidgetIdentifierFancyMenu(VanillaHudElements.ARMOR_BAR_IDENTIFIER);
     }
 
@@ -261,7 +261,7 @@ public class SpiffyOverlayScreen extends Screen {
             AIR_ELEMENT.posOffsetX = gx;
             AIR_ELEMENT.posOffsetY = gy;
             AIR_ELEMENT.spiffyAlignment = SpiffyAlignment.MID_RIGHT;
-            AIR_ELEMENT.render(graphics, mX, mY, partial);
+            AIR_ELEMENT.extractRenderState(graphics, mX, mY, partial);
         }).setWidgetIdentifierFancyMenu(VanillaHudElements.AIR_BAR_IDENTIFIER);
     }
 
@@ -274,7 +274,7 @@ public class SpiffyOverlayScreen extends Screen {
             MOUNT_HEALTH_ELEMENT.posOffsetY = gy;
             MOUNT_HEALTH_ELEMENT.spiffyAlignment = SpiffyAlignment.MID_RIGHT;
             MOUNT_HEALTH_ELEMENT.isUsedAsDummy = true;
-            MOUNT_HEALTH_ELEMENT.render(graphics, mX, mY, partial);
+            MOUNT_HEALTH_ELEMENT.extractRenderState(graphics, mX, mY, partial);
         }).setWidgetIdentifierFancyMenu(VanillaHudElements.MOUNT_HEALTH_BAR_IDENTIFIER);
     }
 
@@ -287,7 +287,7 @@ public class SpiffyOverlayScreen extends Screen {
             PLAYER_HEALTH_ELEMENT.posOffsetY = gy;
             PLAYER_HEALTH_ELEMENT.spiffyAlignment = SpiffyAlignment.MID_LEFT;
             PLAYER_HEALTH_ELEMENT.isUsedAsDummy = true;
-            PLAYER_HEALTH_ELEMENT.render(graphics, mX, mY, partial);
+            PLAYER_HEALTH_ELEMENT.extractRenderState(graphics, mX, mY, partial);
         }).setWidgetIdentifierFancyMenu(VanillaHudElements.PLAYER_HEALTH_BAR_IDENTIFIER);
     }
 
@@ -302,7 +302,7 @@ public class SpiffyOverlayScreen extends Screen {
             animatedTickHolder.set(animatedTickHolder.get() + 0.005f);
             // Use the animated tick value to create a color cycle
             int animatedTextColor = Mth.hsvToRgb(Mth.clamp(animatedTickHolder.get() % 1.0f, 0.0f, 1.0f), 0.7f, 0.6f) | 0xFF000000;
-            graphics.drawString(Minecraft.getInstance().font, message, textX, textY, animatedTextColor);
+            graphics.text(Minecraft.getInstance().font, message, textX, textY, animatedTextColor);
         }).setWidgetIdentifierFancyMenu(VanillaHudElements.OVERLAY_MESSAGE_IDENTIFIER);
     }
 
@@ -368,7 +368,7 @@ public class SpiffyOverlayScreen extends Screen {
                     //Render title
                     graphics.pose().pushMatrix();
                     graphics.pose().scale(4.0f, 4.0f);
-                    graphics.drawString(font, title, -titleWidth / 2, -12, -1);
+                    graphics.text(font, title, -titleWidth / 2, -12, -1);
                     graphics.pose().popMatrix();
                     graphics.pose().popMatrix();
                 }
@@ -388,7 +388,7 @@ public class SpiffyOverlayScreen extends Screen {
             graphics.pose().translate(this.width / 2, this.height / 2);
             graphics.pose().pushMatrix();
             graphics.pose().scale(2.0f, 2.0f);
-            graphics.drawString(Minecraft.getInstance().font, subtitle, -subtitleWidth / 2, 6, 0xFFFFFF);
+            graphics.text(Minecraft.getInstance().font, subtitle, -subtitleWidth / 2, 6, 0xFFFFFF);
             graphics.pose().popMatrix();
             graphics.pose().popMatrix();
         }).setWidgetIdentifierFancyMenu(VanillaHudElements.SUBTITLE_IDENTIFIER);
@@ -404,7 +404,7 @@ public class SpiffyOverlayScreen extends Screen {
             BOSS_OVERLAY_ELEMENT.posOffsetX = gx;
             BOSS_OVERLAY_ELEMENT.posOffsetY = gy;
             BOSS_OVERLAY_ELEMENT.spiffyAlignment = SpiffyAlignment.TOP_CENTERED;
-            BOSS_OVERLAY_ELEMENT.render(graphics, mX, mY, partial);
+            BOSS_OVERLAY_ELEMENT.extractRenderState(graphics, mX, mY, partial);
         }).setWidgetIdentifierFancyMenu(VanillaHudElements.BOSS_BARS_IDENTIFIER);
     }
 
@@ -414,7 +414,7 @@ public class SpiffyOverlayScreen extends Screen {
             EFFECTS_ELEMENT.posOffsetX = gx;
             EFFECTS_ELEMENT.posOffsetY = gy;
             EFFECTS_ELEMENT.spiffyAlignment = SpiffyAlignment.TOP_RIGHT;
-            EFFECTS_ELEMENT.render(graphics, mX, mY, partial);
+            EFFECTS_ELEMENT.extractRenderState(graphics, mX, mY, partial);
         }).setWidgetIdentifierFancyMenu(VanillaHudElements.EFFECTS_IDENTIFIER);
     }
 
@@ -425,10 +425,10 @@ public class SpiffyOverlayScreen extends Screen {
         }
 
         @Override
-        public void render(@NotNull GuiGraphics $$0, int $$1, int $$2, float $$3) {
+        protected void extractWidgetRenderState(@NotNull GuiGraphicsExtractor $$0, int $$1, int $$2, float $$3) {
             //Don't render widgets when not in the editor
             if (!(Minecraft.getInstance().screen instanceof LayoutEditorScreen)) return;
-            super.render($$0, $$1, $$2, $$3);
+            super.extractWidgetRenderState($$0, $$1, $$2, $$3);
         }
 
     }

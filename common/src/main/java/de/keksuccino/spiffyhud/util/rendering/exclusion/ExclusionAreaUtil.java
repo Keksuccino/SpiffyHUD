@@ -1,44 +1,44 @@
 package de.keksuccino.spiffyhud.util.rendering.exclusion;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 /**
- * Utility class for working with exclusion areas in GuiGraphics.
+ * Utility class for working with exclusion areas in GuiGraphicsExtractor.
  * Provides convenient methods and a try-with-resources helper.
  */
 public class ExclusionAreaUtil {
     
     /**
-     * Push an exclusion area onto the GuiGraphics stack.
+     * Push an exclusion area onto the GuiGraphicsExtractor stack.
      */
-    public static void pushExclusionArea(GuiGraphics graphics, int x1, int y1, int x2, int y2) {
+    public static void pushExclusionArea(GuiGraphicsExtractor graphics, int x1, int y1, int x2, int y2) {
         if (graphics instanceof IGuiGraphicsExclusionArea exclusion) {
             exclusion.spiffyHud$pushExclusionArea(x1, y1, x2, y2);
         }
     }
     
     /**
-     * Pop an exclusion area from the GuiGraphics stack.
+     * Pop an exclusion area from the GuiGraphicsExtractor stack.
      */
-    public static void popExclusionArea(GuiGraphics graphics) {
+    public static void popExclusionArea(GuiGraphicsExtractor graphics) {
         if (graphics instanceof IGuiGraphicsExclusionArea exclusion) {
             exclusion.spiffyHud$popExclusionArea();
         }
     }
     
     /**
-     * Clear all exclusion areas from the GuiGraphics stack.
+     * Clear all exclusion areas from the GuiGraphicsExtractor stack.
      */
-    public static void clearExclusionAreas(GuiGraphics graphics) {
+    public static void clearExclusionAreas(GuiGraphicsExtractor graphics) {
         if (graphics instanceof IGuiGraphicsExclusionArea exclusion) {
             exclusion.spiffyHud$clearExclusionAreas();
         }
     }
     
     /**
-     * Check if the GuiGraphics has active exclusion areas.
+     * Check if the GuiGraphicsExtractor has active exclusion areas.
      */
-    public static boolean hasExclusionAreas(GuiGraphics graphics) {
+    public static boolean hasExclusionAreas(GuiGraphicsExtractor graphics) {
         if (graphics instanceof IGuiGraphicsExclusionArea exclusion) {
             return exclusion.spiffyHud$hasExclusionAreas();
         }
@@ -46,10 +46,10 @@ public class ExclusionAreaUtil {
     }
     
     /**
-     * Pop all exclusion areas from the GuiGraphics stack at once.
+     * Pop all exclusion areas from the GuiGraphicsExtractor stack at once.
      * Returns the number of areas that were popped.
      */
-    public static int popAllExclusionAreas(GuiGraphics graphics) {
+    public static int popAllExclusionAreas(GuiGraphicsExtractor graphics) {
         if (graphics instanceof IGuiGraphicsExclusionArea exclusion) {
             return exclusion.spiffyHud$popAllExclusionAreas();
         }
@@ -67,7 +67,7 @@ public class ExclusionAreaUtil {
      * }
      * </pre>
      */
-    public static ExclusionAreaContext withExclusionArea(GuiGraphics graphics, int x1, int y1, int x2, int y2) {
+    public static ExclusionAreaContext withExclusionArea(GuiGraphicsExtractor graphics, int x1, int y1, int x2, int y2) {
         pushExclusionArea(graphics, x1, y1, x2, y2);
         return new ExclusionAreaContext(graphics);
     }
@@ -76,9 +76,9 @@ public class ExclusionAreaUtil {
      * Auto-closeable context for exclusion areas.
      */
     public static class ExclusionAreaContext implements AutoCloseable {
-        private final GuiGraphics graphics;
+        private final GuiGraphicsExtractor graphics;
         
-        private ExclusionAreaContext(GuiGraphics graphics) {
+        private ExclusionAreaContext(GuiGraphicsExtractor graphics) {
             this.graphics = graphics;
         }
         

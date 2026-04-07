@@ -10,7 +10,7 @@ import de.keksuccino.fancymenu.util.resource.resources.texture.ITexture;
 import de.keksuccino.spiffyhud.SpiffyUtils;
 import de.keksuccino.spiffyhud.util.SpiffyAlignment;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
@@ -66,7 +66,7 @@ public class PlayerAirBubbleBarElement extends AbstractElement {
     }
 
     @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partial) {
+    public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partial) {
 
         this.cachedTickCount = safeTickCount();
         PlayerData data = this.collectPlayerData();
@@ -95,7 +95,7 @@ public class PlayerAirBubbleBarElement extends AbstractElement {
         this.drawBubbles(graphics, aligned[0], aligned[1], data, metrics, scale);
     }
 
-    private void drawBubbles(@NotNull GuiGraphics graphics, int originX, int originY, @NotNull PlayerData data, @NotNull RenderMetrics metrics, float scale) {
+    private void drawBubbles(@NotNull GuiGraphicsExtractor graphics, int originX, int originY, @NotNull PlayerData data, @NotNull RenderMetrics metrics, float scale) {
 
         Matrix3x2fStack pose = graphics.pose();
         pose.pushMatrix();
@@ -137,7 +137,7 @@ public class PlayerAirBubbleBarElement extends AbstractElement {
         return AirTextureKind.EMPTY;
     }
 
-    private void renderSingleBubble(@NotNull GuiGraphics graphics, @NotNull RenderMetrics metrics, @NotNull SlotPlacement placement, int logicalIndex, @NotNull AirTextureKind textureKind, float shakeStrengthBase, float scale) {
+    private void renderSingleBubble(@NotNull GuiGraphicsExtractor graphics, @NotNull RenderMetrics metrics, @NotNull SlotPlacement placement, int logicalIndex, @NotNull AirTextureKind textureKind, float shakeStrengthBase, float scale) {
 
         float gap = this.bubbleGap;
         float baseSpacingX = (metrics.baseBubbleSize + gap) * scale;
@@ -169,7 +169,7 @@ public class PlayerAirBubbleBarElement extends AbstractElement {
         return new float[] { dx, dy };
     }
 
-    private void drawBubbleTexture(@NotNull GuiGraphics graphics, @NotNull AirTextureKind kind, int size) {
+    private void drawBubbleTexture(@NotNull GuiGraphicsExtractor graphics, @NotNull AirTextureKind kind, int size) {
         ResourceSupplier<ITexture> supplier = this.customTextures.get(kind);
         if (supplier != null) {
             try {

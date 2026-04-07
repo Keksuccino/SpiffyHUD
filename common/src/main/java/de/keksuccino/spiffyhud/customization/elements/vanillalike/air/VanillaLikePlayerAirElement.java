@@ -6,7 +6,7 @@ import de.keksuccino.spiffyhud.SpiffyUtils;
 import de.keksuccino.spiffyhud.util.SpiffyAlignment;
 import de.keksuccino.spiffyhud.util.rendering.SpiffyRenderUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.FluidTags;
@@ -57,7 +57,7 @@ public class VanillaLikePlayerAirElement extends AbstractElement {
     }
 
     @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partial) {
+    public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partial) {
         // Update the tick counter.
         this.tickCount = SpiffyUtils.getGuiAccessor().getTickCount_Spiffy();
 
@@ -100,7 +100,7 @@ public class VanillaLikePlayerAirElement extends AbstractElement {
      * @param offsetX  The absolute X coordinate where the air bar should start.
      * @param offsetY  The absolute Y coordinate where the air bar should start.
      */
-    private void renderPlayerAir(GuiGraphics graphics, int offsetX, int offsetY) {
+    private void renderPlayerAir(GuiGraphicsExtractor graphics, int offsetX, int offsetY) {
         Player player = getCameraPlayer();
         if (player == null) {
             return;

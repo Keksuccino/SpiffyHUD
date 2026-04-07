@@ -8,7 +8,7 @@ import de.keksuccino.fancymenu.util.MathUtils;
 import de.keksuccino.fancymenu.util.rendering.DrawableColor;
 import de.keksuccino.spiffyhud.util.ComponentUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,7 +33,7 @@ public class SingleLineTextElement extends AbstractElement {
     }
 
     @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partial) {
+    public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partial) {
 
         float scale = this.resolveTextScale();
 
@@ -52,7 +52,7 @@ public class SingleLineTextElement extends AbstractElement {
             pose.pushMatrix();
             pose.translate(this.getAbsoluteX(), this.getAbsoluteY());
             pose.scale(scale, scale);
-            graphics.drawString(Minecraft.getInstance().font, c, 0, 0, DrawableColor.WHITE.getColorIntWithAlpha(this.opacity));
+            graphics.text(Minecraft.getInstance().font, c, 0, 0, DrawableColor.WHITE.getColorIntWithAlpha(this.opacity));
             pose.popMatrix();
 
         } else {

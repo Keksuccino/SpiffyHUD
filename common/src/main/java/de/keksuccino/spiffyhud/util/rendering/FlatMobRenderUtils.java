@@ -2,7 +2,7 @@ package de.keksuccino.spiffyhud.util.rendering;
 
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
@@ -35,7 +35,7 @@ public class FlatMobRenderUtils {
     private FlatMobRenderUtils() {
     }
 
-    public static boolean renderFlatMob(@NotNull GuiGraphics graphics, int left, int top, int size, @Nullable Mob mob, float opacity) {
+    public static boolean renderFlatMob(@NotNull GuiGraphicsExtractor graphics, int left, int top, int size, @Nullable Mob mob, float opacity) {
         Mob renderMob = prepareRenderMob(mob);
         if (renderMob == null) {
             return false;
@@ -80,7 +80,7 @@ public class FlatMobRenderUtils {
     }
 
     private static void renderEntity(
-            @NotNull GuiGraphics graphics,
+            @NotNull GuiGraphicsExtractor graphics,
             int left,
             int top,
             int size,
@@ -96,7 +96,7 @@ public class FlatMobRenderUtils {
         renderState.shadowPieces.clear();
         renderState.outlineColor = EntityRenderState.NO_OUTLINE;
 
-        graphics.submitEntityRenderState(
+        graphics.entity(
                 renderState,
                 scale,
                 offset,

@@ -4,7 +4,7 @@ import de.keksuccino.fancymenu.customization.element.AbstractElement;
 import de.keksuccino.fancymenu.customization.element.ElementBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
@@ -36,7 +36,7 @@ public class VanillaLikeHotbarElement extends AbstractElement {
      * the element's absolute position and size.
      */
     @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         // Get the absolute position and size of this element.
         int elementX = this.getAbsoluteX();
         int elementY = this.getAbsoluteY();
@@ -60,7 +60,7 @@ public class VanillaLikeHotbarElement extends AbstractElement {
      * @param elementWidth   The width of the element.
      * @param elementHeight  The height of the element.
      */
-    private void renderHotbar(GuiGraphics graphics, float partialTick, int elementX, int elementY, int elementWidth, int elementHeight) {
+    private void renderHotbar(GuiGraphicsExtractor graphics, float partialTick, int elementX, int elementY, int elementWidth, int elementHeight) {
         // Get the current player.
         Player player = this.getCameraPlayer();
         if (player == null) {
@@ -132,7 +132,7 @@ public class VanillaLikeHotbarElement extends AbstractElement {
      * @param renderSeed    A seed value for randomized rendering effects.
      * @param color         The color to apply to the rendering.
      */
-    private void renderSlot(GuiGraphics graphics, int slotX, int slotY, float partialTick, Player player, ItemStack stack, int renderSeed, int color) {
+    private void renderSlot(GuiGraphicsExtractor graphics, int slotX, int slotY, float partialTick, Player player, ItemStack stack, int renderSeed, int color) {
         // Do not render if the item stack is empty.
         if (stack.isEmpty()) {
             return;
@@ -153,7 +153,7 @@ public class VanillaLikeHotbarElement extends AbstractElement {
         }
 
         // Render the item within the slot.
-        graphics.renderItem(player, stack, slotX, slotY, renderSeed);
+        graphics.item(player, stack, slotX, slotY, renderSeed);
 
         // If a pop animation was applied, revert the transformation.
         if (popTimeRemaining > 0.0f) {
@@ -168,7 +168,7 @@ public class VanillaLikeHotbarElement extends AbstractElement {
     /**
      * Renders stack count, durability bar, and cooldown overlay for a single slot.
      */
-    private void renderSlotDecorations(GuiGraphics graphics, @Nullable Player player, ItemStack stack, int slotX, int slotY) {
+    private void renderSlotDecorations(GuiGraphicsExtractor graphics, @Nullable Player player, ItemStack stack, int slotX, int slotY) {
 
         graphics.pose().pushMatrix();
 
@@ -177,7 +177,7 @@ public class VanillaLikeHotbarElement extends AbstractElement {
 
         if (stack.getCount() != 1) {
             String countText = String.valueOf(stack.getCount());
-            graphics.drawString(font, countText, slotX + 19 - 2 - font.width(countText), slotY + 6 + 3, 0xFFFFFF, true);
+            graphics.text(font, countText, slotX + 19 - 2 - font.width(countText), slotY + 6 + 3, 0xFFFFFF, true);
         }
 
         if (stack.isBarVisible()) {

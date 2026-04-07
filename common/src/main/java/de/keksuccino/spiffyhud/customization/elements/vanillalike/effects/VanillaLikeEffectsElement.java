@@ -8,7 +8,7 @@ import de.keksuccino.spiffyhud.SpiffyUtils;
 import de.keksuccino.spiffyhud.util.SizeAndPositionRecorder;
 import de.keksuccino.spiffyhud.util.SpiffyAlignment;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.core.Holder;
@@ -69,7 +69,7 @@ public class VanillaLikeEffectsElement extends AbstractElement {
      * Finally, it calls renderEffects(...) with the computed base so that each icon is drawn directly at its absolute position.
      */
     @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partial) {
+    public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partial) {
 
         this.tickCount = SpiffyUtils.getGuiAccessor().getTickCount_Spiffy();
 
@@ -109,7 +109,7 @@ public class VanillaLikeEffectsElement extends AbstractElement {
     /**
      * Renders the effect icons directly at absolute positions.
      *
-     * <p>This method computes each effect's final absolute position by using a base (baseX, baseY) provided by the render() method
+     * <p>This method computes each effect's final absolute position by using a base (baseX, baseY) provided by the extractRenderState() method
      * and then adding per-icon offsets that depend on the effect's type (beneficial or harmful) and the chosen alignment.
      * Horizontal positions are computed using a dynamically determined element width based on the number of icons.
      * Vertical positions are determined by a base row offset (with harmful effects rendered 26 pixels below beneficial ones).</p>
@@ -118,7 +118,7 @@ public class VanillaLikeEffectsElement extends AbstractElement {
      * @param baseX the absolute X coordinate of the element's top-left corner
      * @param baseY the absolute Y coordinate (adjusted for vertical alignment)
      */
-    protected void renderEffects(GuiGraphics graphics, int baseX, int baseY) {
+    protected void renderEffects(GuiGraphicsExtractor graphics, int baseX, int baseY) {
 
         // Retrieve active effects.
         Collection<MobEffectInstance> activeEffects = Objects.requireNonNull(this.minecraft.player).getActiveEffects();

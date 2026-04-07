@@ -26,8 +26,8 @@ public class MixinMinecraft {
         }
     }
 
-    @Inject(method = "resizeDisplay", at = @At("RETURN"))
-    private void after_resizeDisplay_Spiffy(CallbackInfo info) {
+    @Inject(method = "resizeGui", at = @At("RETURN"))
+    private void after_resizeGui_Spiffy(CallbackInfo info) {
         if ((Minecraft.getInstance().level != null) && (Minecraft.getInstance().player != null)) {
             SpiffyGui.INSTANCE.onResize();
         }

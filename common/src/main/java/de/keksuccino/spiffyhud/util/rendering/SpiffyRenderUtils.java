@@ -2,7 +2,7 @@ package de.keksuccino.spiffyhud.util.rendering;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import de.keksuccino.spiffyhud.mixin.mixins.common.client.IMixinGuiGraphics;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.metadata.gui.GuiMetadataSection;
@@ -39,7 +39,7 @@ public class SpiffyRenderUtils {
      * @param color                The color to apply to the texture.
      */
     public static void blitMirrored(
-            GuiGraphics graphics,
+            GuiGraphicsExtractor graphics,
             Identifier atlasLocation,
             int x,
             int y,
@@ -72,7 +72,7 @@ public class SpiffyRenderUtils {
      * Uses white color.
      */
     public static void blitMirrored(
-            GuiGraphics graphics,
+            GuiGraphicsExtractor graphics,
             Identifier atlasLocation,
             int x,
             int y,
@@ -111,7 +111,7 @@ public class SpiffyRenderUtils {
      * @param color            The color to apply to the sprite.
      */
     public static void blitSpriteMirrored(
-            GuiGraphics graphics,
+            GuiGraphicsExtractor graphics,
             Identifier sprite,
             int x,
             int y,
@@ -160,7 +160,7 @@ public class SpiffyRenderUtils {
      * Uses white color.
      */
     public static void blitSpriteMirrored(
-            GuiGraphics graphics,
+            GuiGraphicsExtractor graphics,
             Identifier sprite,
             int x,
             int y,
@@ -183,7 +183,7 @@ public class SpiffyRenderUtils {
      * In 1.21.6, we use mixins to access the private blitSprite method for proper sprite rendering.
      */
     public static void blitSprite(
-            GuiGraphics graphics,
+            GuiGraphicsExtractor graphics,
             Identifier sprite,
             int textureWidth,
             int textureHeight,
@@ -237,7 +237,7 @@ public class SpiffyRenderUtils {
      * @param color                The color to apply to the texture.
      */
     public static void blitMirroredMatrix(
-            GuiGraphics graphics,
+            GuiGraphicsExtractor graphics,
             Identifier atlasLocation,
             int x,
             int y,

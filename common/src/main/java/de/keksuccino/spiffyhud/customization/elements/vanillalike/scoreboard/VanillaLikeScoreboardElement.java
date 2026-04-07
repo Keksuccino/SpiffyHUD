@@ -8,7 +8,7 @@ import de.keksuccino.spiffyhud.util.rendering.SpiffyRenderUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.numbers.StyledFormat;
@@ -62,7 +62,7 @@ public class VanillaLikeScoreboardElement extends AbstractElement {
      * with an offset so that it appears inside the element.
      */
     @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partial) {
+    public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partial) {
 
         if (this.minecraft.player == null || this.minecraft.level == null) {
             return;
@@ -103,7 +103,7 @@ public class VanillaLikeScoreboardElement extends AbstractElement {
      * @param offsetY     Vertical offset to add to drawing coordinates.
      * @param applyOffset If true, the computed offset is applied while drawing.
      */
-    private void renderScoreboard(GuiGraphics graphics, int offsetX, int offsetY, boolean applyOffset) {
+    private void renderScoreboard(GuiGraphicsExtractor graphics, int offsetX, int offsetY, boolean applyOffset) {
         Scoreboard scoreboard = this.minecraft.level.getScoreboard();
         Objective objective = null;
         PlayerTeam playerTeam = scoreboard.getPlayersTeam(this.minecraft.player.getScoreboardName());
@@ -145,7 +145,7 @@ public class VanillaLikeScoreboardElement extends AbstractElement {
      * @param offsetY     Vertical offset to apply.
      * @param applyOffset If true, the offset is added to all drawing coordinates.
      */
-    private void displayScoreboardSidebar(GuiGraphics guiGraphics, Objective objective, int offsetX, int offsetY, boolean applyOffset) {
+    private void displayScoreboardSidebar(GuiGraphicsExtractor guiGraphics, Objective objective, int offsetX, int offsetY, boolean applyOffset) {
         Scoreboard scoreboard = objective.getScoreboard();
         
         // List to hold display entries
@@ -241,15 +241,15 @@ public class VanillaLikeScoreboardElement extends AbstractElement {
             // Draw title centered
             Font font = this.getFont();
             int titleX = effectiveBaseX + maxEntryWidth / 2 - titleWidth / 2;
-            guiGraphics.drawString(font, title, titleX, titleTop + 1, opacityAdjustedTextColor, false);
+            guiGraphics.text(font, title, titleX, titleTop + 1, opacityAdjustedTextColor, false);
             
             // Draw each score line
             for (int i = 0; i < displayEntries.length; i++) {
                 DisplayEntry entry = displayEntries[i];
                 int lineY = effectiveBaseY - (numberOfLines - i) * lineHeight;
                 // Draw the player's name and score
-                guiGraphics.drawString(this.getFont(), entry.name, effectiveBaseX, lineY, opacityAdjustedTextColor, false);
-                guiGraphics.drawString(this.getFont(), entry.score, rightX - entry.scoreWidth, lineY, opacityAdjustedTextColor, false);
+                guiGraphics.text(this.getFont(), entry.name, effectiveBaseX, lineY, opacityAdjustedTextColor, false);
+                guiGraphics.text(this.getFont(), entry.score, rightX - entry.scoreWidth, lineY, opacityAdjustedTextColor, false);
             }
         }
     }

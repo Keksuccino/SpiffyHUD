@@ -16,7 +16,7 @@ import de.keksuccino.spiffyhud.util.death.DeathPointStorage;
 import de.keksuccino.spiffyhud.util.rendering.FlatMobRenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
@@ -172,7 +172,7 @@ public class CompassElement extends AbstractElement {
     }
 
     @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partial) {
+    public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partial) {
 
         if (!this.shouldRender()) {
             return;
@@ -239,18 +239,18 @@ public class CompassElement extends AbstractElement {
         wrapped.run();
     }
 
-    private void drawBackground(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, int color) {
+    private void drawBackground(@NotNull GuiGraphicsExtractor graphics, @NotNull CompassLayout layout, int color) {
         graphics.fill(layout.x(), layout.y(), layout.x() + layout.width(), layout.y() + layout.height(), color);
     }
 
-    private void drawBar(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, int color, @NotNull CompassReading reading) {
+    private void drawBar(@NotNull GuiGraphicsExtractor graphics, @NotNull CompassLayout layout, int color, @NotNull CompassReading reading) {
         if (this.drawBarTexture(graphics, layout, reading)) {
             return;
         }
         graphics.fill(layout.x(), layout.barTop(), layout.x() + layout.width(), layout.barTop() + layout.barHeight(), color);
     }
 
-    private boolean drawBarTexture(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull CompassReading reading) {
+    private boolean drawBarTexture(@NotNull GuiGraphicsExtractor graphics, @NotNull CompassLayout layout, @NotNull CompassReading reading) {
         TextureHandle handle = this.resolveTexture(this.barTexture);
         if (handle == null) {
             return false;
@@ -282,11 +282,11 @@ public class CompassElement extends AbstractElement {
         return true;
     }
 
-    private void blitBarTextureTile(@NotNull GuiGraphics graphics, @NotNull TextureHandle handle, int drawX, int drawY, int destWidth, int destHeight) {
+    private void blitBarTextureTile(@NotNull GuiGraphicsExtractor graphics, @NotNull TextureHandle handle, int drawX, int drawY, int destWidth, int destHeight) {
         graphics.blit(RenderPipelines.GUI_TEXTURED, handle.location(), drawX, drawY, 0.0F, 0.0F, destWidth, destHeight, destWidth, destHeight, ARGB.white(this.opacity));
     }
 
-    private void drawGradeLines(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull ResolvedColors colors, @NotNull CompassReading reading) {
+    private void drawGradeLines(@NotNull GuiGraphicsExtractor graphics, @NotNull CompassLayout layout, @NotNull ResolvedColors colors, @NotNull CompassReading reading) {
         boolean drawCardinal = this.cardinalTicksEnabled;
         boolean drawDegree = this.degreeTicksEnabled;
         boolean drawMinor = this.minorTicksEnabled;
@@ -322,7 +322,7 @@ public class CompassElement extends AbstractElement {
         }
     }
 
-    private void drawTick(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float relativeDegrees, int halfHeight, int color, @Nullable ResourceSupplier<ITexture> texture, float offsetY) {
+    private void drawTick(@NotNull GuiGraphicsExtractor graphics, @NotNull CompassLayout layout, float relativeDegrees, int halfHeight, int color, @Nullable ResourceSupplier<ITexture> texture, float offsetY) {
         float x = this.computeScreenX(layout, relativeDegrees);
         if (this.drawTickTexture(graphics, layout, x, texture, offsetY)) {
             return;
@@ -334,7 +334,7 @@ public class CompassElement extends AbstractElement {
         graphics.fill(xi, top, xi + 1, bottom, color);
     }
 
-    private boolean drawTickTexture(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float centerX, @Nullable ResourceSupplier<ITexture> supplier, float offsetY) {
+    private boolean drawTickTexture(@NotNull GuiGraphicsExtractor graphics, @NotNull CompassLayout layout, float centerX, @Nullable ResourceSupplier<ITexture> supplier, float offsetY) {
         TextureHandle handle = this.resolveTexture(supplier);
         if (handle == null) {
             return false;
@@ -350,7 +350,7 @@ public class CompassElement extends AbstractElement {
         return true;
     }
 
-    private void drawCardinalLabels(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull ResolvedColors colors, @NotNull CompassReading reading) {
+    private void drawCardinalLabels(@NotNull GuiGraphicsExtractor graphics, @NotNull CompassLayout layout, @NotNull ResolvedColors colors, @NotNull CompassReading reading) {
         String[] labels = {"N", "E", "S", "W"};
         float[] angles = {0F, 90F, 180F, 270F};
         float offset = this.resolveCardinalTextYOffset();
@@ -359,7 +359,7 @@ public class CompassElement extends AbstractElement {
         }
     }
 
-    private void drawCardinal(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float absoluteDegrees, @NotNull String text, int color, @NotNull CompassReading reading, float offsetY) {
+    private void drawCardinal(@NotNull GuiGraphicsExtractor graphics, @NotNull CompassLayout layout, float absoluteDegrees, @NotNull String text, int color, @NotNull CompassReading reading, float offsetY) {
         float relative = this.relativeToHeading(absoluteDegrees, reading.headingDegrees());
         float centerX = this.computeScreenX(layout, relative);
         float centerY = layout.cardinalCenterY() + offsetY;
@@ -370,7 +370,7 @@ public class CompassElement extends AbstractElement {
         this.drawScaledCenteredString(graphics, text, centerX, centerY, layout.cardinalScale(), color, this.cardinalOutlineEnabled);
     }
 
-    private void drawDegreeNumbers(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull ResolvedColors colors, @NotNull CompassReading reading) {
+    private void drawDegreeNumbers(@NotNull GuiGraphicsExtractor graphics, @NotNull CompassLayout layout, @NotNull ResolvedColors colors, @NotNull CompassReading reading) {
         float offset = this.resolveDegreeTextYOffset();
         for (int degrees = -150; degrees <= 150; degrees += 30) {
             if (degrees == 0) {
@@ -387,7 +387,7 @@ public class CompassElement extends AbstractElement {
         }
     }
 
-    private void drawMobDots(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull ResolvedColors colors, @NotNull MobDots dots) {
+    private void drawMobDots(@NotNull GuiGraphicsExtractor graphics, @NotNull CompassLayout layout, @NotNull ResolvedColors colors, @NotNull MobDots dots) {
         if (!dots.hasAny()) {
             return;
         }
@@ -432,7 +432,7 @@ public class CompassElement extends AbstractElement {
         return Math.max(1.0F, scaledDiameter / 2.0F);
     }
 
-    private void drawMobDot(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull MobDotData data, float centerY, float radius, boolean drawHead, int color, @Nullable ResourceSupplier<ITexture> texture) {
+    private void drawMobDot(@NotNull GuiGraphicsExtractor graphics, @NotNull CompassLayout layout, @NotNull MobDotData data, float centerY, float radius, boolean drawHead, int color, @Nullable ResourceSupplier<ITexture> texture) {
         float centerX = this.computeScreenX(layout, data.relativeDegrees());
         int size = Math.max(2, Mth.ceil(radius * 2.0F));
         DotBounds bounds = this.computeDotBounds(layout, centerX, centerY, radius, size);
@@ -445,7 +445,7 @@ public class CompassElement extends AbstractElement {
         graphics.fill(bounds.left(), bounds.top(), bounds.left() + bounds.size(), bounds.top() + bounds.size(), color);
     }
 
-    private void drawMarkerDots(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull List<ResolvedMarker> markers) {
+    private void drawMarkerDots(@NotNull GuiGraphicsExtractor graphics, @NotNull CompassLayout layout, @NotNull List<ResolvedMarker> markers) {
         float baseDiameter = this.computeBaseDotDiameter(layout);
         float radius = this.computeScaledRadius(baseDiameter, this.resolveMarkerDotScale());
         float centerY = layout.y() + layout.height() / 2.0F + this.resolveMarkerDotYOffset();
@@ -457,7 +457,7 @@ public class CompassElement extends AbstractElement {
         }
     }
 
-    private void drawMarkerDot(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull ResolvedMarker marker, float centerY, float radius) {
+    private void drawMarkerDot(@NotNull GuiGraphicsExtractor graphics, @NotNull CompassLayout layout, @NotNull ResolvedMarker marker, float centerY, float radius) {
         float centerX = this.computeScreenX(layout, marker.relativeDegrees());
         int size = Math.max(2, Mth.ceil(radius * 2.0F));
         DotBounds bounds = this.computeDotBounds(layout, centerX, centerY, radius, size);
@@ -471,7 +471,7 @@ public class CompassElement extends AbstractElement {
         graphics.fill(bounds.left(), bounds.top(), bounds.left() + bounds.size(), bounds.top() + bounds.size(), marker.color());
     }
 
-    private void drawMarkerNeedles(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull List<ResolvedMarker> markers) {
+    private void drawMarkerNeedles(@NotNull GuiGraphicsExtractor graphics, @NotNull CompassLayout layout, @NotNull List<ResolvedMarker> markers) {
         float offset = this.resolveMarkerNeedleYOffset();
         for (ResolvedMarker marker : markers) {
             if (!marker.showAsNeedle()) {
@@ -481,7 +481,7 @@ public class CompassElement extends AbstractElement {
         }
     }
 
-    private void drawMarkerNeedle(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull ResolvedMarker marker, float offsetY) {
+    private void drawMarkerNeedle(@NotNull GuiGraphicsExtractor graphics, @NotNull CompassLayout layout, @NotNull ResolvedMarker marker, float offsetY) {
         float centerX = this.computeScreenX(layout, marker.relativeDegrees());
         ResourceSupplier<ITexture> texture = marker.needleTexture();
         if (texture == null) {
@@ -499,7 +499,7 @@ public class CompassElement extends AbstractElement {
         graphics.fill(xi, top, xi + needleWidth, top + layout.height(), marker.color());
     }
 
-    private void drawMarkerLabels(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull List<ResolvedMarker> markers, @NotNull ResolvedColors colors) {
+    private void drawMarkerLabels(@NotNull GuiGraphicsExtractor graphics, @NotNull CompassLayout layout, @NotNull List<ResolvedMarker> markers, @NotNull ResolvedColors colors) {
         if (markers.isEmpty()) {
             return;
         }
@@ -533,7 +533,7 @@ public class CompassElement extends AbstractElement {
         }
     }
 
-    private void drawMarkerLabel(@NotNull GuiGraphics graphics, @NotNull String text, float centerX, float centerY, float scale, int textColor, boolean outline) {
+    private void drawMarkerLabel(@NotNull GuiGraphicsExtractor graphics, @NotNull String text, float centerX, float centerY, float scale, int textColor, boolean outline) {
         if (text.isEmpty() || scale <= 0.0F) {
             return;
         }
@@ -561,7 +561,7 @@ public class CompassElement extends AbstractElement {
         return new DotBounds(left, top, size);
     }
 
-    private boolean drawDotTexture(@NotNull GuiGraphics graphics, @NotNull DotBounds bounds, @Nullable ResourceSupplier<ITexture> supplier) {
+    private boolean drawDotTexture(@NotNull GuiGraphicsExtractor graphics, @NotNull DotBounds bounds, @Nullable ResourceSupplier<ITexture> supplier) {
         TextureHandle handle = this.resolveTexture(supplier);
         if (handle == null) {
             return false;
@@ -571,14 +571,14 @@ public class CompassElement extends AbstractElement {
         return true;
     }
 
-    private boolean drawMobHead(@NotNull GuiGraphics graphics, @NotNull DotBounds bounds, @Nullable Mob mob) {
+    private boolean drawMobHead(@NotNull GuiGraphicsExtractor graphics, @NotNull DotBounds bounds, @Nullable Mob mob) {
         if (mob == null) {
             return false;
         }
         return FlatMobRenderUtils.renderFlatMob(graphics, bounds.left(), bounds.top(), bounds.size(), mob, this.opacity);
     }
 
-    private void drawNeedle(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull ResolvedColors colors) {
+    private void drawNeedle(@NotNull GuiGraphicsExtractor graphics, @NotNull CompassLayout layout, @NotNull ResolvedColors colors) {
         int needleWidth = Math.max(1, Mth.floor(layout.width() * 0.01F));
         int half = Math.max(0, needleWidth / 2);
         int centerX = layout.x() + layout.width() / 2;
@@ -593,7 +593,7 @@ public class CompassElement extends AbstractElement {
         graphics.fill(xi, top, xi + needleWidth, top + layout.height(), colors.needleColor());
     }
 
-    private void drawDeathNeedle(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull CompassReading reading, @Nullable DeathPointerData pointer, @NotNull ResolvedColors colors) {
+    private void drawDeathNeedle(@NotNull GuiGraphicsExtractor graphics, @NotNull CompassLayout layout, @NotNull CompassReading reading, @Nullable DeathPointerData pointer, @NotNull ResolvedColors colors) {
         if (pointer == null) {
             this.hasLastDeathPointerRelative = false;
             return;
@@ -616,7 +616,7 @@ public class CompassElement extends AbstractElement {
         this.drawDeathPointerLabel(graphics, layout, pointer, centerX, centerY, colors);
     }
 
-    private void drawDeathPointerLabel(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, @NotNull DeathPointerData pointer, float needleCenterX, float needleCenterY, @NotNull ResolvedColors colors) {
+    private void drawDeathPointerLabel(@NotNull GuiGraphicsExtractor graphics, @NotNull CompassLayout layout, @NotNull DeathPointerData pointer, float needleCenterX, float needleCenterY, @NotNull ResolvedColors colors) {
         if (!this.deathPointerLabelEnabled) {
             return;
         }
@@ -637,7 +637,7 @@ public class CompassElement extends AbstractElement {
         this.drawMarkerLabel(graphics, label, drawX, drawY, scale, colors.degreeNumberTextColor(), this.deathPointerLabelOutlineEnabled);
     }
 
-    private boolean drawNeedleTexture(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float centerX, float centerY, @Nullable ResourceSupplier<ITexture> supplier, boolean clampCenter, boolean wrapAcross) {
+    private boolean drawNeedleTexture(@NotNull GuiGraphicsExtractor graphics, @NotNull CompassLayout layout, float centerX, float centerY, @Nullable ResourceSupplier<ITexture> supplier, boolean clampCenter, boolean wrapAcross) {
         TextureHandle handle = this.resolveTexture(supplier);
         if (handle == null) {
             return false;
@@ -653,7 +653,7 @@ public class CompassElement extends AbstractElement {
         return true;
     }
 
-    private void drawNeedleTextureInstance(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float centerX, float centerY, @NotNull TextureHandle handle, boolean clampCenter) {
+    private void drawNeedleTextureInstance(@NotNull GuiGraphicsExtractor graphics, @NotNull CompassLayout layout, float centerX, float centerY, @NotNull TextureHandle handle, boolean clampCenter) {
         int availableWidth = Math.max(1, layout.width());
         int availableHeight = Math.max(1, layout.height());
         if (handle.width() <= 0 || handle.height() <= 0) {
@@ -681,7 +681,7 @@ public class CompassElement extends AbstractElement {
         graphics.blit(RenderPipelines.GUI_TEXTURED, handle.location(), drawXi, drawYi, 0.0F, 0.0F, destWidth, destHeight, destWidth, destHeight, ARGB.white(this.opacity));
     }
 
-    private boolean drawCardinalTexture(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float centerX, float centerY, float scale, @Nullable ResourceSupplier<ITexture> supplier) {
+    private boolean drawCardinalTexture(@NotNull GuiGraphicsExtractor graphics, @NotNull CompassLayout layout, float centerX, float centerY, float scale, @Nullable ResourceSupplier<ITexture> supplier) {
         if (scale <= 0.0F) {
             return false;
         }
@@ -755,7 +755,7 @@ public class CompassElement extends AbstractElement {
         return Math.max(0.4F, baseScale * 0.8F);
     }
 
-    private void drawScaledCenteredString(@NotNull GuiGraphics graphics, @NotNull String text, float centerX, float centerY, float scale, int color, boolean outline) {
+    private void drawScaledCenteredString(@NotNull GuiGraphicsExtractor graphics, @NotNull String text, float centerX, float centerY, float scale, int color, boolean outline) {
         if (text.isEmpty() || scale <= 0.0F) {
             return;
         }
@@ -770,16 +770,16 @@ public class CompassElement extends AbstractElement {
         pose.scale(scale, scale);
         if (outline) {
             int blackColor = applyOpacity(DrawableColor.BLACK.getColorInt());
-            graphics.drawString(font, text, -1, 0, blackColor, false);
-            graphics.drawString(font, text, 0, -1, blackColor, false);
-            graphics.drawString(font, text, 1, 0, blackColor, false);
-            graphics.drawString(font, text, 0, 1, blackColor, false);
-            graphics.drawString(font, text, -1, -1, blackColor, false);
-            graphics.drawString(font, text, 1, -1, blackColor, false);
-            graphics.drawString(font, text, 1, 1, blackColor, false);
-            graphics.drawString(font, text, -1, 1, blackColor, false);
+            graphics.text(font, text, -1, 0, blackColor, false);
+            graphics.text(font, text, 0, -1, blackColor, false);
+            graphics.text(font, text, 1, 0, blackColor, false);
+            graphics.text(font, text, 0, 1, blackColor, false);
+            graphics.text(font, text, -1, -1, blackColor, false);
+            graphics.text(font, text, 1, -1, blackColor, false);
+            graphics.text(font, text, 1, 1, blackColor, false);
+            graphics.text(font, text, -1, 1, blackColor, false);
         }
-        graphics.drawString(font, text, 0, 0, color, false);
+        graphics.text(font, text, 0, 0, color, false);
         pose.popMatrix();
     }
 
@@ -1289,7 +1289,7 @@ public class CompassElement extends AbstractElement {
     private record TextureHandle(Identifier location, int width, int height, @NotNull AspectRatio aspectRatio) {
     }
 
-    private void drawDeathNeedleStrips(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float centerX, int color, float offsetY) {
+    private void drawDeathNeedleStrips(@NotNull GuiGraphicsExtractor graphics, @NotNull CompassLayout layout, float centerX, int color, float offsetY) {
         int needleWidth = Math.max(1, Mth.floor(layout.width() * 0.006F));
         int half = Math.max(0, needleWidth / 2);
         float normalizedCenter = this.normalizeCenterForWrap(layout, centerX);
@@ -1298,7 +1298,7 @@ public class CompassElement extends AbstractElement {
         this.drawNeedleStrip(graphics, layout, normalizedCenter + layout.width(), needleWidth, half, color, offsetY);
     }
 
-    private void drawNeedleStrip(@NotNull GuiGraphics graphics, @NotNull CompassLayout layout, float centerX, int width, int halfWidth, int color, float offsetY) {
+    private void drawNeedleStrip(@NotNull GuiGraphicsExtractor graphics, @NotNull CompassLayout layout, float centerX, int width, int halfWidth, int color, float offsetY) {
         int xi = Mth.floor(centerX) - halfWidth;
         int pixelOffset = Mth.floor(offsetY);
         int top = layout.y() + pixelOffset;

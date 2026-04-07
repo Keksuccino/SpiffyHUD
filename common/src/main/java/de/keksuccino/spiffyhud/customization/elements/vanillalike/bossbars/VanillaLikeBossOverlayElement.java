@@ -2,12 +2,12 @@ package de.keksuccino.spiffyhud.customization.elements.vanillalike.bossbars;
 
 import de.keksuccino.fancymenu.customization.element.AbstractElement;
 import de.keksuccino.fancymenu.customization.element.ElementBuilder;
-import de.keksuccino.spiffyhud.mixin.mixins.common.client.IMixinGuiGraphics;
+import de.keksuccino.spiffyhud.mixin.mixins.common.client.IMixinBossHealthOverlay;
 import de.keksuccino.spiffyhud.util.SizeAndPositionRecorder;
 import de.keksuccino.spiffyhud.util.SpiffyAlignment;
 import de.keksuccino.spiffyhud.util.rendering.SpiffyRenderUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 
@@ -97,7 +97,7 @@ public class VanillaLikeBossOverlayElement extends AbstractElement {
      * using our own drawing code.
      */
     @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partial) {
+    public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partial) {
         if (this.minecraft.player == null || this.minecraft.level == null) return;
 
         // Compute the local (relative) boss bar area.
@@ -117,7 +117,7 @@ public class VanillaLikeBossOverlayElement extends AbstractElement {
         int offsetY = alignedPosition[1] - this.barOriginalY;
 
         // Choose events to render.
-        Iterable<LerpingBossEvent> eventsToRender = isEditor() ? DUMMY_EVENTS : Minecraft.getInstance().gui.getBossOverlay().events.values();
+        Iterable<LerpingBossEvent> eventsToRender = isEditor() ? DUMMY_EVENTS : ((IMixinBossHealthOverlay)Minecraft.getInstance().gui.getBossOverlay()).get_events_Spiffy().values();
 
         this.renderBossBars(graphics, offsetX, offsetY, eventsToRender);
     }
@@ -133,7 +133,7 @@ public class VanillaLikeBossOverlayElement extends AbstractElement {
 
         // Use dummy events in editor mode, or real events otherwise.
         Iterable<LerpingBossEvent> eventsToRecord = isEditor() ? DUMMY_EVENTS
-                : Minecraft.getInstance().gui.getBossOverlay().events.values();
+                : ((IMixinBossHealthOverlay)Minecraft.getInstance().gui.getBossOverlay()).get_events_Spiffy().values();
         if (!eventsToRecord.iterator().hasNext() && !isEditor()) {
             return;
         }
@@ -171,7 +171,7 @@ public class VanillaLikeBossOverlayElement extends AbstractElement {
      * @param offsetY    Vertical offset (from alignment).
      * @param bossEvents The boss events to render.
      */
-    private void renderBossBars(GuiGraphics graphics, int offsetX, int offsetY, Iterable<LerpingBossEvent> bossEvents) {
+    private void renderBossBars(GuiGraphicsExtractor graphics, int offsetX, int offsetY, Iterable<LerpingBossEvent> bossEvents) {
         // Calculate the color with opacity
         int color = ARGB.color(Math.round(this.opacity * 255f), 255, 255, 255);
 
@@ -190,7 +190,7 @@ public class VanillaLikeBossOverlayElement extends AbstractElement {
             int textPosY = barPosY - 9;
 
             // Draw text with proper opacity
-            graphics.drawString(
+            graphics.text(
                 this.minecraft.font,
                 eventName,
                 textPosX,
@@ -211,7 +211,7 @@ public class VanillaLikeBossOverlayElement extends AbstractElement {
      * @param bossEvent The boss event providing progress and style.
      * @param color     The color to use for rendering (includes opacity).
      */
-    private void drawBar(GuiGraphics graphics, int barX, int barY, BossEvent bossEvent, int color) {
+    private void drawBar(GuiGraphicsExtractor graphics, int barX, int barY, BossEvent bossEvent, int color) {
         // Draw the background (default width = 182).
         drawBar(graphics, barX, barY, bossEvent, BAR_WIDTH, BAR_BACKGROUND_SPRITES, OVERLAY_BACKGROUND_SPRITES, color);
 
@@ -235,7 +235,7 @@ public class VanillaLikeBossOverlayElement extends AbstractElement {
      * @param overlaySprites   Array of overlay sprites for different notch patterns.
      * @param color            The color to use for rendering (includes opacity).
      */
-    private void drawBar(GuiGraphics graphics, int barX, int barY, BossEvent bossEvent, int progress, Identifier[] barSprites, Identifier[] overlaySprites, int color) {
+    private void drawBar(GuiGraphicsExtractor graphics, int barX, int barY, BossEvent bossEvent, int progress, Identifier[] barSprites, Identifier[] overlaySprites, int color) {
         SpiffyRenderUtils.blitSprite(graphics, barSprites[bossEvent.getColor().ordinal()], BAR_WIDTH, BAR_HEIGHT, 0, 0, barX, barY, progress, BAR_HEIGHT, color);
         if (bossEvent.getOverlay() != BossBarOverlay.PROGRESS) {
             SpiffyRenderUtils.blitSprite(graphics, overlaySprites[bossEvent.getOverlay().ordinal() - 1], BAR_WIDTH, BAR_HEIGHT, 0, 0, barX, barY, progress, BAR_HEIGHT, color);

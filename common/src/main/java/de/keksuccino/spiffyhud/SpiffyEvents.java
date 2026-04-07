@@ -14,7 +14,7 @@ import de.keksuccino.fancymenu.util.rendering.ui.widget.button.ExtendedButton;
 import de.keksuccino.spiffyhud.customization.SpiffyOverlayScreen;
 import de.keksuccino.spiffyhud.networking.packets.structure.structures.StructuresPacket;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.PauseScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
@@ -42,7 +42,7 @@ public class SpiffyEvents {
             }) {
 
                 @Override
-                public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partial) {
+                protected void extractContents(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partial) {
 
                     var m = CustomizationOverlay.getCurrentMenuBarInstance();
                     if ((m == null) || !m.isUserNavigatingInMenuBar()) {
@@ -55,7 +55,7 @@ public class SpiffyEvents {
                         this.setX(-30);
                     }
 
-                    super.render(graphics, mouseX, mouseY, partial);
+                    super.extractContents(graphics, mouseX, mouseY, partial);
 
                     graphics.blit(RenderPipelines.GUI_TEXTURED, EDIT_BUTTON_TEXTURE, this.getX(), this.getY(), 0.0f, 0.0f, this.getWidth(), this.getHeight(), this.getWidth(), this.getHeight());
 
@@ -81,7 +81,7 @@ public class SpiffyEvents {
 
         if ((e.getScreen() instanceof PauseScreen p) && p.showsPauseMenu() && CustomizationOverlay.isOverlayVisible(p)) {
             if (this.spiffyButton != null) {
-                this.spiffyButton.render(e.getGraphics(), e.getMouseX(), e.getMouseY(), e.getPartial());
+                this.spiffyButton.extractRenderState(e.getGraphics(), e.getMouseX(), e.getMouseY(), e.getPartial());
             }
         }
 

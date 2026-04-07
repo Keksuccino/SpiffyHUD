@@ -6,7 +6,7 @@ import de.keksuccino.fancymenu.customization.placeholder.PlaceholderParser;
 import de.keksuccino.fancymenu.util.MathUtils;
 import de.keksuccino.fancymenu.util.rendering.DrawableColor;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -86,7 +86,7 @@ public class ChatCustomizerElement extends AbstractElement {
     }
 
     @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partial) {
+    public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partial) {
 
         if (isEditor()) {
             int x = this.getAbsoluteX();
@@ -95,7 +95,7 @@ public class ChatCustomizerElement extends AbstractElement {
             int h = this.getAbsoluteHeight();
             graphics.fill(x, y, x + w, y + h, this.inEditorColor.getColorInt());
             graphics.enableScissor(x, y, x + w, y + h);
-            graphics.drawCenteredString(Minecraft.getInstance().font, this.getDisplayName(), x + (w / 2), y + (h / 2) - (Minecraft.getInstance().font.lineHeight / 2), -1);
+            graphics.centeredText(Minecraft.getInstance().font, this.getDisplayName(), x + (w / 2), y + (h / 2) - (Minecraft.getInstance().font.lineHeight / 2), -1);
             graphics.disableScissor();
         }
 

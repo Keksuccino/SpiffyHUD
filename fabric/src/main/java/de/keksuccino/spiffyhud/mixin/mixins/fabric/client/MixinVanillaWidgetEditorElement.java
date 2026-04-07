@@ -9,7 +9,7 @@ import de.keksuccino.fancymenu.util.ObjectUtils;
 import de.keksuccino.fancymenu.util.rendering.ui.UIBase;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
@@ -40,8 +40,8 @@ public abstract class MixinVanillaWidgetEditorElement extends ButtonEditorElemen
         super(null, null);
     }
 
-    @Inject(method = "renderDraggingNotAllowedOverlay", at = @At(value = "INVOKE", target = "Lde/keksuccino/fancymenu/customization/element/elements/button/custombutton/ButtonEditorElement;renderDraggingNotAllowedOverlay(Lnet/minecraft/client/gui/GuiGraphics;)V"))
-    private void after_adding_display_lines_Spiffy(GuiGraphics graphics, CallbackInfo info) {
+    @Inject(method = "renderDraggingNotAllowedOverlay", at = @At(value = "INVOKE", target = "Lde/keksuccino/fancymenu/customization/element/elements/button/custombutton/ButtonEditorElement;renderDraggingNotAllowedOverlay(Lnet/minecraft/client/gui/GuiGraphicsExtractor;)V"))
+    private void after_adding_display_lines_Spiffy(GuiGraphicsExtractor graphics, CallbackInfo info) {
 
         if (this.isSpiffyDummyElement_Spiffy()) {
 
@@ -99,15 +99,15 @@ public abstract class MixinVanillaWidgetEditorElement extends ButtonEditorElemen
                             int xLeft = centerX - (lineWidth / 2);
                             // Draw background: 1 pixel padding on each side.
                             graphics.fill(xLeft - 1, lineY - 1, xLeft + lineWidth + 1, lineY + lineHeight + 1, bgColor);
-                            graphics.drawCenteredString(font, c, centerX, lineY, -1);
+                            graphics.centeredText(font, c, centerX, lineY, -1);
                         } else if (useRightAligned) {
                             int textX = this.getX() + this.getWidth() - lineWidth;
                             graphics.fill(textX - 1, lineY - 1, textX + lineWidth + 1, lineY + lineHeight + 1, bgColor);
-                            graphics.drawString(font, c, textX, lineY, -1);
+                            graphics.text(font, c, textX, lineY, -1);
                         } else if (useLeftAligned) {
                             int textX = this.getX();
                             graphics.fill(textX - 1, lineY - 1, textX + lineWidth + 1, lineY + lineHeight + 1, bgColor);
-                            graphics.drawString(font, c, textX, lineY, -1);
+                            graphics.text(font, c, textX, lineY, -1);
                         }
                         currentLine++;
                     }
@@ -136,15 +136,15 @@ public abstract class MixinVanillaWidgetEditorElement extends ButtonEditorElemen
                         if (useCentered) {
                             int xLeft = centerX - (lineWidth / 2);
                             graphics.fill(xLeft - 1, lineY - 1, xLeft + lineWidth + 1, lineY + lineHeight + 1, bgColor);
-                            graphics.drawCenteredString(font, c, centerX, lineY, -1);
+                            graphics.centeredText(font, c, centerX, lineY, -1);
                         } else if (useRightAligned) {
                             int textX = this.getX() + this.getWidth() - lineWidth;
                             graphics.fill(textX - 1, lineY - 1, textX + lineWidth + 1, lineY + lineHeight + 1, bgColor);
-                            graphics.drawString(font, c, textX, lineY, -1);
+                            graphics.text(font, c, textX, lineY, -1);
                         } else if (useLeftAligned) {
                             int textX = this.getX();
                             graphics.fill(textX - 1, lineY - 1, textX + lineWidth + 1, lineY + lineHeight + 1, bgColor);
-                            graphics.drawString(font, c, textX, lineY, -1);
+                            graphics.text(font, c, textX, lineY, -1);
                         }
                         currentLine++;
                     }
@@ -166,7 +166,7 @@ public abstract class MixinVanillaWidgetEditorElement extends ButtonEditorElemen
                         int lineY = startY + currentLine * (lineHeight + 2);
                         int lineWidth = font.width(c);
                         graphics.fill(startX - 1, lineY - 1, startX + lineWidth + 1, lineY + lineHeight + 1, bgColor);
-                        graphics.drawString(font, c, startX, lineY, -1);
+                        graphics.text(font, c, startX, lineY, -1);
                         currentLine++;
                     }
                 }
@@ -187,7 +187,7 @@ public abstract class MixinVanillaWidgetEditorElement extends ButtonEditorElemen
                             textX = 0;
                         }
                         graphics.fill(textX - 1, lineY - 1, textX + lineWidth + 1, lineY + lineHeight + 1, bgColor);
-                        graphics.drawString(font, c, textX, lineY, -1);
+                        graphics.text(font, c, textX, lineY, -1);
                         currentLine++;
                     }
                 }

@@ -9,7 +9,7 @@ import de.keksuccino.fancymenu.util.rendering.ui.UIBase;
 import de.keksuccino.spiffyhud.util.rendering.SpiffyRenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
@@ -36,7 +36,7 @@ public class SlotElement extends AbstractElement {
     }
 
     @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partial) {
+    public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partial) {
 
         if (this.shouldRender()) {
 
@@ -65,7 +65,7 @@ public class SlotElement extends AbstractElement {
                 graphics.fill(x, y, x + w, y + h, this.inEditorColor.getColorIntWithAlpha(0.5F));
                 UIBase.renderBorder(graphics, x, y, x + w, y + h, 1, this.inEditorColor.getColorIntWithAlpha(0.8F), true, true, true, true);
 
-                graphics.drawCenteredString(this.font, label, x + (w / 2), y + (h / 2) - (this.font.lineHeight / 2), -1);
+                graphics.centeredText(this.font, label, x + (w / 2), y + (h / 2) - (this.font.lineHeight / 2), -1);
 
             } else {
 
@@ -81,7 +81,7 @@ public class SlotElement extends AbstractElement {
 
     }
 
-    protected void renderItem(GuiGraphics graphics, int x, int y, int width, int height, int mouseX, int mouseY, @NotNull ItemStack itemStack) {
+    protected void renderItem(GuiGraphicsExtractor graphics, int x, int y, int width, int height, int mouseX, int mouseY, @NotNull ItemStack itemStack) {
 
         int count = itemStack.getCount();
 
@@ -93,7 +93,7 @@ public class SlotElement extends AbstractElement {
 
     }
 
-    protected void renderScaledItem(@NotNull GuiGraphics graphics, @NotNull ItemStack stack, int x, int y, int width, int height) {
+    protected void renderScaledItem(@NotNull GuiGraphicsExtractor graphics, @NotNull ItemStack stack, int x, int y, int width, int height) {
 
         // Save the current transformation state.
         Matrix3x2fStack pose = graphics.pose();
@@ -108,14 +108,14 @@ public class SlotElement extends AbstractElement {
         pose.scale(scale, scale);
 
         // Now render the item at (0,0) because the translation has been applied.
-        graphics.renderItem(stack, 0, 0);
+        graphics.item(stack, 0, 0);
 
         // Render durability bar if enabled and needed
         if (this.showDurability && stack.isBarVisible()) {
             int barWidth = stack.getBarWidth();
             int barColor = stack.getBarColor();
             
-            // Position the bar - using the same positioning logic as in GuiGraphics
+            // Position the bar - using the same positioning logic as in GuiGraphicsExtractor
             int barX = 2;
             int barY = 13;
             
@@ -145,7 +145,7 @@ public class SlotElement extends AbstractElement {
 
     }
 
-    protected void renderItemCount(@NotNull GuiGraphics graphics, @NotNull Font font, int x, int y, int size, int count) {
+    protected void renderItemCount(@NotNull GuiGraphicsExtractor graphics, @NotNull Font font, int x, int y, int size, int count) {
 
         Matrix3x2fStack pose = graphics.pose();
         String text = String.valueOf(count);
@@ -163,7 +163,7 @@ public class SlotElement extends AbstractElement {
         int scaledX = (int)((x / scaleFactor) + 19 - 2 - font.width(text));
         int scaledY = (int)((y / scaleFactor) + 6 + 3);
 
-        graphics.drawString(font, text, scaledX, scaledY, DrawableColor.WHITE.getColorIntWithAlpha(this.opacity), true);
+        graphics.text(font, text, scaledX, scaledY, DrawableColor.WHITE.getColorIntWithAlpha(this.opacity), true);
         pose.popMatrix();
         pose.popMatrix();
 

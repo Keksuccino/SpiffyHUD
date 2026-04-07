@@ -5,7 +5,7 @@ import de.keksuccino.fancymenu.customization.element.ElementBuilder;
 import de.keksuccino.spiffyhud.util.rendering.SpiffyRenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.WaypointStyle;
@@ -78,7 +78,7 @@ public class VanillaLikeContextualBarElement extends AbstractElement {
      * @param partial  Partial ticks.
      */
     @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partial) {
+    public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partial) {
         // Do nothing if the player or level is missing.
         if (this.minecraft.player == null || this.minecraft.level == null) {
             return;
@@ -176,7 +176,7 @@ public class VanillaLikeContextualBarElement extends AbstractElement {
     /**
      * Renders the experience bar.
      */
-    private void renderExperienceBar(GuiGraphics graphics, int x, int y, int width, int height) {
+    private void renderExperienceBar(GuiGraphicsExtractor graphics, int x, int y, int width, int height) {
         var player = this.minecraft.player;
         if (player == null) return;
 
@@ -230,19 +230,19 @@ public class VanillaLikeContextualBarElement extends AbstractElement {
             int textY = y - 6;
 
             // Draw shadow around the text for better readability.
-            graphics.drawString(this.getFont(), levelText, textX + 1, textY, SpiffyRenderUtils.colorWithAlpha(0, this.opacity), false);
-            graphics.drawString(this.getFont(), levelText, textX - 1, textY, SpiffyRenderUtils.colorWithAlpha(0, this.opacity), false);
-            graphics.drawString(this.getFont(), levelText, textX, textY + 1, SpiffyRenderUtils.colorWithAlpha(0, this.opacity), false);
-            graphics.drawString(this.getFont(), levelText, textX, textY - 1, SpiffyRenderUtils.colorWithAlpha(0, this.opacity), false);
+            graphics.text(this.getFont(), levelText, textX + 1, textY, SpiffyRenderUtils.colorWithAlpha(0, this.opacity), false);
+            graphics.text(this.getFont(), levelText, textX - 1, textY, SpiffyRenderUtils.colorWithAlpha(0, this.opacity), false);
+            graphics.text(this.getFont(), levelText, textX, textY + 1, SpiffyRenderUtils.colorWithAlpha(0, this.opacity), false);
+            graphics.text(this.getFont(), levelText, textX, textY - 1, SpiffyRenderUtils.colorWithAlpha(0, this.opacity), false);
             // Draw the main level number in yellow (color code 8453920).
-            graphics.drawString(this.getFont(), levelText, textX, textY, SpiffyRenderUtils.colorWithAlpha(8453920, this.opacity), false);
+            graphics.text(this.getFont(), levelText, textX, textY, SpiffyRenderUtils.colorWithAlpha(8453920, this.opacity), false);
         }
     }
 
     /**
      * Renders the jump bar for rideable entities.
      */
-    private void renderJumpBar(GuiGraphics graphics, int x, int y, int width, int height) {
+    private void renderJumpBar(GuiGraphicsExtractor graphics, int x, int y, int width, int height) {
         LocalPlayer player = this.minecraft.player;
         PlayerRideableJumping jumpableVehicle = player != null ? player.jumpableVehicle() : null;
         if (jumpableVehicle == null && !isEditor()) return;
@@ -307,7 +307,7 @@ public class VanillaLikeContextualBarElement extends AbstractElement {
     /**
      * Renders the locator bar for waypoints.
      */
-    private void renderLocatorBar(GuiGraphics graphics, int x, int y, int width, int height) {
+    private void renderLocatorBar(GuiGraphicsExtractor graphics, int x, int y, int width, int height) {
         int color = ARGB.color(Math.round(this.opacity * 255f), 255, 255, 255);
 
         // Draw the background
@@ -337,7 +337,7 @@ public class VanillaLikeContextualBarElement extends AbstractElement {
             Level level = this.minecraft.getCameraEntity().level();
             this.minecraft.player.connection.getWaypointManager().forEachWaypoint(this.minecraft.getCameraEntity(), (waypoint) -> {
                 if (!isPlayerWaypoint(waypoint)) {
-                    double yawAngle = waypoint.yawAngleToCamera(level, this.minecraft.gameRenderer.getMainCamera(), entity -> this.minecraft.gameRenderer.getMainCamera().getPartialTickTime());
+                    double yawAngle = waypoint.yawAngleToCamera(level, this.minecraft.gameRenderer.getMainCamera(), entity -> this.minecraft.gameRenderer.getMainCamera().getCameraEntityPartialTicks(this.minecraft.getDeltaTracker()));
                     if (yawAngle > -VISIBLE_DEGREE_RANGE - 1 && yawAngle <= VISIBLE_DEGREE_RANGE) {
                         renderWaypoint(graphics, waypoint, x, y, width, yawAngle, level);
                     }
@@ -358,7 +358,7 @@ public class VanillaLikeContextualBarElement extends AbstractElement {
     /**
      * Renders a single waypoint on the locator bar.
      */
-    private void renderWaypoint(GuiGraphics graphics, TrackedWaypoint waypoint, int barX, int barY, int barWidth, double yawAngle, Level level) {
+    private void renderWaypoint(GuiGraphicsExtractor graphics, TrackedWaypoint waypoint, int barX, int barY, int barWidth, double yawAngle, Level level) {
         int centerX = barX + barWidth / 2;
         Waypoint.Icon icon = waypoint.icon();
         WaypointStyle style = this.minecraft.getWaypointStyles().get(icon.style);
@@ -393,7 +393,7 @@ public class VanillaLikeContextualBarElement extends AbstractElement {
         );
         
         // Draw directional arrow if needed
-        TrackedWaypoint.PitchDirection pitchDirection = waypoint.pitchDirectionToCamera(level, this.minecraft.gameRenderer, entity -> this.minecraft.gameRenderer.getMainCamera().getPartialTickTime());
+        TrackedWaypoint.PitchDirection pitchDirection = waypoint.pitchDirectionToCamera(level, this.minecraft.gameRenderer, entity -> this.minecraft.gameRenderer.getMainCamera().getCameraEntityPartialTicks(this.minecraft.getDeltaTracker()));
         if (pitchDirection != TrackedWaypoint.PitchDirection.NONE) {
             int arrowY;
             Identifier arrowSprite;

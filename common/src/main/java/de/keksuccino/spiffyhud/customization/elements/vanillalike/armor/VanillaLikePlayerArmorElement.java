@@ -6,7 +6,7 @@ import de.keksuccino.spiffyhud.SpiffyUtils;
 import de.keksuccino.spiffyhud.util.SpiffyAlignment;
 import de.keksuccino.spiffyhud.util.rendering.SpiffyRenderUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
@@ -39,7 +39,7 @@ public class VanillaLikePlayerArmorElement extends AbstractElement {
     }
 
     @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partial) {
+    public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partial) {
         // Update the current tick (if needed for any time-dependent effects).
         this.tickCount = SpiffyUtils.getGuiAccessor().getTickCount_Spiffy();
 
@@ -80,7 +80,7 @@ public class VanillaLikePlayerArmorElement extends AbstractElement {
      * @param offsetX  the x-coordinate where the bar should start drawing
      * @param offsetY  the y-coordinate where the bar should start drawing
      */
-    private void renderPlayerArmor(GuiGraphics graphics, int offsetX, int offsetY) {
+    private void renderPlayerArmor(GuiGraphicsExtractor graphics, int offsetX, int offsetY) {
         // Retrieve the current player; if unavailable, skip rendering.
         Player player = this.getCameraPlayer();
         if (player == null) {

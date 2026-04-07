@@ -10,7 +10,7 @@ import de.keksuccino.fancymenu.util.resource.resources.texture.ITexture;
 import de.keksuccino.spiffyhud.SpiffyUtils;
 import de.keksuccino.spiffyhud.util.SpiffyAlignment;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
@@ -64,7 +64,7 @@ public class PlayerArmorBarElement extends AbstractElement {
     }
 
     @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partial) {
+    public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partial) {
 
         this.cachedTickCount = safeTickCount();
         PlayerData data = this.collectPlayerData();
@@ -93,7 +93,7 @@ public class PlayerArmorBarElement extends AbstractElement {
         this.drawArmor(graphics, aligned[0], aligned[1], data, metrics, scale);
     }
 
-    private void drawArmor(@NotNull GuiGraphics graphics, int originX, int originY, @NotNull PlayerData data, @NotNull RenderMetrics metrics, float scale) {
+    private void drawArmor(@NotNull GuiGraphicsExtractor graphics, int originX, int originY, @NotNull PlayerData data, @NotNull RenderMetrics metrics, float scale) {
 
         Matrix3x2fStack pose = graphics.pose();
         pose.pushMatrix();
@@ -134,7 +134,7 @@ public class PlayerArmorBarElement extends AbstractElement {
         return this.textureFromFill(fillValue);
     }
 
-    private void renderSingleIcon(@NotNull GuiGraphics graphics, @NotNull RenderMetrics metrics, @NotNull SlotPlacement placement, int logicalIndex, @NotNull ArmorTextureKind textureKind, float shakeStrengthBase, float scale) {
+    private void renderSingleIcon(@NotNull GuiGraphicsExtractor graphics, @NotNull RenderMetrics metrics, @NotNull SlotPlacement placement, int logicalIndex, @NotNull ArmorTextureKind textureKind, float shakeStrengthBase, float scale) {
 
         float gap = this.iconGap;
         float baseSpacingX = (metrics.baseIconSize + gap) * scale;
@@ -165,7 +165,7 @@ public class PlayerArmorBarElement extends AbstractElement {
         return new float[] { dx, dy };
     }
 
-    private void drawArmorTexture(@NotNull GuiGraphics graphics, @NotNull ArmorTextureKind kind, int size) {
+    private void drawArmorTexture(@NotNull GuiGraphicsExtractor graphics, @NotNull ArmorTextureKind kind, int size) {
         ResourceSupplier<ITexture> supplier = this.customTextures.get(kind);
         if (supplier != null) {
             try {

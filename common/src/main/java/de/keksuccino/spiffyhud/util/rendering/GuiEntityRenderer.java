@@ -1,7 +1,7 @@
 package de.keksuccino.spiffyhud.util.rendering;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
@@ -47,7 +47,7 @@ public class GuiEntityRenderer {
      * @param opacity   the opacity of the rendered entity (0.0 = fully transparent, 1.0 = fully opaque)
      * @param entity    the LivingEntity to render
      */
-    public void renderEntity(GuiGraphics graphics, int posX, int posY, int boxWidth, int boxHeight, float opacity, LivingEntity entity) {
+    public void renderEntity(GuiGraphicsExtractor graphics, int posX, int posY, int boxWidth, int boxHeight, float opacity, LivingEntity entity) {
 
         // Obtain the entity's bounding dimensions using Pose.STANDING.
         EntityDimensions dimensions = entity.getDimensions(Pose.STANDING);
@@ -117,7 +117,7 @@ public class GuiEntityRenderer {
         boxHeight += 2000;
 
         // Submit the entity render state using the new 1.21.6 method
-        graphics.submitEntityRenderState(
+        graphics.entity(
             renderState,
             uniformScale,
             translation,

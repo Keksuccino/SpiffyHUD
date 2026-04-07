@@ -10,7 +10,7 @@ import de.keksuccino.fancymenu.util.resource.resources.texture.ITexture;
 import de.keksuccino.spiffyhud.SpiffyUtils;
 import de.keksuccino.spiffyhud.util.SpiffyAlignment;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
@@ -68,7 +68,7 @@ public class PlayerFoodBarElement extends AbstractElement {
     }
 
     @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partial) {
+    public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partial) {
 
         this.cachedTickCount = safeTickCount();
         PlayerData data = this.collectPlayerData();
@@ -97,7 +97,7 @@ public class PlayerFoodBarElement extends AbstractElement {
         this.drawFood(graphics, aligned[0], aligned[1], data, metrics, scale);
     }
 
-    private void drawFood(@NotNull GuiGraphics graphics, int originX, int originY, @NotNull PlayerData data, @NotNull RenderMetrics metrics, float scale) {
+    private void drawFood(@NotNull GuiGraphicsExtractor graphics, int originX, int originY, @NotNull PlayerData data, @NotNull RenderMetrics metrics, float scale) {
 
         Matrix3x2fStack pose = graphics.pose();
         pose.pushMatrix();
@@ -138,7 +138,7 @@ public class PlayerFoodBarElement extends AbstractElement {
         return this.textureFromFill(fillValue, data.visualStyle);
     }
 
-    private void renderSingleIcon(@NotNull GuiGraphics graphics, @NotNull RenderMetrics metrics, @NotNull SlotPlacement placement, int logicalIndex, @NotNull FoodTextureKind textureKind, float shakeStrengthBase, float scale) {
+    private void renderSingleIcon(@NotNull GuiGraphicsExtractor graphics, @NotNull RenderMetrics metrics, @NotNull SlotPlacement placement, int logicalIndex, @NotNull FoodTextureKind textureKind, float shakeStrengthBase, float scale) {
 
         float gap = this.iconGap;
         float baseSpacingX = (metrics.baseIconSize + gap) * scale;
@@ -169,7 +169,7 @@ public class PlayerFoodBarElement extends AbstractElement {
         return new float[] { dx, dy };
     }
 
-    private void drawFoodTexture(@NotNull GuiGraphics graphics, @NotNull FoodTextureKind kind, int size) {
+    private void drawFoodTexture(@NotNull GuiGraphicsExtractor graphics, @NotNull FoodTextureKind kind, int size) {
         ResourceSupplier<ITexture> supplier = this.customTextures.get(kind);
         if (supplier != null) {
             try {

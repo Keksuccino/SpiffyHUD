@@ -7,8 +7,7 @@ import de.keksuccino.spiffyhud.util.SizeAndPositionRecorder;
 import de.keksuccino.spiffyhud.util.SpiffyAlignment;
 import de.keksuccino.spiffyhud.util.rendering.SpiffyRenderUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
@@ -28,11 +27,51 @@ public class VanillaLikePlayerHealthElement extends AbstractElement {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    // Sprite resources for hearts in 1.21.1
+    // Sprite resources for hearts in 26.1.1
     private static final Identifier HEART_CONTAINER_SPRITE = Identifier.withDefaultNamespace("hud/heart/container");
     private static final Identifier HEART_CONTAINER_BLINKING_SPRITE = Identifier.withDefaultNamespace("hud/heart/container_blinking");
     private static final Identifier HEART_CONTAINER_HARDCORE_SPRITE = Identifier.withDefaultNamespace("hud/heart/container_hardcore");
     private static final Identifier HEART_CONTAINER_HARDCORE_BLINKING_SPRITE = Identifier.withDefaultNamespace("hud/heart/container_hardcore_blinking");
+    private static final Identifier HEART_NORMAL_FULL_SPRITE = Identifier.withDefaultNamespace("hud/heart/full");
+    private static final Identifier HEART_NORMAL_FULL_BLINKING_SPRITE = Identifier.withDefaultNamespace("hud/heart/full_blinking");
+    private static final Identifier HEART_NORMAL_HALF_SPRITE = Identifier.withDefaultNamespace("hud/heart/half");
+    private static final Identifier HEART_NORMAL_HALF_BLINKING_SPRITE = Identifier.withDefaultNamespace("hud/heart/half_blinking");
+    private static final Identifier HEART_NORMAL_HARDCORE_FULL_SPRITE = Identifier.withDefaultNamespace("hud/heart/hardcore_full");
+    private static final Identifier HEART_NORMAL_HARDCORE_FULL_BLINKING_SPRITE = Identifier.withDefaultNamespace("hud/heart/hardcore_full_blinking");
+    private static final Identifier HEART_NORMAL_HARDCORE_HALF_SPRITE = Identifier.withDefaultNamespace("hud/heart/hardcore_half");
+    private static final Identifier HEART_NORMAL_HARDCORE_HALF_BLINKING_SPRITE = Identifier.withDefaultNamespace("hud/heart/hardcore_half_blinking");
+    private static final Identifier HEART_POISONED_FULL_SPRITE = Identifier.withDefaultNamespace("hud/heart/poisoned_full");
+    private static final Identifier HEART_POISONED_FULL_BLINKING_SPRITE = Identifier.withDefaultNamespace("hud/heart/poisoned_full_blinking");
+    private static final Identifier HEART_POISONED_HALF_SPRITE = Identifier.withDefaultNamespace("hud/heart/poisoned_half");
+    private static final Identifier HEART_POISONED_HALF_BLINKING_SPRITE = Identifier.withDefaultNamespace("hud/heart/poisoned_half_blinking");
+    private static final Identifier HEART_POISONED_HARDCORE_FULL_SPRITE = Identifier.withDefaultNamespace("hud/heart/poisoned_hardcore_full");
+    private static final Identifier HEART_POISONED_HARDCORE_FULL_BLINKING_SPRITE = Identifier.withDefaultNamespace("hud/heart/poisoned_hardcore_full_blinking");
+    private static final Identifier HEART_POISONED_HARDCORE_HALF_SPRITE = Identifier.withDefaultNamespace("hud/heart/poisoned_hardcore_half");
+    private static final Identifier HEART_POISONED_HARDCORE_HALF_BLINKING_SPRITE = Identifier.withDefaultNamespace("hud/heart/poisoned_hardcore_half_blinking");
+    private static final Identifier HEART_WITHERED_FULL_SPRITE = Identifier.withDefaultNamespace("hud/heart/withered_full");
+    private static final Identifier HEART_WITHERED_FULL_BLINKING_SPRITE = Identifier.withDefaultNamespace("hud/heart/withered_full_blinking");
+    private static final Identifier HEART_WITHERED_HALF_SPRITE = Identifier.withDefaultNamespace("hud/heart/withered_half");
+    private static final Identifier HEART_WITHERED_HALF_BLINKING_SPRITE = Identifier.withDefaultNamespace("hud/heart/withered_half_blinking");
+    private static final Identifier HEART_WITHERED_HARDCORE_FULL_SPRITE = Identifier.withDefaultNamespace("hud/heart/withered_hardcore_full");
+    private static final Identifier HEART_WITHERED_HARDCORE_FULL_BLINKING_SPRITE = Identifier.withDefaultNamespace("hud/heart/withered_hardcore_full_blinking");
+    private static final Identifier HEART_WITHERED_HARDCORE_HALF_SPRITE = Identifier.withDefaultNamespace("hud/heart/withered_hardcore_half");
+    private static final Identifier HEART_WITHERED_HARDCORE_HALF_BLINKING_SPRITE = Identifier.withDefaultNamespace("hud/heart/withered_hardcore_half_blinking");
+    private static final Identifier HEART_ABSORBING_FULL_SPRITE = Identifier.withDefaultNamespace("hud/heart/absorbing_full");
+    private static final Identifier HEART_ABSORBING_FULL_BLINKING_SPRITE = Identifier.withDefaultNamespace("hud/heart/absorbing_full_blinking");
+    private static final Identifier HEART_ABSORBING_HALF_SPRITE = Identifier.withDefaultNamespace("hud/heart/absorbing_half");
+    private static final Identifier HEART_ABSORBING_HALF_BLINKING_SPRITE = Identifier.withDefaultNamespace("hud/heart/absorbing_half_blinking");
+    private static final Identifier HEART_ABSORBING_HARDCORE_FULL_SPRITE = Identifier.withDefaultNamespace("hud/heart/absorbing_hardcore_full");
+    private static final Identifier HEART_ABSORBING_HARDCORE_FULL_BLINKING_SPRITE = Identifier.withDefaultNamespace("hud/heart/absorbing_hardcore_full_blinking");
+    private static final Identifier HEART_ABSORBING_HARDCORE_HALF_SPRITE = Identifier.withDefaultNamespace("hud/heart/absorbing_hardcore_half");
+    private static final Identifier HEART_ABSORBING_HARDCORE_HALF_BLINKING_SPRITE = Identifier.withDefaultNamespace("hud/heart/absorbing_hardcore_half_blinking");
+    private static final Identifier HEART_FROZEN_FULL_SPRITE = Identifier.withDefaultNamespace("hud/heart/frozen_full");
+    private static final Identifier HEART_FROZEN_FULL_BLINKING_SPRITE = Identifier.withDefaultNamespace("hud/heart/frozen_full_blinking");
+    private static final Identifier HEART_FROZEN_HALF_SPRITE = Identifier.withDefaultNamespace("hud/heart/frozen_half");
+    private static final Identifier HEART_FROZEN_HALF_BLINKING_SPRITE = Identifier.withDefaultNamespace("hud/heart/frozen_half_blinking");
+    private static final Identifier HEART_FROZEN_HARDCORE_FULL_SPRITE = Identifier.withDefaultNamespace("hud/heart/frozen_hardcore_full");
+    private static final Identifier HEART_FROZEN_HARDCORE_FULL_BLINKING_SPRITE = Identifier.withDefaultNamespace("hud/heart/frozen_hardcore_full_blinking");
+    private static final Identifier HEART_FROZEN_HARDCORE_HALF_SPRITE = Identifier.withDefaultNamespace("hud/heart/frozen_hardcore_half");
+    private static final Identifier HEART_FROZEN_HARDCORE_HALF_BLINKING_SPRITE = Identifier.withDefaultNamespace("hud/heart/frozen_hardcore_half_blinking");
 
     private final Minecraft minecraft = Minecraft.getInstance();
     protected final RandomSource random = RandomSource.create();
@@ -66,7 +105,7 @@ public class VanillaLikePlayerHealthElement extends AbstractElement {
      *    absolute coordinates (using getAbsoluteX/Y/Width/Height).
      */
     @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partial) {
+    public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partial) {
 
         // Update tick counter for animations.
         this.tickCount = SpiffyUtils.getGuiAccessor().getTickCount_Spiffy();
@@ -102,7 +141,7 @@ public class VanillaLikePlayerHealthElement extends AbstractElement {
      *
      * When shouldRenderBar is false, this method only records the bar's bounds.
      */
-    private void renderPlayerHealthInternal(GuiGraphics graphics, int originX, int originY) {
+    private void renderPlayerHealthInternal(GuiGraphicsExtractor graphics, int originX, int originY) {
 
         Player player = this.getCameraPlayer();
         if (player == null) {
@@ -172,7 +211,7 @@ public class VanillaLikePlayerHealthElement extends AbstractElement {
         }
 
         // Determine heart type.
-        Gui.HeartType baseHeartType = Gui.HeartType.forPlayer(player);
+        HeartType_Spiffy baseHeartType = HeartType_Spiffy.forPlayer(player);
         boolean isHardcore = player.level().getLevelData().isHardcore();
 
         // Recorder to capture the bounds of the hearts bar.
@@ -241,7 +280,7 @@ public class VanillaLikePlayerHealthElement extends AbstractElement {
                 if (absorptionIndex < absorptionHalfHearts) {
                     boolean isLastAbsorption = (absorptionIndex + 1 == absorptionHalfHearts);
                     if (this.shouldRenderBar) {
-                        renderHeart(graphics, baseHeartType == Gui.HeartType.WITHERED ? baseHeartType : Gui.HeartType.ABSORBING, heartX, heartY, false, isHardcore, isLastAbsorption);
+                        renderHeart(graphics, baseHeartType == HeartType_Spiffy.WITHERED ? baseHeartType : HeartType_Spiffy.ABSORBING, heartX, heartY, false, isHardcore, isLastAbsorption);
                     }
                 }
             }
@@ -275,7 +314,7 @@ public class VanillaLikePlayerHealthElement extends AbstractElement {
     /**
      * Renders a heart container (empty heart)
      */
-    private void renderEmptyHeart(GuiGraphics graphics, int x, int y, boolean blinking, boolean hardcore) {
+    private void renderEmptyHeart(GuiGraphicsExtractor graphics, int x, int y, boolean blinking, boolean hardcore) {
         Identifier spriteLocation;
 
         if (hardcore) {
@@ -302,7 +341,7 @@ public class VanillaLikePlayerHealthElement extends AbstractElement {
      * @param hardcore    Whether to use hardcore sprites.
      * @param halfHeart   Whether to render a half heart.
      */
-    private void renderHeart(GuiGraphics graphics, Gui.HeartType heartType, int x, int y, boolean blinking, boolean hardcore, boolean halfHeart) {
+    private void renderHeart(GuiGraphicsExtractor graphics, HeartType_Spiffy heartType, int x, int y, boolean blinking, boolean hardcore, boolean halfHeart) {
         Identifier spriteLocation = heartType.getSprite(hardcore, halfHeart, blinking);
 
         if (this.spiffyAlignment == SpiffyAlignment.TOP_RIGHT || this.spiffyAlignment == SpiffyAlignment.MID_RIGHT || this.spiffyAlignment == SpiffyAlignment.BOTTOM_RIGHT) {
@@ -329,6 +368,114 @@ public class VanillaLikePlayerHealthElement extends AbstractElement {
     @Override
     public int getAbsoluteHeight() {
         return this.barHeight;
+    }
+
+    private enum HeartType_Spiffy {
+        NORMAL(
+            HEART_NORMAL_FULL_SPRITE,
+            HEART_NORMAL_FULL_BLINKING_SPRITE,
+            HEART_NORMAL_HALF_SPRITE,
+            HEART_NORMAL_HALF_BLINKING_SPRITE,
+            HEART_NORMAL_HARDCORE_FULL_SPRITE,
+            HEART_NORMAL_HARDCORE_FULL_BLINKING_SPRITE,
+            HEART_NORMAL_HARDCORE_HALF_SPRITE,
+            HEART_NORMAL_HARDCORE_HALF_BLINKING_SPRITE
+        ),
+        POISONED(
+            HEART_POISONED_FULL_SPRITE,
+            HEART_POISONED_FULL_BLINKING_SPRITE,
+            HEART_POISONED_HALF_SPRITE,
+            HEART_POISONED_HALF_BLINKING_SPRITE,
+            HEART_POISONED_HARDCORE_FULL_SPRITE,
+            HEART_POISONED_HARDCORE_FULL_BLINKING_SPRITE,
+            HEART_POISONED_HARDCORE_HALF_SPRITE,
+            HEART_POISONED_HARDCORE_HALF_BLINKING_SPRITE
+        ),
+        WITHERED(
+            HEART_WITHERED_FULL_SPRITE,
+            HEART_WITHERED_FULL_BLINKING_SPRITE,
+            HEART_WITHERED_HALF_SPRITE,
+            HEART_WITHERED_HALF_BLINKING_SPRITE,
+            HEART_WITHERED_HARDCORE_FULL_SPRITE,
+            HEART_WITHERED_HARDCORE_FULL_BLINKING_SPRITE,
+            HEART_WITHERED_HARDCORE_HALF_SPRITE,
+            HEART_WITHERED_HARDCORE_HALF_BLINKING_SPRITE
+        ),
+        ABSORBING(
+            HEART_ABSORBING_FULL_SPRITE,
+            HEART_ABSORBING_FULL_BLINKING_SPRITE,
+            HEART_ABSORBING_HALF_SPRITE,
+            HEART_ABSORBING_HALF_BLINKING_SPRITE,
+            HEART_ABSORBING_HARDCORE_FULL_SPRITE,
+            HEART_ABSORBING_HARDCORE_FULL_BLINKING_SPRITE,
+            HEART_ABSORBING_HARDCORE_HALF_SPRITE,
+            HEART_ABSORBING_HARDCORE_HALF_BLINKING_SPRITE
+        ),
+        FROZEN(
+            HEART_FROZEN_FULL_SPRITE,
+            HEART_FROZEN_FULL_BLINKING_SPRITE,
+            HEART_FROZEN_HALF_SPRITE,
+            HEART_FROZEN_HALF_BLINKING_SPRITE,
+            HEART_FROZEN_HARDCORE_FULL_SPRITE,
+            HEART_FROZEN_HARDCORE_FULL_BLINKING_SPRITE,
+            HEART_FROZEN_HARDCORE_HALF_SPRITE,
+            HEART_FROZEN_HARDCORE_HALF_BLINKING_SPRITE
+        );
+
+        private final Identifier full_Spiffy;
+        private final Identifier fullBlinking_Spiffy;
+        private final Identifier half_Spiffy;
+        private final Identifier halfBlinking_Spiffy;
+        private final Identifier hardcoreFull_Spiffy;
+        private final Identifier hardcoreFullBlinking_Spiffy;
+        private final Identifier hardcoreHalf_Spiffy;
+        private final Identifier hardcoreHalfBlinking_Spiffy;
+
+        HeartType_Spiffy(
+            Identifier full,
+            Identifier fullBlinking,
+            Identifier half,
+            Identifier halfBlinking,
+            Identifier hardcoreFull,
+            Identifier hardcoreFullBlinking,
+            Identifier hardcoreHalf,
+            Identifier hardcoreHalfBlinking
+        ) {
+            this.full_Spiffy = full;
+            this.fullBlinking_Spiffy = fullBlinking;
+            this.half_Spiffy = half;
+            this.halfBlinking_Spiffy = halfBlinking;
+            this.hardcoreFull_Spiffy = hardcoreFull;
+            this.hardcoreFullBlinking_Spiffy = hardcoreFullBlinking;
+            this.hardcoreHalf_Spiffy = hardcoreHalf;
+            this.hardcoreHalfBlinking_Spiffy = hardcoreHalfBlinking;
+        }
+
+        private Identifier getSprite(boolean hardcore, boolean halfHeart, boolean blinking) {
+            if (hardcore) {
+                if (halfHeart) {
+                    return blinking ? this.hardcoreHalfBlinking_Spiffy : this.hardcoreHalf_Spiffy;
+                }
+                return blinking ? this.hardcoreFullBlinking_Spiffy : this.hardcoreFull_Spiffy;
+            }
+            if (halfHeart) {
+                return blinking ? this.halfBlinking_Spiffy : this.half_Spiffy;
+            }
+            return blinking ? this.fullBlinking_Spiffy : this.full_Spiffy;
+        }
+
+        private static HeartType_Spiffy forPlayer(Player player) {
+            if (player.hasEffect(MobEffects.POISON)) {
+                return POISONED;
+            }
+            if (player.hasEffect(MobEffects.WITHER)) {
+                return WITHERED;
+            }
+            if (player.isFullyFrozen()) {
+                return FROZEN;
+            }
+            return NORMAL;
+        }
     }
 
 }

@@ -41,31 +41,22 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 jarJar.enable()
 
-subsystems {
-    parchment {
-        minecraftVersion = "${parchment_mc_version}"
-        mappingsVersion = "${parchment_version}"
-    }
-}
+//subsystems {
+//    parchment {
+//        minecraftVersion = "${parchment_mc_version}"
+//        mappingsVersion = "${parchment_version}"
+//    }
+//}
 
 dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.2")
     implementation "net.neoforged:neoforge:${neoforge_version}"
-    implementation "maven.modrinth:konkrete:1.9.14-1.21.11-neoforge"
-	implementation "maven.modrinth:melody:1.0.15-1.21.11-neoforge"
-	implementation "maven.modrinth:fancymenu:3.8.3-1.21.11-neoforge"
+    implementation "maven.modrinth:konkrete:1.10.0-26.1.1-neoforge"
+    implementation "maven.modrinth:melody:1.0.16-26.1.1-neoforge"
+    implementation "maven.modrinth:fancymenu:3.8.5-26.1.1-neoforge"
     implementation "net.objecthunter:exp4j:0.4.8"
     compileOnly project(":common")
-}
-
-// Exclude Fabric Loader from NeoForge
-configurations {
-    runtimeClasspath    { exclude group: 'net.fabricmc', module: 'fabric-loader' }
-    developmentRuntimeClasspath {
-        // Gradle 8 names used by ForgeGradle 6
-        exclude group: 'net.fabricmc', module: 'fabric-loader'
-    }
 }
 
 // Exclude Fabric Loader from NeoForge

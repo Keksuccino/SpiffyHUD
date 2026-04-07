@@ -1,9 +1,9 @@
 package de.keksuccino.spiffyhud.platform;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import de.keksuccino.spiffyhud.mixin.mixins.common.client.IMixinKeyMapping;
 import de.keksuccino.spiffyhud.platform.services.IPlatformHelper;
 import net.fabricmc.api.EnvType;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.KeyMapping;
@@ -68,7 +68,7 @@ public class FabricPlatformHelper implements IPlatformHelper {
 
     @Override
     public InputConstants.Key getKeyMappingKey(KeyMapping keyMapping) {
-        return KeyBindingHelper.getBoundKeyOf(keyMapping);
+        return ((IMixinKeyMapping)keyMapping).get_key_Spiffy();
     }
 
 }

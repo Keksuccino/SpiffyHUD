@@ -1,4 +1,4 @@
-accessWidener	v1 named
+accessWidener	v1 official
 
 extendable method net/minecraft/client/gui/components/AbstractWidget render (Lnet/minecraft/client/gui/GuiGraphics;IIF)V
 accessible class net/minecraft/client/gui/Gui$HeartType

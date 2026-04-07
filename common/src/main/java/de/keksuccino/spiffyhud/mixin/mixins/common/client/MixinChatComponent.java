@@ -5,10 +5,10 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import de.keksuccino.spiffyhud.customization.elements.chatcustomizer.ChatCustomizerHandler;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
-import net.minecraft.client.GuiMessageTag;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.client.gui.components.ChatComponent;
+import net.minecraft.client.multiplayer.chat.GuiMessageTag;
 import net.minecraft.util.FormattedCharSequence;
 import org.joml.Matrix3x2f;
 import org.spongepowered.asm.mixin.Final;
@@ -45,7 +45,7 @@ public abstract class MixinChatComponent {
      * @reason Adjust the chat render pose to support right-aligned layouts.
      */
     @WrapOperation(
-        method = "render(Lnet/minecraft/client/gui/components/ChatComponent$ChatGraphicsAccess;IIZ)V",
+        method = "extractRenderState(Lnet/minecraft/client/gui/components/ChatComponent$ChatGraphicsAccess;IILnet/minecraft/client/gui/components/ChatComponent$DisplayMode;)V",
         at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/ChatComponent$ChatGraphicsAccess;updatePose(Ljava/util/function/Consumer;)V")
     )
     private void wrap_updatePose_Spiffy(ChatComponent.ChatGraphicsAccess access, Consumer<Matrix3x2f> consumer, Operation<Void> original) {
@@ -69,7 +69,7 @@ public abstract class MixinChatComponent {
      * @reason Apply the custom line spacing override when rendering chat.
      */
     @WrapOperation(
-        method = "render(Lnet/minecraft/client/gui/components/ChatComponent$ChatGraphicsAccess;IIZ)V",
+        method = "extractRenderState(Lnet/minecraft/client/gui/components/ChatComponent$ChatGraphicsAccess;IILnet/minecraft/client/gui/components/ChatComponent$DisplayMode;)V",
         at = @At(value = "INVOKE", target = "Lnet/minecraft/client/OptionInstance;get()Ljava/lang/Object;")
     )
     private Object wrap_get_render_Spiffy(OptionInstance<?> instance, Operation<Object> original) {
@@ -96,7 +96,7 @@ public abstract class MixinChatComponent {
      * @reason Replace the line background fill color with the custom value (including fade).
      */
     @ModifyVariable(
-        method = "render(Lnet/minecraft/client/gui/components/ChatComponent$ChatGraphicsAccess;IIZ)V",
+        method = "extractRenderState(Lnet/minecraft/client/gui/components/ChatComponent$ChatGraphicsAccess;IILnet/minecraft/client/gui/components/ChatComponent$DisplayMode;)V",
         at = @At("HEAD"),
         argsOnly = true
     )

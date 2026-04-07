@@ -7,7 +7,7 @@ import de.keksuccino.spiffyhud.SpiffyUtils;
 import de.keksuccino.spiffyhud.util.SpiffyAlignment;
 import de.keksuccino.spiffyhud.util.rendering.SpiffyRenderUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 
 import net.minecraft.resources.Identifier;
@@ -53,7 +53,7 @@ public class VanillaLikeMountHealthElement extends AbstractElement {
      * alignment, we render the hearts at the proper offset.
      */
     @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partial) {
+    public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partial) {
 
         this.tickCount = SpiffyUtils.getGuiAccessor().getTickCount_Spiffy();
 
@@ -105,7 +105,7 @@ public class VanillaLikeMountHealthElement extends AbstractElement {
      * @param baseX    the x–offset at which to start drawing the bar (already computed from element alignment).
      * @param baseY    the y–offset at which to start drawing the bar.
      */
-    private void renderVehicleHealth(GuiGraphics graphics, int baseX, int baseY) {
+    private void renderVehicleHealth(GuiGraphicsExtractor graphics, int baseX, int baseY) {
 
         LivingEntity mount = this.getPlayerVehicleWithHealth();
         int totalHearts = (mount != null) ? this.getVehicleMaxHearts(mount) : 10;

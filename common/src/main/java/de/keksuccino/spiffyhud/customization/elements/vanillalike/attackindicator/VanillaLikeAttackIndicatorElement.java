@@ -4,7 +4,7 @@ import de.keksuccino.fancymenu.customization.element.AbstractElement;
 import de.keksuccino.fancymenu.customization.element.ElementBuilder;
 import de.keksuccino.spiffyhud.util.rendering.SpiffyRenderUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 
 import net.minecraft.resources.Identifier;
@@ -42,7 +42,7 @@ public class VanillaLikeAttackIndicatorElement extends AbstractElement {
      * @param partial  Partial ticks.
      */
     @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partial) {
+    public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partial) {
 
         // Do nothing if the player or level is missing.
         if (this.minecraft.player == null || this.minecraft.level == null) {
@@ -63,14 +63,14 @@ public class VanillaLikeAttackIndicatorElement extends AbstractElement {
     /**
      * Renders the attack indicator in either crosshair or hotbar mode, scaled to the specified dimensions.
      *
-     * @param graphics the GuiGraphics object used for rendering
+     * @param graphics the GuiGraphicsExtractor object used for rendering
      * @param isHotbar whether to render the hotbar version (true) or crosshair version (false)
      * @param x the x position to render at
      * @param y the y position to render at
      * @param width the width to render the indicator at
      * @param height the height to render the indicator at
      */
-    public void renderAttackIndicator(GuiGraphics graphics, boolean isHotbar, int x, int y, int width, int height) {
+    public void renderAttackIndicator(GuiGraphicsExtractor graphics, boolean isHotbar, int x, int y, int width, int height) {
 
         float attackStrength = this.minecraft.player.getAttackStrengthScale(0.0f);
         if (isEditor()) attackStrength = 0.5f;

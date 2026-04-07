@@ -6,7 +6,7 @@ import de.keksuccino.spiffyhud.SpiffyUtils;
 import de.keksuccino.spiffyhud.util.SpiffyAlignment;
 import de.keksuccino.spiffyhud.util.rendering.SpiffyRenderUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
@@ -51,7 +51,7 @@ public class VanillaLikePlayerFoodElement extends AbstractElement {
      * then calculates the aligned position within the element, and finally renders the bar.
      */
     @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partial) {
+    public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partial) {
         this.tickCount = SpiffyUtils.getGuiAccessor().getTickCount_Spiffy();
 
         if (this.minecraft.player == null || this.minecraft.level == null) {
@@ -86,7 +86,7 @@ public class VanillaLikePlayerFoodElement extends AbstractElement {
      * @param baseX    The X coordinate where the food bar starts.
      * @param baseY    The Y coordinate where the food bar starts.
      */
-    private void renderFoodBar(GuiGraphics graphics, int baseX, int baseY) {
+    private void renderFoodBar(GuiGraphicsExtractor graphics, int baseX, int baseY) {
         Player player = getCameraPlayer();
         if (player == null) return;
 

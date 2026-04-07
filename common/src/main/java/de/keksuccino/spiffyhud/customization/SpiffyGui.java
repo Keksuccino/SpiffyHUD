@@ -7,7 +7,7 @@ import de.keksuccino.fancymenu.customization.layout.editor.LayoutEditorScreen;
 import de.keksuccino.fancymenu.events.screen.*;
 import de.keksuccino.fancymenu.util.event.acara.EventHandler;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import org.apache.logging.log4j.LogManager;
@@ -39,7 +39,7 @@ public class SpiffyGui implements Renderable {
 
 
     @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partial) {
+    public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partial) {
 
         if (!this.shouldRenderCustomizations()) return;
 
@@ -52,7 +52,7 @@ public class SpiffyGui implements Renderable {
             this.restoreRenderDefaults(graphics);
 
             EventHandler.INSTANCE.postEvent(new RenderScreenEvent.Pre(spiffyOverlayScreen, graphics, mouseX, mouseY, partial));
-            spiffyOverlayScreen.render(graphics, mouseX, mouseY, partial);
+            spiffyOverlayScreen.extractRenderState(graphics, mouseX, mouseY, partial);
             this.restoreRenderDefaults(graphics);
             EventHandler.INSTANCE.postEvent(new RenderScreenEvent.Post(spiffyOverlayScreen, graphics, mouseX, mouseY, partial));
 
@@ -62,7 +62,7 @@ public class SpiffyGui implements Renderable {
 
     }
 
-    private void restoreRenderDefaults(@NotNull GuiGraphics graphics) {
+    private void restoreRenderDefaults(@NotNull GuiGraphicsExtractor graphics) {
         // Unused in 1.21.5
     }
 

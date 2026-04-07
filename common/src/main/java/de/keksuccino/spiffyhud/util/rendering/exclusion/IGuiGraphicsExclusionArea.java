@@ -1,8 +1,8 @@
 package de.keksuccino.spiffyhud.util.rendering.exclusion;
 
 /**
- * Interface to access the exclusion area functionality added to GuiGraphics via mixin.
- * Cast GuiGraphics to this interface to access the exclusion area methods.
+ * Interface to access the exclusion area functionality added to GuiGraphicsExtractor via mixin.
+ * Cast GuiGraphicsExtractor to this interface to access the exclusion area methods.
  */
 public interface IGuiGraphicsExclusionArea {
     
