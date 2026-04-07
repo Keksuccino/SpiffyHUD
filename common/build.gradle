@@ -13,11 +13,11 @@ base {
 dependencies {
     minecraft "com.mojang:minecraft:${minecraft_version}"
     compileOnly "net.fabricmc:fabric-loader:${fabric_loader_version}"
-    implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
-    implementation group: 'org.ow2.asm', name: 'asm-tree', version: '9.7'
-    annotationProcessor group: 'org.ow2.asm', name: 'asm-util', version: '9.7'
+    implementation "com.google.code.findbugs:jsr305:3.0.2"
+    implementation "org.ow2.asm:asm-tree:9.7"
+    annotationProcessor "org.ow2.asm:asm-util:9.7"
     compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixin_extras_version}"))
-    compileOnly group:'org.spongepowered', name:'mixin', version:'0.8.5'
+    compileOnly "org.spongepowered:mixin:0.8.5"
     compileOnly "maven.modrinth:melody:1.0.16-26.1.1-fabric"
     compileOnly "maven.modrinth:konkrete:1.10.0-26.1.1-fabric"
     compileOnly "maven.modrinth:fancymenu:3.8.5-26.1.1-fabric"
@@ -27,13 +27,13 @@ dependencies {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifactId base.archivesName.get()
+            artifactId = base.archivesName.get()
             from components.java
         }
     }
     repositories {
         maven {
-            url "file://" + System.getenv("local_maven")
+            url = "file://" + System.getenv("local_maven")
         }
     }
 }

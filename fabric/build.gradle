@@ -15,7 +15,7 @@ dependencies {
     minecraft "com.mojang:minecraft:${minecraft_version}"
     implementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
     implementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
-    implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
+    implementation "com.google.code.findbugs:jsr305:3.0.1"
     include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:${mixin_extras_version}")))
     implementation "maven.modrinth:melody:1.0.16-26.1.1-fabric"
     implementation "maven.modrinth:konkrete:1.10.0-26.1.1-fabric"
@@ -73,13 +73,13 @@ processResources {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifactId base.archivesName.get()
+            artifactId = base.archivesName.get()
             from components.java
         }
     }
     repositories {
         maven {
-            url "file://" + System.getenv("local_maven")
+            url = "file://" + System.getenv("local_maven")
         }
     }
 }
