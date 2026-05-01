@@ -32,7 +32,7 @@ dependencies {
     compileOnly group:'org.spongepowered', name:'mixin', version:'0.8.5'
     modCompileOnly "maven.modrinth:melody:1.0.4-1.20.1-1.20.4-fabric"
     modCompileOnly "maven.modrinth:konkrete:1.8.1-1.20.1-fabric"
-	modCompileOnly "flatdir:fancymenu:3.8.0"
+	modCompileOnly "flatdir:fancymenu:3.9.0"
 }
 
 loom {
