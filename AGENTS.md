@@ -2,6 +2,7 @@
 
 ## Project Structure & Module Organization
 - SpiffyHUD (aka. Spiffy) is a Minecraft Java 1.21.1 mod that uses the MultiLoader layout with shared logic under `common` and loader-specific wrappers under `fabric` and `neoforge`.
+- SpiffyHUD is an addon for "FancyMenu" and needs FancyMenu as mandatory dependency.
 - Place shared Java sources in `common/src/main/java` and assets such as menu JSON, translations, or textures in `common/src/main/resources` so they ship with every loader build.
 - Loader-only hooks belong inside each module's `src/main/java` tree; keep local run directories like `run_client` and `run_server` for iterative testing but never depend on them for assets.
 
