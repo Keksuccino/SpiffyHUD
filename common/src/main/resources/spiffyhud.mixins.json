@@ -17,7 +17,6 @@
     "client.MixinLayoutEditorUI",
     "client.MixinLocalPlayer",
     "client.MixinMinecraft",
-    "client.MixinRenderSystem",
     "client.MixinScreenCustomization",
     "client.MixinScreenCustomizationLayer",
     "client.MixinSpectatorGui",
