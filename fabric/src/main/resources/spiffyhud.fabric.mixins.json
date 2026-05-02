@@ -6,6 +6,7 @@
   ],
   "client": [
     "client.MixinGui",
+    "client.MixinRenderSystem",
     "client.MixinVanillaWidgetEditorElement"
   ],
   "injectors": {
