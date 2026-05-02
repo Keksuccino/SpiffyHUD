@@ -2,7 +2,6 @@ package de.keksuccino.spiffyhud.customization;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import de.keksuccino.fancymenu.customization.ScreenCustomization;
 import de.keksuccino.fancymenu.customization.element.anchor.ElementAnchorPoints;
 import de.keksuccino.fancymenu.customization.layout.editor.LayoutEditorScreen;
@@ -456,16 +455,11 @@ public class SpiffyOverlayScreen extends ModernScreen {
             super(x, y, width, height, body);
         }
 
+        @Override
         public void render(@NotNull GuiGraphics $$0, int $$1, int $$2, float $$3) {
             //Don't render widgets when not in the editor
             if (!(Minecraft.getInstance().screen instanceof LayoutEditorScreen)) return;
-            super.render($$0.pose(), $$1, $$2, $$3);
-        }
-
-        @Override
-        @Deprecated
-        public final void render(PoseStack $$0, int $$1, int $$2, float $$3) {
-            this.render(GuiGraphics.currentGraphics(), $$1, $$2, $$3);
+            super.render($$0, $$1, $$2, $$3);
         }
 
     }

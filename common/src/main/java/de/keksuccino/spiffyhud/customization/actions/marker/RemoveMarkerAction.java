@@ -2,10 +2,10 @@ package de.keksuccino.spiffyhud.customization.actions.marker;
 
 import de.keksuccino.fancymenu.customization.action.Action;
 import de.keksuccino.fancymenu.customization.action.ActionInstance;
-import de.keksuccino.fancymenu.util.LocalizationUtils;
+import de.keksuccino.fancymenu.util.rendering.ui.pipwindow.PiPWindow;
+import de.keksuccino.fancymenu.util.rendering.ui.pipwindow.PiPWindowHandler;
+import de.keksuccino.fancymenu.util.rendering.ui.screen.texteditor.TextEditorWindowBody;
 import de.keksuccino.spiffyhud.customization.marker.MarkerStorage;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -43,13 +43,13 @@ public class RemoveMarkerAction extends Action {
     }
 
     @Override
-    public @NotNull Component getActionDisplayName() {
+    public @NotNull Component getDisplayName() {
         return Component.translatable("spiffyhud.actions.remove_marker");
     }
 
     @Override
-    public @NotNull Component[] getActionDescription() {
-        return LocalizationUtils.splitLocalizedLines("spiffyhud.actions.remove_marker.desc");
+    public @NotNull Component getDescription() {
+        return Component.translatable("spiffyhud.actions.remove_marker.desc");
     }
 
     @Override
@@ -58,27 +58,56 @@ public class RemoveMarkerAction extends Action {
     }
 
     @Override
-    public String getValueExample() {
+    public String getValuePreset() {
         return MarkerRemovalConfig.defaultConfig().serialize();
     }
 
     @Override
-    public void editValue(@NotNull Screen parentScreen, @NotNull ActionInstance instance) {
+    public void editValue(@NotNull ActionInstance instance, @NotNull ActionEditingCompletedFeedback onEditingCompleted, @NotNull ActionEditingCanceledFeedback onEditingCanceled) {
+        String oldValue = instance.value;
+        boolean[] handled = {false};
         MarkerRemovalConfig config = MarkerRemovalConfig.parse(instance.value);
         if (config == null) {
             config = MarkerRemovalConfig.defaultConfig();
         }
+        final PiPWindow[] windowHolder = new PiPWindow[1];
         MarkerRemovalScreen screen = new MarkerRemovalScreen(
                 Component.translatable("spiffyhud.actions.remove_marker.editor"),
                 config,
                 serialized -> {
+                    if (handled[0]) {
+                        return;
+                    }
+                    handled[0] = true;
                     if (serialized != null) {
                         instance.value = serialized;
+                        onEditingCompleted.accept(instance, oldValue, serialized);
+                    } else {
+                        onEditingCanceled.accept(instance);
                     }
-                    Minecraft.getInstance().setScreen(parentScreen);
+                    PiPWindow window = windowHolder[0];
+                    if (window != null) {
+                        window.close();
+                    }
                 }
         );
-        Minecraft.getInstance().setScreen(screen);
+        PiPWindow window = new PiPWindow(screen.getTitle())
+                .setScreen(screen)
+                .setForceFancyMenuUiScale(true)
+                .setAlwaysOnTop(true)
+                .setBlockMinecraftScreenInputs(true)
+                .setForceFocus(true)
+                .setMinSize(TextEditorWindowBody.PIP_WINDOW_WIDTH, TextEditorWindowBody.PIP_WINDOW_HEIGHT)
+                .setSize(TextEditorWindowBody.PIP_WINDOW_WIDTH, TextEditorWindowBody.PIP_WINDOW_HEIGHT);
+        windowHolder[0] = window;
+        PiPWindowHandler.INSTANCE.openWindowCentered(window, null);
+        window.addCloseCallback(() -> {
+            if (handled[0]) {
+                return;
+            }
+            handled[0] = true;
+            onEditingCanceled.accept(instance);
+        });
     }
 
 }

@@ -12,9 +12,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
+import com.mojang.math.Quaternion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -43,7 +43,7 @@ public class FlatMobRenderUtils {
         MobBounds bounds = captureBounds(renderMob);
         float scale = computeScale(bounds, size);
         Vector3f offset = new Vector3f(0.0F, bounds.height * HALF, 0.0F);
-        Quaternionf baseRotation = Axis.ZP.rotationDegrees(180.0F);
+        Quaternion baseRotation = Axis.ZP.rotationDegrees(180.0F);
 
         float originalBody = renderMob.yBodyRot;
         float originalBodyO = renderMob.yBodyRotO;
@@ -84,7 +84,7 @@ public class FlatMobRenderUtils {
         return true;
     }
 
-    private static void renderEntity(@NotNull GuiGraphics graphics, float centerX, float centerY, float scale, @NotNull Vector3f offset, @NotNull Quaternionf modelRotation, @NotNull Mob mob) {
+    private static void renderEntity(@NotNull GuiGraphics graphics, float centerX, float centerY, float scale, @NotNull Vector3f offset, @NotNull Quaternion modelRotation, @NotNull Mob mob) {
         graphics.pose().translate(centerX, centerY, 50.0);
         graphics.pose().scale(scale, scale, -scale);
         graphics.pose().translate(offset.x, offset.y, offset.z);

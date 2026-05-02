@@ -9,9 +9,9 @@ import de.keksuccino.spiffyhud.util.SpiffyAlignment;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
-public class VanillaLikeScoreboardEditorElement extends AbstractEditorElement {
+public class VanillaLikeScoreboardEditorElement extends AbstractEditorElement<VanillaLikeScoreboardEditorElement, VanillaLikeScoreboardElement> {
 
-    public VanillaLikeScoreboardEditorElement(@NotNull AbstractElement element, @NotNull LayoutEditorScreen editor) {
+    public VanillaLikeScoreboardEditorElement(@NotNull VanillaLikeScoreboardElement element, @NotNull LayoutEditorScreen editor) {
         super(element, editor);
         this.settings.setStretchable(false);
         this.settings.setAdvancedSizingSupported(false);

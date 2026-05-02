@@ -54,10 +54,10 @@ public class SpiffyGui implements Renderable {
 
             this.restoreRenderDefaults(graphics);
 
-            EventHandler.INSTANCE.postEvent(new RenderScreenEvent.Pre(spiffyOverlayScreen, graphics.pose(), mouseX, mouseY, partial));
+            EventHandler.INSTANCE.postEvent(new RenderScreenEvent.Pre(spiffyOverlayScreen, graphics, mouseX, mouseY, partial));
             spiffyOverlayScreen.render(graphics, mouseX, mouseY, partial);
             this.restoreRenderDefaults(graphics);
-            EventHandler.INSTANCE.postEvent(new RenderScreenEvent.Post(spiffyOverlayScreen, graphics.pose(), mouseX, mouseY, partial));
+            EventHandler.INSTANCE.postEvent(new RenderScreenEvent.Post(spiffyOverlayScreen, graphics, mouseX, mouseY, partial));
 
             this.restoreRenderDefaults(graphics);
 

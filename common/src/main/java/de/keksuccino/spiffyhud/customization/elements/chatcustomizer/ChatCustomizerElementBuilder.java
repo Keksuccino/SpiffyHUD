@@ -28,7 +28,7 @@ public class ChatCustomizerElementBuilder extends ElementBuilder<ChatCustomizerE
         ChatCustomizerElement i = new ChatCustomizerElement(this);
         i.baseWidth = 100;
         i.baseHeight = 100;
-        i.inEditorColor = DrawableColor.of(new Color(50, 168, 146));
+        i.inEditorColor.setDefault(DrawableColor.of(new Color(50, 168, 146)).getHex()).set(DrawableColor.of(new Color(50, 168, 146)).getHex());
         return i;
     }
 

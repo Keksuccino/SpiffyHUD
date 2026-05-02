@@ -4,7 +4,7 @@ import de.keksuccino.fancymenu.customization.placeholder.DeserializedPlaceholder
 import de.keksuccino.fancymenu.customization.placeholder.Placeholder;
 import de.keksuccino.fancymenu.util.LocalizationUtils;
 import de.keksuccino.fancymenu.util.MathUtils;
-import de.keksuccino.fancymenu.util.SerializationUtils;
+import de.keksuccino.fancymenu.util.SerializationHelper;
 import de.keksuccino.spiffyhud.mixin.mixins.common.client.IMixinSpectatorGui;
 import de.keksuccino.spiffyhud.util.ComponentUtils;
 import net.minecraft.client.Minecraft;
@@ -28,7 +28,7 @@ public class SlotItemDisplayNamePlaceholder extends Placeholder {
     @Override
     public String getReplacementFor(DeserializedPlaceholderString dps) {
         String slot = dps.values.get("slot");
-        boolean ignoreSpectator = SerializationUtils.deserializeBoolean(false, dps.values.get("ignore_spectator"));
+        boolean ignoreSpectator = SerializationHelper.INSTANCE.deserializeBoolean(false, dps.values.get("ignore_spectator"));
         if ((slot != null) && MathUtils.isInteger(slot) && (Minecraft.getInstance().player != null)) {
             int slotInt = Integer.parseInt(slot);
             ItemStack stack = Minecraft.getInstance().player.getInventory().getItem(slotInt);

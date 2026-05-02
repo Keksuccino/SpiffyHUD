@@ -41,7 +41,7 @@ public class OverlayRemoverElement extends AbstractElement {
             int w = this.getAbsoluteWidth();
             int h = this.getAbsoluteHeight();
             RenderSystem.enableBlend();
-            graphics.fill(x, y, x + w, y + h, this.inEditorColor.getColorInt());
+            graphics.fill(x, y, x + w, y + h, this.inEditorColor.getDrawable().getColorInt());
             graphics.enableScissor(x, y, x + w, y + h);
             graphics.drawCenteredString(Minecraft.getInstance().font, this.getDisplayName(), x + (w / 2), y + (h / 2) - (Minecraft.getInstance().font.lineHeight / 2), -1);
             graphics.disableScissor();
@@ -104,8 +104,8 @@ public class OverlayRemoverElement extends AbstractElement {
         long now = System.currentTimeMillis();
         Pair<Long, Boolean> cached = CACHED_OVERLAY_VISIBILITY.get(type);
         if (cached != null) {
-            if ((cached.getKey() + 100) > now) {
-                return cached.getValue();
+            if ((cached.getFirst() + 100) > now) {
+                return cached.getSecond();
             }
         }
         boolean returnVal = false;

@@ -1,18 +1,14 @@
 package de.keksuccino.spiffyhud.customization.requirements;
 
-import de.keksuccino.fancymenu.customization.loadingrequirement.LoadingRequirement;
-import de.keksuccino.fancymenu.customization.loadingrequirement.internal.LoadingRequirementInstance;
+import de.keksuccino.fancymenu.customization.requirement.Requirement;
+import de.keksuccino.fancymenu.customization.requirement.internal.RequirementInstance;
 import de.keksuccino.fancymenu.networking.PacketHandler;
-import de.keksuccino.fancymenu.util.LocalizationUtils;
 import de.keksuccino.fancymenu.util.rendering.ui.UIBase;
-import de.keksuccino.fancymenu.util.rendering.ui.screen.StringBuilderScreen;
 import de.keksuccino.fancymenu.util.rendering.ui.screen.texteditor.TextEditorFormattingRule;
 import de.keksuccino.fancymenu.util.rendering.ui.widget.editbox.EditBoxSuggestions;
 import de.keksuccino.spiffyhud.networking.packets.structure.playerpos.PlayerPosStructuresPacket;
 import de.keksuccino.spiffyhud.networking.packets.structure.structures.StructuresPacket;
-import net.minecraft.client.Minecraft;
 import de.keksuccino.fancymenu.util.rendering.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import org.apache.logging.log4j.LogManager;
@@ -20,12 +16,11 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public class IsPlayerInStructureRequirement extends LoadingRequirement {
+public class IsPlayerInStructureRequirement extends Requirement {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -66,13 +61,13 @@ public class IsPlayerInStructureRequirement extends LoadingRequirement {
     }
 
     @Override
-    public @NotNull String getDisplayName() {
-        return I18n.get("spiffyhud.requirements.is_player_in_structure");
+    public @NotNull Component getDisplayName() {
+        return Component.translatable("spiffyhud.requirements.is_player_in_structure");
     }
 
     @Override
-    public List<String> getDescription() {
-        return Arrays.asList(LocalizationUtils.splitLocalizedStringLines("spiffyhud.requirements.is_player_in_structure.desc"));
+    public Component getDescription() {
+        return Component.translatable("spiffyhud.requirements.is_player_in_structure.desc");
     }
 
     @Override
@@ -81,8 +76,8 @@ public class IsPlayerInStructureRequirement extends LoadingRequirement {
     }
 
     @Override
-    public String getValueDisplayName() {
-        return "";
+    public Component getValueDisplayName() {
+        return Component.literal("");
     }
 
     @Override
@@ -96,17 +91,33 @@ public class IsPlayerInStructureRequirement extends LoadingRequirement {
     }
 
     @Override
-    public void editValue(@NotNull Screen parentScreen, @NotNull LoadingRequirementInstance requirementInstance) {
-        IsPlayerInStructureValueConfigScreen s = new IsPlayerInStructureValueConfigScreen(Objects.requireNonNullElse(requirementInstance.value, this.getValuePreset()), callback -> {
-            if (callback != null) {
-                requirementInstance.value = callback;
+    public void editValue(@NotNull RequirementInstance instance, @NotNull RequirementEditingCompletedFeedback onEditingCompleted, @NotNull RequirementEditingCanceledFeedback onEditingCanceled) {
+        boolean[] handled = {false};
+        final Runnable[] closeAction = new Runnable[] {() -> {}};
+        IsPlayerInStructureValueConfigScreen s = new IsPlayerInStructureValueConfigScreen(Objects.requireNonNullElse(instance.value, this.getValuePreset()), callback -> {
+            if (handled[0]) {
+                return;
             }
-            Minecraft.getInstance().setScreen(parentScreen);
+            handled[0] = true;
+            if (callback != null) {
+                String oldValue = instance.value;
+                instance.value = callback;
+                onEditingCompleted.accept(instance, oldValue, callback);
+            } else {
+                onEditingCanceled.accept(instance);
+            }
+            closeAction[0].run();
         });
-        Minecraft.getInstance().setScreen(s);
+        closeAction[0] = openRequirementValueEditor(s, () -> {
+            if (handled[0]) {
+                return;
+            }
+            handled[0] = true;
+            onEditingCanceled.accept(instance);
+        });
     }
 
-    public static class IsPlayerInStructureValueConfigScreen extends StringBuilderScreen {
+    public static class IsPlayerInStructureValueConfigScreen extends Requirement.RequirementValueEditScreen {
 
         @NotNull
         protected String oldStructureKey;
@@ -115,7 +126,7 @@ public class IsPlayerInStructureRequirement extends LoadingRequirement {
         protected EditBoxSuggestions structureKeySuggestions;
 
         protected IsPlayerInStructureValueConfigScreen(@NotNull String value, @NotNull Consumer<String> callback) {
-            super(Component.translatable("fancymenu.editor.elements.visibilityrequirements.edit_value"), callback);
+            super(Component.translatable("fancymenu.requirements.screens.build_screen.edit_value"), callback);
             this.oldStructureKey = value;
         }
 
@@ -139,9 +150,8 @@ public class IsPlayerInStructureRequirement extends LoadingRequirement {
         }
 
         @Override
-        public void render(GuiGraphics graphics, int mouseX, int mouseY, float partial) {
-            super.render(graphics, mouseX, mouseY, partial);
-            this.structureKeySuggestions.render(graphics.pose(), mouseX, mouseY);
+        public void renderLateBody( GuiGraphics graphics, int mouseX, int mouseY, float partial) {
+            this.structureKeySuggestions.render(graphics, mouseX, mouseY);
         }
 
         @Override

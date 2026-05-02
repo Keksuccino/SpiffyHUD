@@ -2,7 +2,7 @@ package de.keksuccino.spiffyhud.customization.actions.marker;
 
 import de.keksuccino.fancymenu.util.LocalizationUtils;
 import de.keksuccino.fancymenu.util.rendering.ui.screen.CellScreen;
-import de.keksuccino.fancymenu.util.rendering.ui.tooltip.Tooltip;
+import de.keksuccino.fancymenu.util.rendering.ui.tooltip.UITooltip;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
@@ -27,7 +27,7 @@ public class MarkerRemovalScreen extends CellScreen {
         TextInputCell targetCell = this.addTextInputCell(null, true, true)
                 .setEditListener(s -> this.config.targetElementIdentifier = s.trim())
                 .setText(this.config.targetElementIdentifier);
-        targetCell.editBox.setTooltip(() -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.actions.marker.target_element.desc")));
+        targetCell.editBox.setUITooltip(() -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.actions.marker.target_element.desc")));
 
         this.addCellGroupEndSpacerCell();
 
@@ -35,7 +35,7 @@ public class MarkerRemovalScreen extends CellScreen {
         TextInputCell markerCell = this.addTextInputCell(null, true, true)
                 .setEditListener(s -> this.config.uniqueMarkerName = s.trim())
                 .setText(this.config.uniqueMarkerName);
-        markerCell.editBox.setTooltip(() -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.actions.marker.remove_name.desc")));
+        markerCell.editBox.setUITooltip(() -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.actions.marker.remove_name.desc")));
 
         this.addStartEndSpacerCell();
     }

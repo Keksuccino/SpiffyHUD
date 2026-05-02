@@ -37,7 +37,7 @@ public class PlayerElementBuilder extends ElementBuilder<PlayerElement, PlayerEd
         PlayerElement element = this.buildDefaultInstance();
 
 //        element.slot = Objects.requireNonNullElse(serialized.getValue("inventory_slot"), element.slot);
-//        element.useSelectedSlot = SerializationUtils.deserializeBoolean(element.useSelectedSlot, serialized.getValue("use_selected_slot"));
+//        element.useSelectedSlot = SerializationHelper.INSTANCE.deserializeBoolean(element.useSelectedSlot, serialized.getValue("use_selected_slot"));
 
         return element;
 

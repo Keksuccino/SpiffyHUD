@@ -23,7 +23,7 @@ public class MixinLayoutEditorUI {
      * @reason Remove unsupported right-click menu options for Spiffy layouts.
      */
     @Inject(method = "buildRightClickContextMenu", at = @At("RETURN"), remap = false)
-    private static void after_buildRightClickContextMenu_Spiffy(LayoutEditorScreen editor, CallbackInfoReturnable<ContextMenu> info) {
+    private void after_buildRightClickContextMenu_Spiffy(CallbackInfoReturnable<ContextMenu> info) {
 
         ContextMenu menu = info.getReturnValue();
         if (menu == null) return;
