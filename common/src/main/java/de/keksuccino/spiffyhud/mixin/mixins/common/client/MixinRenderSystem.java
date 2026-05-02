@@ -11,12 +11,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MixinRenderSystem {
 
     @Inject(method = "enableBlend", at = @At("HEAD"), cancellable = true, remap = false)
-    private static void _head_enableBlend_Spiffy(CallbackInfo info) {
+    private static void head_enableBlend_Spiffy(CallbackInfo info) {
         if (SpiffyRenderUtils.isBlendLocked()) info.cancel();
     }
 
     @Inject(method = "disableBlend", at = @At("HEAD"), cancellable = true, remap = false)
-    private static void _head_disableBlend_Spiffy(CallbackInfo info) {
+    private static void head_disableBlend_Spiffy(CallbackInfo info) {
         if (SpiffyRenderUtils.isBlendLocked()) info.cancel();
     }
 
