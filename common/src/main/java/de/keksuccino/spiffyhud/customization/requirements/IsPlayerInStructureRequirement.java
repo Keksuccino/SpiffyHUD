@@ -1,18 +1,14 @@
 package de.keksuccino.spiffyhud.customization.requirements;
 
-import de.keksuccino.fancymenu.customization.loadingrequirement.LoadingRequirement;
-import de.keksuccino.fancymenu.customization.loadingrequirement.internal.LoadingRequirementInstance;
+import de.keksuccino.fancymenu.customization.requirement.Requirement;
+import de.keksuccino.fancymenu.customization.requirement.internal.RequirementInstance;
 import de.keksuccino.fancymenu.networking.PacketHandler;
-import de.keksuccino.fancymenu.util.LocalizationUtils;
 import de.keksuccino.fancymenu.util.rendering.ui.UIBase;
-import de.keksuccino.fancymenu.util.rendering.ui.screen.StringBuilderScreen;
 import de.keksuccino.fancymenu.util.rendering.ui.screen.texteditor.TextEditorFormattingRule;
 import de.keksuccino.fancymenu.util.rendering.ui.widget.editbox.EditBoxSuggestions;
 import de.keksuccino.spiffyhud.networking.packets.structure.playerpos.PlayerPosStructuresPacket;
 import de.keksuccino.spiffyhud.networking.packets.structure.structures.StructuresPacket;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.resources.language.I18n;
@@ -22,12 +18,11 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public class IsPlayerInStructureRequirement extends LoadingRequirement {
+public class IsPlayerInStructureRequirement extends Requirement {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -68,13 +63,13 @@ public class IsPlayerInStructureRequirement extends LoadingRequirement {
     }
 
     @Override
-    public @NotNull String getDisplayName() {
-        return I18n.get("spiffyhud.requirements.is_player_in_structure");
+    public @NotNull Component getDisplayName() {
+        return Component.translatable("spiffyhud.requirements.is_player_in_structure");
     }
 
     @Override
-    public List<String> getDescription() {
-        return Arrays.asList(LocalizationUtils.splitLocalizedStringLines("spiffyhud.requirements.is_player_in_structure.desc"));
+    public Component getDescription() {
+        return Component.translatable("spiffyhud.requirements.is_player_in_structure.desc");
     }
 
     @Override
@@ -83,8 +78,8 @@ public class IsPlayerInStructureRequirement extends LoadingRequirement {
     }
 
     @Override
-    public String getValueDisplayName() {
-        return "";
+    public Component getValueDisplayName() {
+        return Component.literal("");
     }
 
     @Override
@@ -98,17 +93,33 @@ public class IsPlayerInStructureRequirement extends LoadingRequirement {
     }
 
     @Override
-    public void editValue(@NotNull Screen parentScreen, @NotNull LoadingRequirementInstance requirementInstance) {
-        IsPlayerInStructureValueConfigScreen s = new IsPlayerInStructureValueConfigScreen(Objects.requireNonNullElse(requirementInstance.value, this.getValuePreset()), callback -> {
-            if (callback != null) {
-                requirementInstance.value = callback;
+    public void editValue(@NotNull RequirementInstance instance, @NotNull RequirementEditingCompletedFeedback onEditingCompleted, @NotNull RequirementEditingCanceledFeedback onEditingCanceled) {
+        boolean[] handled = {false};
+        final Runnable[] closeAction = new Runnable[] {() -> {}};
+        IsPlayerInStructureValueConfigScreen s = new IsPlayerInStructureValueConfigScreen(Objects.requireNonNullElse(instance.value, this.getValuePreset()), callback -> {
+            if (handled[0]) {
+                return;
             }
-            Minecraft.getInstance().setScreen(parentScreen);
+            handled[0] = true;
+            if (callback != null) {
+                String oldValue = instance.value;
+                instance.value = callback;
+                onEditingCompleted.accept(instance, oldValue, callback);
+            } else {
+                onEditingCanceled.accept(instance);
+            }
+            closeAction[0].run();
         });
-        Minecraft.getInstance().setScreen(s);
+        closeAction[0] = openRequirementValueEditor(s, () -> {
+            if (handled[0]) {
+                return;
+            }
+            handled[0] = true;
+            onEditingCanceled.accept(instance);
+        });
     }
 
-    public static class IsPlayerInStructureValueConfigScreen extends StringBuilderScreen {
+    public static class IsPlayerInStructureValueConfigScreen extends Requirement.RequirementValueEditScreen {
 
         @NotNull
         protected String oldStructureKey;
@@ -117,7 +128,7 @@ public class IsPlayerInStructureRequirement extends LoadingRequirement {
         protected EditBoxSuggestions structureKeySuggestions;
 
         protected IsPlayerInStructureValueConfigScreen(@NotNull String value, @NotNull Consumer<String> callback) {
-            super(Component.translatable("fancymenu.editor.elements.visibilityrequirements.edit_value"), callback);
+            super(Component.translatable("fancymenu.requirements.screens.build_screen.edit_value"), callback);
             this.oldStructureKey = value;
         }
 
@@ -141,15 +152,18 @@ public class IsPlayerInStructureRequirement extends LoadingRequirement {
         }
 
         @Override
-        public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partial) {
-            super.render(graphics, mouseX, mouseY, partial);
+        public void renderLateBody(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partial) {
             this.structureKeySuggestions.render(graphics, mouseX, mouseY);
         }
 
         @Override
         public boolean keyPressed(@NotNull KeyEvent event) {
-            if (this.structureKeySuggestions.keyPressed(event)) return true;
-            return super.keyPressed(event);
+            return this.keyPressed(event.key(), event.scancode(), event.modifiers());
+        }
+
+        public boolean keyPressed(int $$0, int $$1, int $$2) {
+            if (this.structureKeySuggestions.keyPressed($$0, $$1, $$2)) return true;
+            return super.keyPressed($$0, $$1, $$2);
         }
 
         @Override
@@ -160,8 +174,12 @@ public class IsPlayerInStructureRequirement extends LoadingRequirement {
 
         @Override
         public boolean mouseClicked(@NotNull MouseButtonEvent event, boolean isDoubleClick) {
-            if (this.structureKeySuggestions.mouseClicked(event)) return true;
-            return super.mouseClicked(event, isDoubleClick);
+            return this.mouseClicked(event.x(), event.y(), event.button());
+        }
+
+        public boolean mouseClicked(double $$0, double $$1, int $$2) {
+            if (this.structureKeySuggestions.mouseClicked($$0, $$1, $$2)) return true;
+            return super.mouseClicked($$0, $$1, $$2);
         }
 
         @Override

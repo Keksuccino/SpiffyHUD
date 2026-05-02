@@ -5,9 +5,9 @@ import de.keksuccino.fancymenu.customization.element.editor.AbstractEditorElemen
 import de.keksuccino.fancymenu.customization.layout.editor.LayoutEditorScreen;
 import org.jetbrains.annotations.NotNull;
 
-public class PlayerEditorElement extends AbstractEditorElement {
+public class PlayerEditorElement extends AbstractEditorElement<PlayerEditorElement, PlayerElement> {
 
-    public PlayerEditorElement(@NotNull AbstractElement element, @NotNull LayoutEditorScreen editor) {
+    public PlayerEditorElement(@NotNull PlayerElement element, @NotNull LayoutEditorScreen editor) {
 
         super(element, editor);
 

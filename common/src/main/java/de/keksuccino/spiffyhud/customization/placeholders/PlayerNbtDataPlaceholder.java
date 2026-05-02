@@ -4,7 +4,7 @@ import de.keksuccino.fancymenu.customization.placeholder.DeserializedPlaceholder
 import de.keksuccino.fancymenu.customization.placeholder.Placeholder;
 import de.keksuccino.fancymenu.util.LocalizationUtils;
 import de.keksuccino.fancymenu.util.Pair;
-import de.keksuccino.fancymenu.util.SerializationUtils;
+import de.keksuccino.fancymenu.util.SerializationHelper;
 import de.keksuccino.spiffyhud.util.level.EntityNbtUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -30,11 +30,11 @@ public class PlayerNbtDataPlaceholder extends Placeholder {
         LocalPlayer e = Minecraft.getInstance().player;
         if (e != null) {
             String path = dps.values.get("path");
-            long cooldownMs = SerializationUtils.deserializeNumber(Long.class, 0L, dps.values.get("refresh_cooldown_ms"));
+            long cooldownMs = SerializationHelper.INSTANCE.deserializeNumber(Long.class, 0L, dps.values.get("refresh_cooldown_ms"));
             if (path != null) {
                 String identifier = path + ":" + cooldownMs;
-                if ((cooldownMs > 0) && CACHE.containsKey(identifier) && ((CACHE.get(identifier).getValue() + cooldownMs) >= now)) {
-                    return CACHE.get(identifier).getKey();
+                if ((cooldownMs > 0) && CACHE.containsKey(identifier) && ((CACHE.get(identifier).getSecond() + cooldownMs) >= now)) {
+                    return CACHE.get(identifier).getFirst();
                 } else {
                     String value = EntityNbtUtils.getNbtString(e, path);
                     if (value == null) return "§cINVALID NBT PATH!";

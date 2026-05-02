@@ -1,13 +1,12 @@
 package de.keksuccino.spiffyhud.customization.elements.vanillalike.contextualbar;
 
-import de.keksuccino.fancymenu.customization.element.AbstractElement;
 import de.keksuccino.fancymenu.customization.element.editor.AbstractEditorElement;
 import de.keksuccino.fancymenu.customization.layout.editor.LayoutEditorScreen;
 import org.jetbrains.annotations.NotNull;
 
-public class VanillaLikeContextualBarEditorElement extends AbstractEditorElement {
+public class VanillaLikeContextualBarEditorElement extends AbstractEditorElement<VanillaLikeContextualBarEditorElement, VanillaLikeContextualBarElement> {
 
-    public VanillaLikeContextualBarEditorElement(@NotNull AbstractElement element, @NotNull LayoutEditorScreen editor) {
+    public VanillaLikeContextualBarEditorElement(@NotNull VanillaLikeContextualBarElement element, @NotNull LayoutEditorScreen editor) {
         super(element, editor);
         this.settings.setStretchable(false);
         this.settings.setAdvancedSizingSupported(false);

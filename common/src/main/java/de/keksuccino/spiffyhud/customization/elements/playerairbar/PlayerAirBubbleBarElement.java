@@ -174,8 +174,8 @@ public class PlayerAirBubbleBarElement extends AbstractElement {
         if (supplier != null) {
             try {
                 ITexture texture = supplier.get();
-                if ((texture != null) && texture.isReady() && (texture.getIdentifier() != null)) {
-                    graphics.blit(RenderPipelines.GUI_TEXTURED, texture.getIdentifier(), 0, 0, 0.0F, 0.0F, size, size, size, size, ARGB.white(this.opacity));
+                if ((texture != null) && texture.isReady() && (texture.getResourceLocation() != null)) {
+                    graphics.blit(RenderPipelines.GUI_TEXTURED, texture.getResourceLocation(), 0, 0, 0.0F, 0.0F, size, size, size, size, ARGB.white(this.opacity));
                     return;
                 }
             } catch (Exception ex) {

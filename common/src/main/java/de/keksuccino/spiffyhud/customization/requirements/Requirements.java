@@ -1,6 +1,6 @@
 package de.keksuccino.spiffyhud.customization.requirements;
 
-import de.keksuccino.fancymenu.customization.loadingrequirement.LoadingRequirementRegistry;
+import de.keksuccino.fancymenu.customization.requirement.RequirementRegistry;
 
 public class Requirements {
 
@@ -9,8 +9,8 @@ public class Requirements {
 
     public static void registerAll() {
 
-        LoadingRequirementRegistry.register(IS_PLAYER_USING_ITEM);
-        LoadingRequirementRegistry.register(IS_PLAYER_IN_STRUCTURE);
+        RequirementRegistry.register(IS_PLAYER_USING_ITEM);
+        RequirementRegistry.register(IS_PLAYER_IN_STRUCTURE);
 
     }
 
