@@ -65,8 +65,8 @@ public class SlotElement extends AbstractElement {
                     label.append(this.useSelectedSlot ? Component.literal(" (SEL)") : Component.literal(" (" + this.parsedSlot + ")"));
                 }
 
-                graphics.fill(x, y, x + w, y + h, this.inEditorColor.getColorIntWithAlpha(0.5F));
-                UIBase.renderBorder(graphics, x, y, x + w, y + h, 1, this.inEditorColor.getColorIntWithAlpha(0.8F), true, true, true, true);
+                graphics.fill(x, y, x + w, y + h, this.inEditorColor.getDrawable().getColorIntWithAlpha(0.5F));
+                UIBase.renderBorder(graphics, x, y, x + w, y + h, 1, this.inEditorColor.getDrawable().getColorIntWithAlpha(0.8F), true, true, true, true);
 
                 graphics.drawCenteredString(this.font, label, x + (w / 2), y + (h / 2) - (this.font.lineHeight / 2), -1);
 

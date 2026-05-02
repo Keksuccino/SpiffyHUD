@@ -6,9 +6,9 @@ import de.keksuccino.fancymenu.customization.layout.editor.LayoutEditorScreen;
 import de.keksuccino.spiffyhud.util.SpiffyAlignment;
 import org.jetbrains.annotations.NotNull;
 
-public class VanillaLikePlayerFoodEditorElement extends AbstractEditorElement {
+public class VanillaLikePlayerFoodEditorElement extends AbstractEditorElement<VanillaLikePlayerFoodEditorElement, VanillaLikePlayerFoodElement> {
 
-    public VanillaLikePlayerFoodEditorElement(@NotNull AbstractElement element, @NotNull LayoutEditorScreen editor) {
+    public VanillaLikePlayerFoodEditorElement(@NotNull VanillaLikePlayerFoodElement element, @NotNull LayoutEditorScreen editor) {
         super(element, editor);
         this.settings.setStretchable(false);
         this.settings.setAdvancedSizingSupported(false);

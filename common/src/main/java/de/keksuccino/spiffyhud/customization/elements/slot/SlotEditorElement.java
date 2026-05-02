@@ -7,9 +7,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
-public class SlotEditorElement extends AbstractEditorElement {
+public class SlotEditorElement extends AbstractEditorElement<SlotEditorElement, SlotElement> {
 
-    public SlotEditorElement(@NotNull AbstractElement element, @NotNull LayoutEditorScreen editor) {
+    public SlotEditorElement(@NotNull SlotElement element, @NotNull LayoutEditorScreen editor) {
 
         super(element, editor);
 

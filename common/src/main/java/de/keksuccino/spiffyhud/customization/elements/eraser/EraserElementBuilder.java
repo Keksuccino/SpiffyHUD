@@ -28,7 +28,7 @@ public class EraserElementBuilder extends ElementBuilder<EraserElement, EraserEd
         EraserElement i = new EraserElement(this);
         i.baseWidth = 100;
         i.baseHeight = 100;
-        i.inEditorColor = DrawableColor.of(new Color(157, 19, 93, 179));
+        i.inEditorColor.setDefault(DrawableColor.of(new Color(157, 19, 93, 179)).getHex()).set(DrawableColor.of(new Color(157, 19, 93, 179)).getHex());
         i.stayOnScreen = false;
         return i;
     }

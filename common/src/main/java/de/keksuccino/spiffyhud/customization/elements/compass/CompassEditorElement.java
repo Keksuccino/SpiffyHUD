@@ -4,20 +4,20 @@ import de.keksuccino.fancymenu.customization.element.AbstractElement;
 import de.keksuccino.fancymenu.customization.element.editor.AbstractEditorElement;
 import de.keksuccino.fancymenu.customization.layout.editor.LayoutEditorScreen;
 import de.keksuccino.fancymenu.util.LocalizationUtils;
+import de.keksuccino.fancymenu.util.rendering.ui.dialog.Dialogs;
+import de.keksuccino.fancymenu.util.rendering.ui.dialog.message.MessageDialogStyle;
 import de.keksuccino.fancymenu.util.rendering.ui.contextmenu.v2.ContextMenu;
-import de.keksuccino.fancymenu.util.rendering.ui.screen.ConfirmationScreen;
-import de.keksuccino.fancymenu.util.rendering.ui.tooltip.Tooltip;
+import de.keksuccino.fancymenu.util.rendering.ui.tooltip.UITooltip;
 import de.keksuccino.spiffyhud.customization.marker.MarkerData;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.function.Consumer;
 
-public class CompassEditorElement extends AbstractEditorElement {
+public class CompassEditorElement extends AbstractEditorElement<CompassEditorElement, CompassElement> {
 
-    public CompassEditorElement(@NotNull AbstractElement element, @NotNull LayoutEditorScreen editor) {
+    public CompassEditorElement(@NotNull CompassElement element, @NotNull LayoutEditorScreen editor) {
         super(element, editor);
         this.settings.setAutoSizingAllowed(false);
     }
@@ -34,7 +34,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                 .setStackable(false);
 
         this.addColorInput("background_color", Component.translatable("spiffyhud.elements.compass.background.color"), CompassElement.DEFAULT_BACKGROUND_COLOR_STRING)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.background.color.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.background.color.desc")));
 
         this.rightClickMenu.addSeparatorEntry("separator_after_background");
 
@@ -46,7 +46,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                 .setStackable(false);
 
         this.addColorInput("bar_color", Component.translatable("spiffyhud.elements.compass.bar.color"), CompassElement.DEFAULT_BAR_COLOR_STRING)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.bar.color.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.bar.color.desc")));
 
         this.addImageResourceChooserContextMenuEntryTo(this.rightClickMenu,
                         "bar_texture",
@@ -57,7 +57,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.compass.bar.texture"),
                         true, null, true, true, true)
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.bar.texture.desc")))
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.bar.texture.desc")))
                 .setIcon(ContextMenu.IconFactory.getIcon("image"));
 
         this.rightClickMenu.addSeparatorEntry("separator_after_bar");
@@ -70,7 +70,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                 .setStackable(false);
 
         this.addColorInput("needle_color", Component.translatable("spiffyhud.elements.compass.needle.color"), CompassElement.DEFAULT_NEEDLE_COLOR_STRING)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.needle.color.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.needle.color.desc")));
 
         this.addStringInputContextMenuEntryTo(this.rightClickMenu, "needle_y_offset",
                         CompassEditorElement.class,
@@ -80,7 +80,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.compass.needle.y_offset"),
                         true, CompassElement.DEFAULT_TEXT_OFFSET_STRING, null, null)
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.needle.y_offset.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.needle.y_offset.desc")));
 
         this.addImageResourceChooserContextMenuEntryTo(this.rightClickMenu,
                         "needle_texture",
@@ -91,7 +91,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.compass.needle.texture"),
                         true, null, true, true, true)
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.needle.texture.desc")))
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.needle.texture.desc")))
                 .setIcon(ContextMenu.IconFactory.getIcon("image"));
 
         this.rightClickMenu.addSeparatorEntry("separator_after_needle");
@@ -113,7 +113,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.compass.cardinal.ticks.y_offset"),
                         true, CompassElement.DEFAULT_TICK_OFFSET_STRING, null, null)
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.cardinal.ticks.y_offset.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.cardinal.ticks.y_offset.desc")));
 
         this.addImageResourceChooserContextMenuEntryTo(this.rightClickMenu,
                         "cardinal_tick_texture",
@@ -124,7 +124,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.compass.cardinal.ticks.texture"),
                         true, null, true, true, true)
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.cardinal.ticks.texture.desc")))
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.cardinal.ticks.texture.desc")))
                 .setIcon(ContextMenu.IconFactory.getIcon("image"));
 
         this.rightClickMenu.addSeparatorEntry("separator_after_cardinal_tick");
@@ -146,7 +146,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.compass.degrees.ticks.y_offset"),
                         true, CompassElement.DEFAULT_TICK_OFFSET_STRING, null, null)
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.degrees.ticks.y_offset.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.degrees.ticks.y_offset.desc")));
 
         this.addImageResourceChooserContextMenuEntryTo(this.rightClickMenu,
                         "degree_tick_texture",
@@ -157,7 +157,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.compass.degrees.ticks.texture"),
                         true, null, true, true, true)
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.degrees.ticks.texture.desc")))
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.degrees.ticks.texture.desc")))
                 .setIcon(ContextMenu.IconFactory.getIcon("image"));
 
         this.rightClickMenu.addSeparatorEntry("separator_after_degree_tick");
@@ -179,7 +179,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.compass.ticks.minor.y_offset"),
                         true, CompassElement.DEFAULT_TICK_OFFSET_STRING, null, null)
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.ticks.minor.y_offset.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.ticks.minor.y_offset.desc")));
 
         this.addImageResourceChooserContextMenuEntryTo(this.rightClickMenu,
                         "minor_tick_texture",
@@ -190,7 +190,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.compass.ticks.minor.texture"),
                         true, null, true, true, true)
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.ticks.minor.texture.desc")))
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.ticks.minor.texture.desc")))
                 .setIcon(ContextMenu.IconFactory.getIcon("image"));
 
         this.rightClickMenu.addSeparatorEntry("separator_after_minor_tick");
@@ -212,7 +212,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.compass.cardinal.text.scale"),
                         true, CompassElement.DEFAULT_TEXT_SCALE_STRING, null, null)
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.cardinal.text.scale.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.cardinal.text.scale.desc")));
 
         this.addStringInputContextMenuEntryTo(this.rightClickMenu, "cardinal_text_y_offset",
                         CompassEditorElement.class,
@@ -222,7 +222,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.compass.cardinal.text.y_offset"),
                         true, CompassElement.DEFAULT_TEXT_OFFSET_STRING, null, null)
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.cardinal.text.y_offset.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.cardinal.text.y_offset.desc")));
 
         this.addImageResourceChooserContextMenuEntryTo(this.rightClickMenu,
                         "cardinal_texture_north",
@@ -233,7 +233,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.compass.cardinal.text.texture.north"),
                         true, null, true, true, true)
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.cardinal.text.texture.north.desc")))
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.cardinal.text.texture.north.desc")))
                 .setIcon(ContextMenu.IconFactory.getIcon("image"));
 
         this.addImageResourceChooserContextMenuEntryTo(this.rightClickMenu,
@@ -245,7 +245,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.compass.cardinal.text.texture.east"),
                         true, null, true, true, true)
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.cardinal.text.texture.east.desc")))
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.cardinal.text.texture.east.desc")))
                 .setIcon(ContextMenu.IconFactory.getIcon("image"));
 
         this.addImageResourceChooserContextMenuEntryTo(this.rightClickMenu,
@@ -257,7 +257,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.compass.cardinal.text.texture.south"),
                         true, null, true, true, true)
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.cardinal.text.texture.south.desc")))
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.cardinal.text.texture.south.desc")))
                 .setIcon(ContextMenu.IconFactory.getIcon("image"));
 
         this.addImageResourceChooserContextMenuEntryTo(this.rightClickMenu,
@@ -269,7 +269,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.compass.cardinal.text.texture.west"),
                         true, null, true, true, true)
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.cardinal.text.texture.west.desc")))
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.cardinal.text.texture.west.desc")))
                 .setIcon(ContextMenu.IconFactory.getIcon("image"));
 
         this.addToggleContextMenuEntryTo(this.rightClickMenu, "cardinal_outline",
@@ -298,7 +298,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.compass.degrees.text.scale"),
                         true, CompassElement.DEFAULT_TEXT_SCALE_STRING, null, null)
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.degrees.text.scale.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.degrees.text.scale.desc")));
 
         this.addStringInputContextMenuEntryTo(this.rightClickMenu, "degree_text_y_offset",
                         CompassEditorElement.class,
@@ -308,7 +308,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.compass.degrees.text.y_offset"),
                         true, CompassElement.DEFAULT_TEXT_OFFSET_STRING, null, null)
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.degrees.text.y_offset.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.degrees.text.y_offset.desc")));
 
         this.addToggleContextMenuEntryTo(this.rightClickMenu, "degree_outline",
                         CompassEditorElement.class,
@@ -327,7 +327,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                 .setStackable(false);
 
         this.addColorInput("death_pointer_color", Component.translatable("spiffyhud.elements.compass.death_pointer.color"), CompassElement.DEFAULT_DEATH_POINTER_COLOR_STRING)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.death_pointer.color.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.death_pointer.color.desc")));
 
         this.addStringInputContextMenuEntryTo(this.rightClickMenu, "death_pointer_y_offset",
                         CompassEditorElement.class,
@@ -337,7 +337,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.compass.death_pointer.y_offset"),
                         true, CompassElement.DEFAULT_TEXT_OFFSET_STRING, null, null)
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.death_pointer.y_offset.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.death_pointer.y_offset.desc")));
 
         this.addToggleContextMenuEntryTo(this.rightClickMenu, "death_pointer_label_enabled",
                         CompassEditorElement.class,
@@ -345,7 +345,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         (editorElement, value) -> editorElement.getElement().deathPointerLabelEnabled = value,
                         "spiffyhud.elements.compass.death_pointer.label.enabled")
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.death_pointer.label.enabled.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.death_pointer.label.enabled.desc")));
 
         this.addToggleContextMenuEntryTo(this.rightClickMenu, "death_pointer_label_outline_enabled",
                         CompassEditorElement.class,
@@ -353,7 +353,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         (editorElement, value) -> editorElement.getElement().deathPointerLabelOutlineEnabled = value,
                         "spiffyhud.elements.compass.death_pointer.label.outline")
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.death_pointer.label.outline.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.death_pointer.label.outline.desc")));
 
         this.addStringInputContextMenuEntryTo(this.rightClickMenu, "death_pointer_label_scale",
                         CompassEditorElement.class,
@@ -363,7 +363,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.compass.death_pointer.label.scale"),
                         true, CompassElement.DEFAULT_TEXT_SCALE_STRING, null, null)
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.death_pointer.label.scale.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.death_pointer.label.scale.desc")));
 
         this.addStringInputContextMenuEntryTo(this.rightClickMenu, "death_pointer_label_x_offset",
                         CompassEditorElement.class,
@@ -373,7 +373,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.compass.death_pointer.label.x_offset"),
                         true, CompassElement.DEFAULT_TEXT_OFFSET_STRING, null, null)
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.death_pointer.label.x_offset.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.death_pointer.label.x_offset.desc")));
 
         this.addStringInputContextMenuEntryTo(this.rightClickMenu, "death_pointer_label_y_offset",
                         CompassEditorElement.class,
@@ -383,7 +383,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.compass.death_pointer.label.y_offset"),
                         true, CompassElement.DEFAULT_TEXT_OFFSET_STRING, null, null)
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.death_pointer.label.y_offset.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.death_pointer.label.y_offset.desc")));
 
         this.addImageResourceChooserContextMenuEntryTo(this.rightClickMenu,
                         "death_pointer_texture",
@@ -394,7 +394,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.compass.death_pointer.texture"),
                         true, null, true, true, true)
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.death_pointer.texture.desc")))
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.death_pointer.texture.desc")))
                 .setIcon(ContextMenu.IconFactory.getIcon("image"));
 
         this.rightClickMenu.addSeparatorEntry("separator_after_death_pointer");
@@ -405,7 +405,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         (editorElement, value) -> editorElement.getElement().worldMarkersEnabled = value,
                         "spiffyhud.elements.compass.world_markers.enabled")
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.world_markers.enabled.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.world_markers.enabled.desc")));
 
         this.addStringInputContextMenuEntryTo(this.rightClickMenu, "marker_dots_scale",
                         CompassEditorElement.class,
@@ -415,7 +415,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.compass.world_markers.dots.scale"),
                         true, CompassElement.DEFAULT_DOT_SCALE_STRING, null, null)
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.world_markers.dots.scale.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.world_markers.dots.scale.desc")));
 
         this.addStringInputContextMenuEntryTo(this.rightClickMenu, "marker_dot_y_offset",
                         CompassEditorElement.class,
@@ -425,7 +425,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.compass.world_markers.dots.y_offset"),
                         true, CompassElement.DEFAULT_TEXT_OFFSET_STRING, null, null)
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.world_markers.dots.y_offset.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.world_markers.dots.y_offset.desc")));
 
         this.addStringInputContextMenuEntryTo(this.rightClickMenu, "marker_needle_y_offset",
                         CompassEditorElement.class,
@@ -435,7 +435,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.compass.world_markers.needles.y_offset"),
                         true, CompassElement.DEFAULT_TEXT_OFFSET_STRING, null, null)
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.world_markers.needles.y_offset.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.world_markers.needles.y_offset.desc")));
 
         this.addToggleContextMenuEntryTo(this.rightClickMenu, "marker_labels_enabled",
                         CompassEditorElement.class,
@@ -443,7 +443,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         (editorElement, value) -> editorElement.getElement().markerLabelsEnabled = value,
                         "spiffyhud.elements.compass.world_markers.labels.enabled")
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.world_markers.labels.enabled.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.world_markers.labels.enabled.desc")));
 
         this.addToggleContextMenuEntryTo(this.rightClickMenu, "marker_label_outline_enabled",
                         CompassEditorElement.class,
@@ -451,7 +451,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         (editorElement, value) -> editorElement.getElement().markerLabelOutlineEnabled = value,
                         "spiffyhud.elements.compass.world_markers.labels.outline")
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.world_markers.labels.outline.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.world_markers.labels.outline.desc")));
 
         this.addStringInputContextMenuEntryTo(this.rightClickMenu, "marker_label_scale",
                         CompassEditorElement.class,
@@ -461,7 +461,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.compass.world_markers.labels.scale"),
                         true, CompassElement.DEFAULT_TEXT_SCALE_STRING, null, null)
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.world_markers.labels.scale.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.world_markers.labels.scale.desc")));
 
         this.addStringInputContextMenuEntryTo(this.rightClickMenu, "marker_dot_label_x_offset",
                         CompassEditorElement.class,
@@ -471,7 +471,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.compass.world_markers.labels.dots.x_offset"),
                         true, CompassElement.DEFAULT_TEXT_OFFSET_STRING, null, null)
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.world_markers.labels.dots.x_offset.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.world_markers.labels.dots.x_offset.desc")));
 
         this.addStringInputContextMenuEntryTo(this.rightClickMenu, "marker_dot_label_y_offset",
                         CompassEditorElement.class,
@@ -481,7 +481,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.compass.world_markers.labels.dots.y_offset"),
                         true, CompassElement.DEFAULT_TEXT_OFFSET_STRING, null, null)
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.world_markers.labels.dots.y_offset.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.world_markers.labels.dots.y_offset.desc")));
 
         this.addStringInputContextMenuEntryTo(this.rightClickMenu, "marker_needle_label_x_offset",
                         CompassEditorElement.class,
@@ -491,7 +491,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.compass.world_markers.labels.needles.x_offset"),
                         true, CompassElement.DEFAULT_TEXT_OFFSET_STRING, null, null)
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.world_markers.labels.needles.x_offset.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.world_markers.labels.needles.x_offset.desc")));
 
         this.addStringInputContextMenuEntryTo(this.rightClickMenu, "marker_needle_label_y_offset",
                         CompassEditorElement.class,
@@ -501,21 +501,19 @@ public class CompassEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.compass.world_markers.labels.needles.y_offset"),
                         true, CompassElement.DEFAULT_TEXT_OFFSET_STRING, null, null)
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.world_markers.labels.needles.y_offset.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.world_markers.labels.needles.y_offset.desc")));
 
         this.rightClickMenu.addSeparatorEntry("separator_before_world_markers_clear");
 
         this.rightClickMenu.addClickableEntry("world_markers_clear", Component.translatable("spiffyhud.elements.compass.world_markers.clear"), (menu, entry) -> {
                     this.rightClickMenu.closeMenu();
-                    ConfirmationScreen confirmation = ConfirmationScreen.critical(confirmed -> {
+                    Dialogs.openMessageWithCallback(Component.translatable("spiffyhud.elements.compass.world_markers.clear.confirm"), MessageDialogStyle.WARNING, confirmed -> {
                         if (confirmed) {
                             this.clearMarkers();
                         }
-                        Minecraft.getInstance().setScreen(this.editor);
-                    }, Component.translatable("spiffyhud.elements.compass.world_markers.clear.confirm"));
-                    Minecraft.getInstance().setScreen(confirmation);
+                    });
                 }).setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.world_markers.clear.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.world_markers.clear.desc")));
 
         this.rightClickMenu.addSeparatorEntry("separator_before_mob_dots_move_up_down");
 
@@ -525,7 +523,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         (editorElement, value) -> editorElement.getElement().mobDotsMoveUpDown = value,
                         "spiffyhud.elements.compass.mob_dots.vertical_movement")
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.mob_dots.vertical_movement.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.mob_dots.vertical_movement.desc")));
 
         this.rightClickMenu.addSeparatorEntry("separator_before_hostile_dots_enabled");
 
@@ -535,7 +533,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         (editorElement, value) -> editorElement.getElement().hostileDotsEnabled = value,
                         "spiffyhud.elements.compass.hostile_dots")
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.hostile_dots.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.hostile_dots.desc")));
 
         this.addToggleContextMenuEntryTo(this.rightClickMenu, "hostile_dots_heads_enabled",
                         CompassEditorElement.class,
@@ -543,10 +541,10 @@ public class CompassEditorElement extends AbstractEditorElement {
                         (editorElement, value) -> editorElement.getElement().hostileDotsShowHeads = value,
                         "spiffyhud.elements.compass.hostile_dots.heads")
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.hostile_dots.heads.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.hostile_dots.heads.desc")));
 
         this.addColorInput("hostile_dots_color", Component.translatable("spiffyhud.elements.compass.hostile_dots.color"), CompassElement.DEFAULT_HOSTILE_DOT_COLOR_STRING)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.hostile_dots.color.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.hostile_dots.color.desc")));
 
         this.addStringInputContextMenuEntryTo(this.rightClickMenu, "hostile_dots_scale",
                         CompassEditorElement.class,
@@ -556,7 +554,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.compass.hostile_dots.scale"),
                         true, CompassElement.DEFAULT_DOT_SCALE_STRING, null, null)
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.hostile_dots.scale.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.hostile_dots.scale.desc")));
 
         this.addStringInputContextMenuEntryTo(this.rightClickMenu, "hostile_dots_y_offset",
                         CompassEditorElement.class,
@@ -566,7 +564,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.compass.hostile_dots.y_offset"),
                         true, CompassElement.DEFAULT_TEXT_OFFSET_STRING, null, null)
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.hostile_dots.y_offset.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.hostile_dots.y_offset.desc")));
 
         this.addStringInputContextMenuEntryTo(this.rightClickMenu, "hostile_dots_range",
                         CompassEditorElement.class,
@@ -576,7 +574,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.compass.hostile_dots.range"),
                         true, CompassElement.DEFAULT_HOSTILE_DOT_RANGE_STRING, null, null)
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.hostile_dots.range.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.hostile_dots.range.desc")));
 
         this.addImageResourceChooserContextMenuEntryTo(this.rightClickMenu,
                         "hostile_dots_texture",
@@ -587,7 +585,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.compass.hostile_dots.texture"),
                         true, null, true, true, true)
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.hostile_dots.texture.desc")))
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.hostile_dots.texture.desc")))
                 .setIcon(ContextMenu.IconFactory.getIcon("image"));
 
         this.rightClickMenu.addSeparatorEntry("separator_after_hostile_dots");
@@ -598,7 +596,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         (editorElement, value) -> editorElement.getElement().passiveDotsEnabled = value,
                         "spiffyhud.elements.compass.passive_dots")
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.passive_dots.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.passive_dots.desc")));
 
         this.addToggleContextMenuEntryTo(this.rightClickMenu, "passive_dots_heads_enabled",
                         CompassEditorElement.class,
@@ -606,10 +604,10 @@ public class CompassEditorElement extends AbstractEditorElement {
                         (editorElement, value) -> editorElement.getElement().passiveDotsShowHeads = value,
                         "spiffyhud.elements.compass.passive_dots.heads")
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.passive_dots.heads.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.passive_dots.heads.desc")));
 
         this.addColorInput("passive_dots_color", Component.translatable("spiffyhud.elements.compass.passive_dots.color"), CompassElement.DEFAULT_PASSIVE_DOT_COLOR_STRING)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.passive_dots.color.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.passive_dots.color.desc")));
 
         this.addStringInputContextMenuEntryTo(this.rightClickMenu, "passive_dots_scale",
                         CompassEditorElement.class,
@@ -619,7 +617,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.compass.passive_dots.scale"),
                         true, CompassElement.DEFAULT_DOT_SCALE_STRING, null, null)
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.passive_dots.scale.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.passive_dots.scale.desc")));
 
         this.addStringInputContextMenuEntryTo(this.rightClickMenu, "passive_dots_y_offset",
                         CompassEditorElement.class,
@@ -629,7 +627,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.compass.passive_dots.y_offset"),
                         true, CompassElement.DEFAULT_TEXT_OFFSET_STRING, null, null)
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.passive_dots.y_offset.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.passive_dots.y_offset.desc")));
 
         this.addStringInputContextMenuEntryTo(this.rightClickMenu, "passive_dots_range",
                         CompassEditorElement.class,
@@ -639,7 +637,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.compass.passive_dots.range"),
                         true, CompassElement.DEFAULT_PASSIVE_DOT_RANGE_STRING, null, null)
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.passive_dots.range.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.passive_dots.range.desc")));
 
         this.addImageResourceChooserContextMenuEntryTo(this.rightClickMenu,
                         "passive_dots_texture",
@@ -650,7 +648,7 @@ public class CompassEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.compass.passive_dots.texture"),
                         true, null, true, true, true)
                 .setStackable(false)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.passive_dots.texture.desc")))
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.compass.passive_dots.texture.desc")))
                 .setIcon(ContextMenu.IconFactory.getIcon("image"));
 
     }

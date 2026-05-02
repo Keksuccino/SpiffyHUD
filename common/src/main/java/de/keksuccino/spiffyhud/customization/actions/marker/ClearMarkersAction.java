@@ -1,7 +1,6 @@
 package de.keksuccino.spiffyhud.customization.actions.marker;
 
 import de.keksuccino.fancymenu.customization.action.Action;
-import de.keksuccino.fancymenu.util.LocalizationUtils;
 import de.keksuccino.spiffyhud.customization.marker.MarkerStorage;
 import net.minecraft.network.chat.Component;
 import org.apache.logging.log4j.LogManager;
@@ -41,13 +40,13 @@ public class ClearMarkersAction extends Action {
     }
 
     @Override
-    public @NotNull Component getActionDisplayName() {
+    public @NotNull Component getDisplayName() {
         return Component.translatable("spiffyhud.actions.clear_markers");
     }
 
     @Override
-    public @NotNull Component[] getActionDescription() {
-        return LocalizationUtils.splitLocalizedLines("spiffyhud.actions.clear_markers.desc");
+    public @NotNull Component getDescription() {
+        return Component.translatable("spiffyhud.actions.clear_markers.desc");
     }
 
     @Override
@@ -56,7 +55,7 @@ public class ClearMarkersAction extends Action {
     }
 
     @Override
-    public String getValueExample() {
+    public String getValuePreset() {
         return "example.element.identifier";
     }
 }

@@ -10,7 +10,7 @@ import de.keksuccino.fancymenu.util.LocalizationUtils;
 import de.keksuccino.fancymenu.util.event.acara.EventListener;
 import de.keksuccino.fancymenu.util.rendering.RenderingUtils;
 import de.keksuccino.fancymenu.util.rendering.ui.UIBase;
-import de.keksuccino.fancymenu.util.rendering.ui.tooltip.Tooltip;
+import de.keksuccino.fancymenu.util.rendering.ui.tooltip.UITooltip;
 import de.keksuccino.fancymenu.util.rendering.ui.tooltip.TooltipHandler;
 import de.keksuccino.fancymenu.util.rendering.ui.widget.button.ExtendedButton;
 import de.keksuccino.spiffyhud.customization.SpiffyOverlayScreen;
@@ -48,7 +48,7 @@ public class SpiffyEvents {
 
                     var m = CustomizationOverlay.getCurrentMenuBarInstance();
                     if ((m == null) || !m.isUserNavigatingInMenuBar()) {
-                        TooltipHandler.INSTANCE.addTooltip(Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.edit_hud.desc")).setDefaultStyle().setScale(UIBase.getUIScale()), () -> this.isHovered, false, true);
+                        TooltipHandler.INSTANCE.addTooltip(UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.edit_hud.desc")), () -> this.isHovered, false, true);
                     }
 
                     if (this.isHoveredOrFocused()) {

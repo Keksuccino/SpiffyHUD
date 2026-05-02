@@ -5,14 +5,14 @@ import de.keksuccino.fancymenu.customization.element.editor.AbstractEditorElemen
 import de.keksuccino.fancymenu.customization.layout.editor.LayoutEditorScreen;
 import de.keksuccino.fancymenu.util.LocalizationUtils;
 import de.keksuccino.fancymenu.util.rendering.ui.contextmenu.v2.ContextMenu;
-import de.keksuccino.fancymenu.util.rendering.ui.tooltip.Tooltip;
+import de.keksuccino.fancymenu.util.rendering.ui.tooltip.UITooltip;
 import de.keksuccino.spiffyhud.util.SpiffyAlignment;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
-public class PlayerFoodBarEditorElement extends AbstractEditorElement {
+public class PlayerFoodBarEditorElement extends AbstractEditorElement<PlayerFoodBarEditorElement, PlayerFoodBarElement> {
 
-    public PlayerFoodBarEditorElement(@NotNull AbstractElement element, @NotNull LayoutEditorScreen editor) {
+    public PlayerFoodBarEditorElement(@NotNull PlayerFoodBarElement element, @NotNull LayoutEditorScreen editor) {
         super(element, editor);
         this.settings.setStretchable(false);
         this.settings.setAdvancedSizingSupported(false);
@@ -40,7 +40,7 @@ public class PlayerFoodBarEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.player_food_bar.scale"),
                         true, PlayerFoodBarElement.DEFAULT_SCALE_STRING, null, null)
                 .setStackable(true)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_food_bar.scale.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_food_bar.scale.desc")));
 
         this.rightClickMenu.addSeparatorEntry("separator_after_general");
 
@@ -59,7 +59,7 @@ public class PlayerFoodBarEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.player_food_bar.icon_gap"),
                         true, 1, null, null)
                 .setStackable(true)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_food_bar.icon_gap.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_food_bar.icon_gap.desc")));
 
         this.rightClickMenu.addSeparatorEntry("separator_after_icon");
 
@@ -78,7 +78,7 @@ public class PlayerFoodBarEditorElement extends AbstractEditorElement {
                         (editorElement, value) -> editorElement.getElement().lowFoodShakeEnabled = value,
                         "spiffyhud.elements.player_food_bar.shake")
                 .setStackable(true)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_food_bar.shake.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_food_bar.shake.desc")));
 
         this.addIntegerInputContextMenuEntryTo(this.rightClickMenu, "shake_threshold",
                         PlayerFoodBarEditorElement.class,
@@ -96,7 +96,7 @@ public class PlayerFoodBarEditorElement extends AbstractEditorElement {
                         texturesMenu)
                 .setStackable(true)
                 .setIcon(ContextMenu.IconFactory.getIcon("image"))
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_food_bar.textures.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_food_bar.textures.desc")));
 
         for (PlayerFoodBarElement.FoodTextureKind kind : PlayerFoodBarElement.FoodTextureKind.values()) {
             this.addImageResourceChooserContextMenuEntryTo(texturesMenu,

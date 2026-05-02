@@ -28,7 +28,7 @@ public class OverlayRemoverElementBuilder extends ElementBuilder<OverlayRemoverE
         OverlayRemoverElement i = new OverlayRemoverElement(this);
         i.baseWidth = 100;
         i.baseHeight = 100;
-        i.inEditorColor = DrawableColor.of(new Color(137, 168, 50));
+        i.inEditorColor.setDefault(DrawableColor.of(new Color(137, 168, 50)).getHex()).set(DrawableColor.of(new Color(137, 168, 50)).getHex());
         return i;
     }
 
