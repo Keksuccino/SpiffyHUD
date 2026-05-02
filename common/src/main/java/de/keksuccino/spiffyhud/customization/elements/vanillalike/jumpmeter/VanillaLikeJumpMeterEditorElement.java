@@ -5,9 +5,9 @@ import de.keksuccino.fancymenu.customization.element.editor.AbstractEditorElemen
 import de.keksuccino.fancymenu.customization.layout.editor.LayoutEditorScreen;
 import org.jetbrains.annotations.NotNull;
 
-public class VanillaLikeJumpMeterEditorElement extends AbstractEditorElement {
+public class VanillaLikeJumpMeterEditorElement extends AbstractEditorElement<VanillaLikeJumpMeterEditorElement, VanillaLikeJumpMeterElement> {
 
-    public VanillaLikeJumpMeterEditorElement(@NotNull AbstractElement element, @NotNull LayoutEditorScreen editor) {
+    public VanillaLikeJumpMeterEditorElement(@NotNull VanillaLikeJumpMeterElement element, @NotNull LayoutEditorScreen editor) {
         super(element, editor);
         this.settings.setStretchable(false);
         this.settings.setAdvancedSizingSupported(false);

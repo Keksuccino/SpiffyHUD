@@ -1,6 +1,5 @@
 package de.keksuccino.spiffyhud.mixin.mixins.common.client;
 
-import de.keksuccino.fancymenu.customization.element.AbstractElement;
 import de.keksuccino.fancymenu.customization.element.elements.button.custombutton.ButtonEditorElement;
 import de.keksuccino.fancymenu.customization.element.elements.button.vanillawidget.VanillaWidgetEditorElement;
 import de.keksuccino.fancymenu.customization.element.elements.button.vanillawidget.VanillaWidgetElement;
@@ -25,7 +24,7 @@ public abstract class MixinVanillaWidgetEditorElement extends ButtonEditorElemen
      * @reason Disable most customization stuff for Spiffy's dummy Vanilla elements.
      */
     @Inject(method = "<init>", at = @At("RETURN"),remap = false)
-    private void after_construct_Spiffy(AbstractElement element, LayoutEditorScreen editor, CallbackInfo info) {
+    private void after_construct_Spiffy(VanillaWidgetElement element, LayoutEditorScreen editor, CallbackInfo info) {
 
         if (this.isSpiffyDummyElement_Spiffy()) {
 

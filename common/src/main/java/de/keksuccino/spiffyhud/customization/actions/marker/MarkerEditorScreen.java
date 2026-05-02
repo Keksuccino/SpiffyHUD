@@ -4,13 +4,12 @@ import de.keksuccino.fancymenu.customization.placeholder.PlaceholderParser;
 import de.keksuccino.fancymenu.util.LocalizationUtils;
 import de.keksuccino.fancymenu.util.cycle.CommonCycles;
 import de.keksuccino.fancymenu.util.rendering.ui.screen.CellScreen;
-import de.keksuccino.fancymenu.util.rendering.ui.screen.resource.ResourceChooserScreen;
-import de.keksuccino.fancymenu.util.rendering.ui.tooltip.Tooltip;
+import de.keksuccino.fancymenu.util.rendering.ui.screen.resource.ResourceChooserWindowBody;
+import de.keksuccino.fancymenu.util.rendering.ui.tooltip.UITooltip;
 import de.keksuccino.fancymenu.util.rendering.ui.widget.button.CycleButton;
 import de.keksuccino.fancymenu.util.rendering.ui.widget.button.ExtendedButton;
 import de.keksuccino.fancymenu.util.resource.resources.texture.ITexture;
 import de.keksuccino.fancymenu.util.file.type.types.ImageFileType;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
@@ -41,7 +40,7 @@ public class MarkerEditorScreen extends CellScreen {
         TextInputCell targetElementCell = this.addTextInputCell(null, false, true)
                 .setEditListener(s -> this.config.targetElementIdentifier = s.trim())
                 .setText(this.config.targetElementIdentifier);
-        targetElementCell.editBox.setTooltip(() -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.actions.marker.target_element.desc")));
+        targetElementCell.editBox.setUITooltip(() -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.actions.marker.target_element.desc")));
 
         this.addCellGroupEndSpacerCell();
 
@@ -49,7 +48,7 @@ public class MarkerEditorScreen extends CellScreen {
         TextInputCell displayNameCell = this.addTextInputCell(null, false, true)
                 .setEditListener(s -> this.config.uniqueMarkerName = s.trim())
                 .setText(this.config.uniqueMarkerName);
-        displayNameCell.editBox.setTooltip(() -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.actions.marker.display_name.desc")));
+        displayNameCell.editBox.setUITooltip(() -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.actions.marker.display_name.desc")));
 
         this.addCellGroupEndSpacerCell();
 
@@ -57,7 +56,7 @@ public class MarkerEditorScreen extends CellScreen {
         TextInputCell colorCell = this.addTextInputCell(null, true, true)
                 .setEditListener(s -> this.config.colorHex = s.trim())
                 .setText(this.config.colorHex);
-        colorCell.editBox.setTooltip(() -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.actions.marker.color.desc")));
+        colorCell.editBox.setUITooltip(() -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.actions.marker.color.desc")));
 
         this.addCellGroupEndSpacerCell();
 
@@ -68,7 +67,7 @@ public class MarkerEditorScreen extends CellScreen {
         CycleButton<CommonCycles.CycleEnabledDisabled> showNeedleButton = new CycleButton<>(0, 0, 80, 20,
                 CommonCycles.cycleEnabledDisabled("spiffyhud.actions.marker.show_as_needle.cycle", this.config.showAsNeedle),
                 (value, button) -> this.config.showAsNeedle = value.getAsBoolean());
-        showNeedleButton.setTooltip(Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.actions.marker.show_as_needle.desc")));
+        showNeedleButton.setUITooltip(UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.actions.marker.show_as_needle.desc")));
         this.addWidgetCell(showNeedleButton, true);
 
         this.addCellGroupEndSpacerCell();
@@ -77,7 +76,7 @@ public class MarkerEditorScreen extends CellScreen {
         TextInputCell positionXCell = this.addTextInputCell(null, true, true)
                 .setEditListener(s -> this.config.positionX = s.trim())
                 .setText(this.config.positionX);
-        positionXCell.editBox.setTooltip(() -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.actions.marker.position_x.desc")));
+        positionXCell.editBox.setUITooltip(() -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.actions.marker.position_x.desc")));
 
         this.addCellGroupEndSpacerCell();
 
@@ -85,7 +84,7 @@ public class MarkerEditorScreen extends CellScreen {
         TextInputCell positionZCell = this.addTextInputCell(null, true, true)
                 .setEditListener(s -> this.config.positionZ = s.trim())
                 .setText(this.config.positionZ);
-        positionZCell.editBox.setTooltip(() -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.actions.marker.position_z.desc")));
+        positionZCell.editBox.setUITooltip(() -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.actions.marker.position_z.desc")));
 
         this.addStartEndSpacerCell();
     }
@@ -124,14 +123,14 @@ public class MarkerEditorScreen extends CellScreen {
             cell.setEditListener(s -> this.config.dotTexture = s.trim());
             cell.setText(this.config.dotTexture == null ? "" : this.config.dotTexture);
         }
-        cell.editBox.setTooltip(() -> Tooltip.of(LocalizationUtils.splitLocalizedLines(baseKey + ".desc")));
+        cell.editBox.setUITooltip(() -> UITooltip.of(LocalizationUtils.splitLocalizedLines(baseKey + ".desc")));
 
         ExtendedButton pickButton = new ExtendedButton(0, 0, 20, 20, Component.translatable(baseKey + ".pick"), button -> this.openTexturePicker(field));
-        pickButton.setTooltip(Tooltip.of(LocalizationUtils.splitLocalizedLines(baseKey + ".pick.desc")));
+        pickButton.setUITooltip(UITooltip.of(LocalizationUtils.splitLocalizedLines(baseKey + ".pick.desc")));
         this.addWidgetCell(pickButton, true);
 
         ExtendedButton clearButton = new ExtendedButton(0, 0, 20, 20, Component.translatable(baseKey + ".clear"), button -> this.clearTexture(field));
-        clearButton.setTooltip(Tooltip.of(LocalizationUtils.splitLocalizedLines(baseKey + ".clear.desc")));
+        clearButton.setUITooltip(UITooltip.of(LocalizationUtils.splitLocalizedLines(baseKey + ".clear.desc")));
         this.addWidgetCell(clearButton, true);
 
         this.addCellGroupEndSpacerCell();
@@ -154,7 +153,7 @@ public class MarkerEditorScreen extends CellScreen {
     private void openTexturePicker(@NotNull TextureField field) {
         String stored = (field == TextureField.NEEDLE) ? this.config.needleTexture : this.config.dotTexture;
         String source = stored == null ? "" : stored;
-        ResourceChooserScreen<ITexture, ImageFileType> chooser = ResourceChooserScreen.image(null, selection -> {
+        ResourceChooserWindowBody<ITexture, ImageFileType> chooser = ResourceChooserWindowBody.image(null, selection -> {
             if (selection != null) {
                 if (field == TextureField.NEEDLE) {
                     this.config.needleTexture = selection;
@@ -168,10 +167,9 @@ public class MarkerEditorScreen extends CellScreen {
                     }
                 }
             }
-            Minecraft.getInstance().setScreen(this);
         });
         chooser.setSource(source.isBlank() ? null : source, false);
-        Minecraft.getInstance().setScreen(chooser);
+        chooser.openInWindow(null);
     }
 
     private enum TextureField {
