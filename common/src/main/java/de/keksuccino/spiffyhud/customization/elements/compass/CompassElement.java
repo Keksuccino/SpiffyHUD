@@ -4,7 +4,7 @@ import de.keksuccino.fancymenu.customization.element.AbstractElement;
 import de.keksuccino.fancymenu.customization.element.ElementBuilder;
 import de.keksuccino.fancymenu.customization.placeholder.PlaceholderParser;
 import de.keksuccino.fancymenu.util.MathUtils;
-import de.keksuccino.fancymenu.util.SerializationUtils;
+import de.keksuccino.fancymenu.util.SerializationHelper;
 import de.keksuccino.fancymenu.util.rendering.AspectRatio;
 import de.keksuccino.fancymenu.util.rendering.DrawableColor;
 import de.keksuccino.fancymenu.util.rendering.RenderingUtils;
@@ -723,7 +723,7 @@ public class CompassElement extends AbstractElement {
             if (texture == null || !texture.isReady()) {
                 return null;
             }
-            Identifier location = texture.getIdentifier();
+            Identifier location = texture.getResourceLocation();
             if (location == null) {
                 return null;
             }
@@ -1136,8 +1136,8 @@ public class CompassElement extends AbstractElement {
         float heading = reading.headingDegrees();
         for (MarkerData marker : markers) {
             MarkerOrientation orientation = this.computeMarkerOrientation(player, marker, heading);
-            ResourceSupplier<ITexture> dotTexture = SerializationUtils.deserializeImageResourceSupplier(marker.getDotTexture());
-            ResourceSupplier<ITexture> needleTexture = SerializationUtils.deserializeImageResourceSupplier(marker.getNeedleTexture());
+            ResourceSupplier<ITexture> dotTexture = SerializationHelper.INSTANCE.deserializeImageResourceSupplier(marker.getDotTexture());
+            ResourceSupplier<ITexture> needleTexture = SerializationHelper.INSTANCE.deserializeImageResourceSupplier(marker.getNeedleTexture());
             int color = this.applyOpacity(this.parseColor(marker.getColor(), DEFAULT_NEEDLE_COLOR));
             resolved.add(new ResolvedMarker(marker.getName(), orientation.relativeDegrees(), marker.isShowAsNeedle(),
                     color, dotTexture, needleTexture, orientation.distanceMeters()));

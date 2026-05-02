@@ -5,9 +5,9 @@ import de.keksuccino.fancymenu.customization.element.editor.AbstractEditorElemen
 import de.keksuccino.fancymenu.customization.layout.editor.LayoutEditorScreen;
 import org.jetbrains.annotations.NotNull;
 
-public class VanillaLikeAttackIndicatorEditorElement extends AbstractEditorElement {
+public class VanillaLikeAttackIndicatorEditorElement extends AbstractEditorElement<VanillaLikeAttackIndicatorEditorElement, VanillaLikeAttackIndicatorElement> {
 
-    public VanillaLikeAttackIndicatorEditorElement(@NotNull AbstractElement element, @NotNull LayoutEditorScreen editor) {
+    public VanillaLikeAttackIndicatorEditorElement(@NotNull VanillaLikeAttackIndicatorElement element, @NotNull LayoutEditorScreen editor) {
         super(element, editor);
         this.settings.setParallaxAllowed(false);
     }

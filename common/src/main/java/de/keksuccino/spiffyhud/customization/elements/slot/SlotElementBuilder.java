@@ -28,7 +28,7 @@ public class SlotElementBuilder extends ElementBuilder<SlotElement, SlotEditorEl
         SlotElement i = new SlotElement(this);
         i.baseWidth = 20;
         i.baseHeight = 20;
-        i.inEditorColor = DrawableColor.of(new Color(140, 0, 98));
+        i.inEditorColor.setDefault(DrawableColor.of(new Color(140, 0, 98)).getHex()).set(DrawableColor.of(new Color(140, 0, 98)).getHex());
         i.stayOnScreen = false;
         i.stickyAnchor = true;
         return i;

@@ -4,13 +4,13 @@ import de.keksuccino.fancymenu.customization.element.AbstractElement;
 import de.keksuccino.fancymenu.customization.element.editor.AbstractEditorElement;
 import de.keksuccino.fancymenu.customization.layout.editor.LayoutEditorScreen;
 import de.keksuccino.fancymenu.util.LocalizationUtils;
-import de.keksuccino.fancymenu.util.rendering.ui.tooltip.Tooltip;
+import de.keksuccino.fancymenu.util.rendering.ui.tooltip.UITooltip;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
-public class SingleLineTextEditorElement extends AbstractEditorElement {
+public class SingleLineTextEditorElement extends AbstractEditorElement<SingleLineTextEditorElement, SingleLineTextElement> {
 
-    public SingleLineTextEditorElement(@NotNull AbstractElement element, @NotNull LayoutEditorScreen editor) {
+    public SingleLineTextEditorElement(@NotNull SingleLineTextElement element, @NotNull LayoutEditorScreen editor) {
 
         super(element, editor);
 
@@ -37,7 +37,7 @@ public class SingleLineTextEditorElement extends AbstractEditorElement {
                 (editorElement, scale) -> editorElement.getElement().textScale = (scale == null || scale.isBlank()) ? SingleLineTextElement.DEFAULT_TEXT_SCALE_STRING : scale,
                 null, false, true, Component.translatable("spiffyhud.elements.single_line_text.scale"), true,
                 SingleLineTextElement.DEFAULT_TEXT_SCALE_STRING, null, null)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.single_line_text.scale.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.single_line_text.scale.desc")));
 
     }
 

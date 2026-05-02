@@ -4,14 +4,14 @@ import de.keksuccino.fancymenu.customization.element.AbstractElement;
 import de.keksuccino.fancymenu.customization.element.editor.AbstractEditorElement;
 import de.keksuccino.fancymenu.customization.layout.editor.LayoutEditorScreen;
 import de.keksuccino.fancymenu.util.LocalizationUtils;
-import de.keksuccino.fancymenu.util.rendering.ui.tooltip.Tooltip;
+import de.keksuccino.fancymenu.util.rendering.ui.tooltip.UITooltip;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
-public class EraserEditorElement extends AbstractEditorElement {
+public class EraserEditorElement extends AbstractEditorElement<EraserEditorElement, EraserElement> {
 
-    public EraserEditorElement(@NotNull AbstractElement element, @NotNull LayoutEditorScreen editor) {
+    public EraserEditorElement(@NotNull EraserElement element, @NotNull LayoutEditorScreen editor) {
 
         super(element, editor);
 
@@ -28,7 +28,7 @@ public class EraserEditorElement extends AbstractEditorElement {
                         eraserEditorElement -> eraserEditorElement.getElement().aggressionLevel,
                         (eraserEditorElement, aggressionLevel) -> eraserEditorElement.getElement().aggressionLevel = aggressionLevel,
                         (contextMenu, clickableContextMenuEntry, aggressionLevel) -> aggressionLevel.getCycleComponent())
-                .setTooltipSupplier((contextMenu, contextMenuEntry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.aggression_level.desc")));
+                .setTooltipSupplier((contextMenu, contextMenuEntry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.aggression_level.desc")));
 
     }
 

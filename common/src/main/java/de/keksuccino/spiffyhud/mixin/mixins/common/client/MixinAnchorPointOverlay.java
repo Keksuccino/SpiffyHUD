@@ -18,7 +18,7 @@ public class MixinAnchorPointOverlay {
     @Inject(method = "getTopHoveredNotDraggedElement", at = @At("RETURN"), cancellable = true, remap = false)
     private void after_getTopHoveredNotDraggedElement_Spiffy(CallbackInfoReturnable<AbstractEditorElement> info) {
         if (info.getReturnValue() instanceof VanillaWidgetEditorElement e) {
-            if (e.getElement().widgetMeta.getWidget() instanceof SpiffyOverlayScreen.SpiffyRendererWidget) {
+            if (e.element.widgetMeta.getWidget() instanceof SpiffyOverlayScreen.SpiffyRendererWidget) {
                 info.setReturnValue(null);
             }
         }

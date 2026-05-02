@@ -27,7 +27,7 @@ public class PlayerNbtHelperElementBuilder extends ElementBuilder<PlayerNbtHelpe
         PlayerNbtHelperElement i = new PlayerNbtHelperElement(this);
         i.baseWidth = 100;
         i.baseHeight = 100;
-        i.inEditorColor = DrawableColor.of(new Color(19, 59, 157));
+        i.inEditorColor.setDefault(DrawableColor.of(new Color(19, 59, 157)).getHex()).set(DrawableColor.of(new Color(19, 59, 157)).getHex());
         return i;
     }
 

@@ -4,12 +4,12 @@ import de.keksuccino.fancymenu.customization.element.AbstractElement;
 import de.keksuccino.fancymenu.customization.element.editor.AbstractEditorElement;
 import de.keksuccino.fancymenu.customization.layout.editor.LayoutEditorScreen;
 import de.keksuccino.fancymenu.util.LocalizationUtils;
-import de.keksuccino.fancymenu.util.rendering.ui.tooltip.Tooltip;
+import de.keksuccino.fancymenu.util.rendering.ui.tooltip.UITooltip;
 import org.jetbrains.annotations.NotNull;
 
-public class OverlayRemoverEditorElement extends AbstractEditorElement {
+public class OverlayRemoverEditorElement extends AbstractEditorElement<OverlayRemoverEditorElement, OverlayRemoverElement> {
 
-    public OverlayRemoverEditorElement(@NotNull AbstractElement element, @NotNull LayoutEditorScreen editor) {
+    public OverlayRemoverEditorElement(@NotNull OverlayRemoverElement element, @NotNull LayoutEditorScreen editor) {
 
         super(element, editor);
 
@@ -29,7 +29,7 @@ public class OverlayRemoverEditorElement extends AbstractEditorElement {
                             this.getElement().overlayType = type;
                         }))
                 .setStackable(false)
-                .setTooltipSupplier((contextMenu, contextMenuEntry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.overlay_remover.overlay_type.desc")));
+                .setTooltipSupplier((contextMenu, contextMenuEntry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.overlay_remover.overlay_type.desc")));
 
     }
 

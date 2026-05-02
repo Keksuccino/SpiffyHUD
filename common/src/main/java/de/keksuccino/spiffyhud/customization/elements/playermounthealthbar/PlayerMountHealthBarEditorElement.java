@@ -5,14 +5,14 @@ import de.keksuccino.fancymenu.customization.element.editor.AbstractEditorElemen
 import de.keksuccino.fancymenu.customization.layout.editor.LayoutEditorScreen;
 import de.keksuccino.fancymenu.util.LocalizationUtils;
 import de.keksuccino.fancymenu.util.rendering.ui.contextmenu.v2.ContextMenu;
-import de.keksuccino.fancymenu.util.rendering.ui.tooltip.Tooltip;
+import de.keksuccino.fancymenu.util.rendering.ui.tooltip.UITooltip;
 import de.keksuccino.spiffyhud.util.SpiffyAlignment;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
-public class PlayerMountHealthBarEditorElement extends AbstractEditorElement {
+public class PlayerMountHealthBarEditorElement extends AbstractEditorElement<PlayerMountHealthBarEditorElement, PlayerMountHealthBarElement> {
 
-    public PlayerMountHealthBarEditorElement(@NotNull AbstractElement element, @NotNull LayoutEditorScreen editor) {
+    public PlayerMountHealthBarEditorElement(@NotNull PlayerMountHealthBarElement element, @NotNull LayoutEditorScreen editor) {
         super(element, editor);
         this.settings.setStretchable(false);
         this.settings.setAdvancedSizingSupported(false);
@@ -40,7 +40,7 @@ public class PlayerMountHealthBarEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.player_mount_health_bar.scale"),
                         true, PlayerMountHealthBarElement.DEFAULT_SCALE_STRING, null, null)
                 .setStackable(true)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_mount_health_bar.scale.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_mount_health_bar.scale.desc")));
 
         this.rightClickMenu.addSeparatorEntry("separator_after_general");
 
@@ -59,7 +59,7 @@ public class PlayerMountHealthBarEditorElement extends AbstractEditorElement {
                         Component.translatable("spiffyhud.elements.player_mount_health_bar.heart_gap"),
                         true, 1, null, null)
                 .setStackable(true)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_mount_health_bar.heart_gap.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_mount_health_bar.heart_gap.desc")));
 
         this.rightClickMenu.addSeparatorEntry("separator_after_hearts");
 
@@ -78,7 +78,7 @@ public class PlayerMountHealthBarEditorElement extends AbstractEditorElement {
                         (editorElement, value) -> editorElement.getElement().lowHealthShakeEnabled = value,
                         "spiffyhud.elements.player_mount_health_bar.shake")
                 .setStackable(true)
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_mount_health_bar.shake.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_mount_health_bar.shake.desc")));
 
         this.addIntegerInputContextMenuEntryTo(this.rightClickMenu, "shake_threshold",
                         PlayerMountHealthBarEditorElement.class,
@@ -96,7 +96,7 @@ public class PlayerMountHealthBarEditorElement extends AbstractEditorElement {
                         texturesMenu)
                 .setStackable(true)
                 .setIcon(ContextMenu.IconFactory.getIcon("image"))
-                .setTooltipSupplier((menu, entry) -> Tooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_mount_health_bar.textures.desc")));
+                .setTooltipSupplier((menu, entry) -> UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.elements.player_mount_health_bar.textures.desc")));
 
         for (PlayerMountHealthBarElement.HeartTextureKind kind : PlayerMountHealthBarElement.HeartTextureKind.values()) {
             this.addImageResourceChooserContextMenuEntryTo(texturesMenu,

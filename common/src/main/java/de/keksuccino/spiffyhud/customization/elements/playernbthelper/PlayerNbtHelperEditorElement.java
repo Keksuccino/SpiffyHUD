@@ -7,9 +7,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
-public class PlayerNbtHelperEditorElement extends AbstractEditorElement {
+public class PlayerNbtHelperEditorElement extends AbstractEditorElement<PlayerNbtHelperEditorElement, PlayerNbtHelperElement> {
 
-    public PlayerNbtHelperEditorElement(@NotNull AbstractElement element, @NotNull LayoutEditorScreen editor) {
+    public PlayerNbtHelperEditorElement(@NotNull PlayerNbtHelperElement element, @NotNull LayoutEditorScreen editor) {
 
         super(element, editor);
 

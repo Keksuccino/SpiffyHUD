@@ -1,7 +1,7 @@
 package de.keksuccino.spiffyhud.customization.marker;
 
 import de.keksuccino.fancymenu.customization.placeholder.PlaceholderParser;
-import de.keksuccino.fancymenu.util.SerializationUtils;
+import de.keksuccino.fancymenu.util.SerializationHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
@@ -105,7 +105,7 @@ public class MarkerData {
      * Replaces placeholders in the position and parses it to a number, if possible. Returns 0 if parsing failed.
      */
     public double getResolvedMarkerPosX() {
-        return SerializationUtils.deserializeNumber(Double.class, 0D, PlaceholderParser.replacePlaceholders(this.markerPosX));
+        return SerializationHelper.INSTANCE.deserializeNumber(Double.class, 0D, PlaceholderParser.replacePlaceholders(this.markerPosX));
     }
 
     /**
@@ -124,7 +124,7 @@ public class MarkerData {
      * Replaces placeholders in the position and parses it to a number, if possible. Returns 0 if parsing failed.
      */
     public double getResolvedMarkerPosZ() {
-        return SerializationUtils.deserializeNumber(Double.class, 0D, PlaceholderParser.replacePlaceholders(this.markerPosZ));
+        return SerializationHelper.INSTANCE.deserializeNumber(Double.class, 0D, PlaceholderParser.replacePlaceholders(this.markerPosZ));
     }
 
     /**

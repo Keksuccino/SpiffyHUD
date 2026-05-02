@@ -29,7 +29,7 @@ public abstract class MixinVanillaWidgetEditorElement extends ButtonEditorElemen
         List<Component> list = new ArrayList<>();
         for (Component c : LocalizationUtils.splitLocalizedLines("spiffyhud.elements.dummy.display.cant_move_vanilla_elements")) {
             if (c instanceof MutableComponent m) {
-                list.add(m.setStyle(Style.EMPTY.withBold(true).withColor(UIBase.getUIColorTheme().error_text_color.getColorInt())));
+                list.add(m.setStyle(Style.EMPTY.withBold(true).withColor(UIBase.getUITheme().error_color.getColorInt())));
             }
         }
         return list;
@@ -52,7 +52,7 @@ public abstract class MixinVanillaWidgetEditorElement extends ButtonEditorElemen
             // Instead, render a custom warning when trying to move the Vanilla HUD element
             if (this.renderMovingNotAllowedTime >= System.currentTimeMillis()) {
 
-                int bgColor = UIBase.getUIColorTheme().area_background_color.getColorIntWithAlpha(0.7F);
+                int bgColor = UIBase.getUITheme().ui_interface_area_background_color_type_1.getColorIntWithAlpha(0.7F);
                 Font font = Minecraft.getInstance().font;
 
                 int totalWidth = 0;
