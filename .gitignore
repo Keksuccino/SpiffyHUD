@@ -14,3 +14,8 @@
 /forge/.gradle/
 /forge/build/
 /.run/NeoForge Client.run.xml
+/neoforge/config.txt
+/neoforge/launcher.exe
+/neoforge/jar_output/
+/fabric/launcher.exe
+/fabric/config.txt
