@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(VanillaWidgetEditorElement.class)
-public abstract class MixinVanillaWidgetEditorElement extends ButtonEditorElement {
+public abstract class MixinVanillaWidgetEditorElement extends ButtonEditorElement<VanillaWidgetEditorElement, VanillaWidgetElement> {
 
     //unused dummy constructor
     @SuppressWarnings("all")

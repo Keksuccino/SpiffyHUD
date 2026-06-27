@@ -21,6 +21,7 @@ import org.joml.Vector3f;
 
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Utility for rendering a mob's flat front view inside a GUI square.
@@ -31,6 +32,7 @@ public class FlatMobRenderUtils {
     private static final float VIEWPORT_FILL_RATIO = 0.92F; // keep a little padding so tall mobs don't clip
     private static final float HALF = 0.5F;
     private static final Map<Mob, Mob> RENDER_CLONES = new WeakHashMap<>();
+    private static final AtomicInteger RENDER_ENTITY_IDS = new AtomicInteger(-1);
 
     private FlatMobRenderUtils() {
     }
@@ -40,12 +42,6 @@ public class FlatMobRenderUtils {
         if (renderMob == null) {
             return false;
         }
-        graphics.enableScissor(left, top, left + size, top + size);
-        MobBounds bounds = captureBounds(renderMob);
-        float scale = computeScale(bounds, size);
-        Vector3f offset = new Vector3f(0.0F, bounds.height * HALF, 0.0F);
-        Quaternionf baseRotation = Axis.ZP.rotationDegrees(180.0F);
-
         float originalBody = renderMob.yBodyRot;
         float originalBodyO = renderMob.yBodyRotO;
         float originalYRot = renderMob.getYRot();
@@ -55,27 +51,34 @@ public class FlatMobRenderUtils {
         float originalHead = renderMob.yHeadRot;
         float originalHeadO = renderMob.yHeadRotO;
 
-        renderMob.setYBodyRot(180.0F);
-        renderMob.yBodyRotO = 180.0F;
-        renderMob.setYRot(180.0F);
-        renderMob.yRotO = 180.0F;
-        renderMob.setXRot(0.0F);
-        renderMob.xRotO = 0.0F;
-        renderMob.setYHeadRot(180.0F);
-        renderMob.yHeadRotO = 180.0F;
+        graphics.enableScissor(left, top, left + size, top + size);
+        try {
+            MobBounds bounds = captureBounds(renderMob);
+            float scale = computeScale(bounds, size);
+            Vector3f offset = new Vector3f(0.0F, bounds.height * HALF, 0.0F);
+            Quaternionf baseRotation = Axis.ZP.rotationDegrees(180.0F);
 
-        renderEntity(graphics, left, top, size, scale, offset, baseRotation, renderMob);
+            renderMob.setYBodyRot(180.0F);
+            renderMob.yBodyRotO = 180.0F;
+            renderMob.setYRot(180.0F);
+            renderMob.yRotO = 180.0F;
+            renderMob.setXRot(0.0F);
+            renderMob.xRotO = 0.0F;
+            renderMob.setYHeadRot(180.0F);
+            renderMob.yHeadRotO = 180.0F;
 
-        renderMob.setYBodyRot(originalBody);
-        renderMob.yBodyRotO = originalBodyO;
-        renderMob.setYRot(originalYRot);
-        renderMob.yRotO = originalYRotO;
-        renderMob.setXRot(originalXRot);
-        renderMob.xRotO = originalXRotO;
-        renderMob.setYHeadRot(originalHead);
-        renderMob.yHeadRotO = originalHeadO;
-
-        graphics.disableScissor();
+            renderEntity(graphics, left, top, size, scale, offset, baseRotation, renderMob);
+        } finally {
+            renderMob.setYBodyRot(originalBody);
+            renderMob.yBodyRotO = originalBodyO;
+            renderMob.setYRot(originalYRot);
+            renderMob.yRotO = originalYRotO;
+            renderMob.setXRot(originalXRot);
+            renderMob.xRotO = originalXRotO;
+            renderMob.setYHeadRot(originalHead);
+            renderMob.yHeadRotO = originalHeadO;
+            graphics.disableScissor();
+        }
         return true;
     }
 
@@ -178,7 +181,16 @@ public class FlatMobRenderUtils {
         copy.noPhysics = true;
         copy.setSilent(true);
         copyMobData(source, copy);
+        copy.setId(nextRenderEntityId());
         return copy;
+    }
+
+    private static int nextRenderEntityId() {
+        int id = RENDER_ENTITY_IDS.getAndDecrement();
+        if (id == 0) {
+            id = RENDER_ENTITY_IDS.getAndDecrement();
+        }
+        return id;
     }
 
     private static void copyMobData(@NotNull Mob source, @NotNull Mob target) {

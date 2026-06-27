@@ -117,7 +117,7 @@ public class VanillaLikeBossOverlayElement extends AbstractElement {
         int offsetY = alignedPosition[1] - this.barOriginalY;
 
         // Choose events to render.
-        Iterable<LerpingBossEvent> eventsToRender = isEditor() ? DUMMY_EVENTS : ((IMixinBossHealthOverlay)Minecraft.getInstance().gui.getBossOverlay()).get_events_Spiffy().values();
+        Iterable<LerpingBossEvent> eventsToRender = isEditor() ? DUMMY_EVENTS : ((IMixinBossHealthOverlay)Minecraft.getInstance().gui.hud.getBossOverlay()).get_events_Spiffy().values();
 
         this.renderBossBars(graphics, offsetX, offsetY, eventsToRender);
     }
@@ -133,7 +133,7 @@ public class VanillaLikeBossOverlayElement extends AbstractElement {
 
         // Use dummy events in editor mode, or real events otherwise.
         Iterable<LerpingBossEvent> eventsToRecord = isEditor() ? DUMMY_EVENTS
-                : ((IMixinBossHealthOverlay)Minecraft.getInstance().gui.getBossOverlay()).get_events_Spiffy().values();
+                : ((IMixinBossHealthOverlay)Minecraft.getInstance().gui.hud.getBossOverlay()).get_events_Spiffy().values();
         if (!eventsToRecord.iterator().hasNext() && !isEditor()) {
             return;
         }

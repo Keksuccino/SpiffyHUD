@@ -44,7 +44,7 @@ public class SlotEditorElement extends AbstractEditorElement<SlotEditorElement, 
 
         this.rightClickMenu.addClickableEntry("slot_id_help", Component.translatable("spiffyhud.elements.slot.slot_id_help"), (menu, entry) -> {
             this.rightClickMenu.closeMenu();
-            Minecraft.getInstance().setScreen(new SlotIdHelpScreen(this.editor));
+            Minecraft.getInstance().gui.setScreen(new SlotIdHelpScreen(this.editor));
         });
 
     }

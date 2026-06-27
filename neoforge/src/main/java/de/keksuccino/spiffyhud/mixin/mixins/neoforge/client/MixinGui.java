@@ -11,12 +11,13 @@ import de.keksuccino.spiffyhud.customization.SpiffyOverlayScreen;
 import de.keksuccino.spiffyhud.customization.VanillaHudElements;
 import de.keksuccino.spiffyhud.customization.elements.eraser.EraserElement;
 import de.keksuccino.spiffyhud.customization.elements.overlayremover.OverlayRemoverElement;
+import de.keksuccino.spiffyhud.mixin.mixins.common.client.IMixinGui;
 import de.keksuccino.spiffyhud.util.rendering.exclusion.ExclusionAreaUtil;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.Hud;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
@@ -35,12 +36,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Gui.class)
+@Mixin(Hud.class)
 public class MixinGui {
-
-    @Shadow
-    private Component title;
-    @Shadow private Component subtitle;
 
     @Unique
     private static final Logger LOGGER_SPIFFY = LogManager.getLogger();
@@ -51,7 +48,11 @@ public class MixinGui {
     @Unique
     private int aggressionLevelAggressiveCount_Spiffy = 0;
 
+    @Shadow
+    private Component title;
+    @Shadow private Component subtitle;
     @Shadow @Final private static Identifier POWDER_SNOW_OUTLINE_LOCATION;
+
 
     /**
      * @reason Apply eraser exclusion areas before Vanilla rendering begins.
@@ -65,14 +66,14 @@ public class MixinGui {
         if (this.spiffyGui == null) this.spiffyGui = SpiffyGui.INSTANCE;
 
         Minecraft minecraft = Minecraft.getInstance();
-        Screen previousScreen = minecraft.screen;
+        Screen previousScreen = minecraft.gui.screen();
         SpiffyOverlayScreen overlayScreen = null;
         boolean swappedScreen = false;
 
         try {
             overlayScreen = this.spiffyGui.getOverlayScreen();
             if ((overlayScreen != null) && (previousScreen != overlayScreen)) {
-                minecraft.screen = overlayScreen;
+                ((IMixinGui) minecraft.gui).set_screen_Spiffy(overlayScreen);
                 swappedScreen = true;
             }
             ScreenCustomizationLayer layer = ScreenCustomizationLayerHandler.getLayerOfScreen((overlayScreen != null) ? overlayScreen : SpiffyUtils.DUMMY_SPIFFY_OVERLAY_SCREEN);
@@ -91,10 +92,10 @@ public class MixinGui {
                 }
             }
         } catch (Exception ex) {
-            LOGGER_SPIFFY.error("[SPIFFY HUD] Failed to apply Eraser element areas to Gui!", ex);
+            LOGGER_SPIFFY.error("[SPIFFY HUD] Failed to apply Eraser element areas to HUD!", ex);
         } finally {
             if (swappedScreen) {
-                minecraft.screen = previousScreen;
+                ((IMixinGui) minecraft.gui).set_screen_Spiffy(previousScreen);
             }
         }
 
@@ -110,7 +111,7 @@ public class MixinGui {
 
         if (this.spiffyGui == null) this.spiffyGui = SpiffyGui.INSTANCE;
 
-        if (!Minecraft.getInstance().options.hideGui) {
+        if (!Minecraft.getInstance().gui.hud.isHidden()) {
             graphics.pose().pushMatrix();
             this.spiffyGui.extractRenderState(graphics, -10000000, -10000000, deltaTracker.getGameTimeDeltaTicks());
             graphics.pose().popMatrix();

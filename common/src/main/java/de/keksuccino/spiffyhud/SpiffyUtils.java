@@ -2,7 +2,7 @@ package de.keksuccino.spiffyhud;
 
 import de.keksuccino.spiffyhud.customization.SpiffyOverlayScreen;
 import de.keksuccino.fancymenu.customization.screen.identifier.ScreenIdentifierHandler;
-import de.keksuccino.spiffyhud.mixin.mixins.common.client.IMixinGui;
+import de.keksuccino.spiffyhud.mixin.mixins.common.client.IMixinHud;
 import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -17,8 +17,8 @@ public class SpiffyUtils {
     }
 
     @NotNull
-    public static IMixinGui getGuiAccessor() {
-        return (IMixinGui) Minecraft.getInstance().gui;
+    public static IMixinHud getGuiAccessor() {
+        return (IMixinHud) Minecraft.getInstance().gui.hud;
     }
 
 }

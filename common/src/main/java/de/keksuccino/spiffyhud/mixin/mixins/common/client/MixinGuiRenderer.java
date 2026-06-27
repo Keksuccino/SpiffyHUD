@@ -79,7 +79,7 @@ public class MixinGuiRenderer {
             return this.pipEntityRenderers_Spiffy.computeIfAbsent(scale, s -> {
                 // We need to create a new instance of the renderer.
                 var mc = Minecraft.getInstance();
-                return new GuiEntityRenderer(mc.renderBuffers().bufferSource(), mc.getEntityRenderDispatcher());
+                return new GuiEntityRenderer(mc.getEntityRenderDispatcher());
             });
         }
         // For all other types of render states, let the original call proceed.

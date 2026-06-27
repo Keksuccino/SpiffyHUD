@@ -6,6 +6,7 @@ import de.keksuccino.fancymenu.customization.layer.ScreenCustomizationLayerHandl
 import de.keksuccino.fancymenu.customization.layout.editor.LayoutEditorScreen;
 import de.keksuccino.fancymenu.events.screen.*;
 import de.keksuccino.fancymenu.util.event.acara.EventHandler;
+import de.keksuccino.spiffyhud.mixin.mixins.common.client.IMixinGui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;
@@ -67,7 +68,7 @@ public class SpiffyGui implements Renderable {
     }
 
     private boolean shouldRenderCustomizations() {
-        if (Minecraft.getInstance().screen instanceof LayoutEditorScreen) return false;
+        if (Minecraft.getInstance().gui.screen() instanceof LayoutEditorScreen) return false;
         return (spiffyOverlayScreen != null) && (this.getLayer() != null);
     }
 
@@ -141,19 +142,22 @@ public class SpiffyGui implements Renderable {
     private void runLayerTask(@NotNull Runnable run) {
         try {
             boolean customizationEnabled = ScreenCustomization.isScreenCustomizationEnabled();
-            ScreenCustomization.setScreenCustomizationEnabled(true);
-            Screen current = Minecraft.getInstance().screen;
-            if (!(current instanceof SpiffyOverlayScreen)) {
-                Minecraft.getInstance().screen = spiffyOverlayScreen;
-                this.renderingHudContext = true;
-                try {
-                    run.run();
-                } finally {
-                    this.renderingHudContext = false;
-                    Minecraft.getInstance().screen = current;
+            try {
+                ScreenCustomization.setScreenCustomizationEnabled(true);
+                Screen current = Minecraft.getInstance().gui.screen();
+                if (!(current instanceof SpiffyOverlayScreen)) {
+                    ((IMixinGui) Minecraft.getInstance().gui).set_screen_Spiffy(spiffyOverlayScreen);
+                    this.renderingHudContext = true;
+                    try {
+                        run.run();
+                    } finally {
+                        this.renderingHudContext = false;
+                        ((IMixinGui) Minecraft.getInstance().gui).set_screen_Spiffy(current);
+                    }
                 }
+            } finally {
+                ScreenCustomization.setScreenCustomizationEnabled(customizationEnabled);
             }
-            ScreenCustomization.setScreenCustomizationEnabled(customizationEnabled);
         } catch (Exception ex) {
             LOGGER.error("[SPIFFY HUD] Failed to run layer task!", ex);
         }

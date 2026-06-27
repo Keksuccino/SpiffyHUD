@@ -337,7 +337,7 @@ public class VanillaLikeContextualBarElement extends AbstractElement {
             Level level = this.minecraft.getCameraEntity().level();
             this.minecraft.player.connection.getWaypointManager().forEachWaypoint(this.minecraft.getCameraEntity(), (waypoint) -> {
                 if (!isPlayerWaypoint(waypoint)) {
-                    double yawAngle = waypoint.yawAngleToCamera(level, this.minecraft.gameRenderer.getMainCamera(), entity -> this.minecraft.gameRenderer.getMainCamera().getCameraEntityPartialTicks(this.minecraft.getDeltaTracker()));
+                    double yawAngle = waypoint.yawAngleToCamera(level, this.minecraft.gameRenderer.mainCamera(), entity -> this.minecraft.gameRenderer.mainCamera().getCameraEntityPartialTicks(this.minecraft.getDeltaTracker()));
                     if (yawAngle > -VISIBLE_DEGREE_RANGE - 1 && yawAngle <= VISIBLE_DEGREE_RANGE) {
                         renderWaypoint(graphics, waypoint, x, y, width, yawAngle, level);
                     }
@@ -361,7 +361,7 @@ public class VanillaLikeContextualBarElement extends AbstractElement {
     private void renderWaypoint(GuiGraphicsExtractor graphics, TrackedWaypoint waypoint, int barX, int barY, int barWidth, double yawAngle, Level level) {
         int centerX = barX + barWidth / 2;
         Waypoint.Icon icon = waypoint.icon();
-        WaypointStyle style = this.minecraft.getWaypointStyles().get(icon.style);
+        WaypointStyle style = this.minecraft.gui.hud.getWaypointStyles().get(icon.style);
         float distance = Mth.sqrt((float) waypoint.distanceSquared(this.minecraft.getCameraEntity()));
         Identifier sprite = style.sprite(distance);
         
@@ -393,7 +393,7 @@ public class VanillaLikeContextualBarElement extends AbstractElement {
         );
         
         // Draw directional arrow if needed
-        TrackedWaypoint.PitchDirection pitchDirection = waypoint.pitchDirectionToCamera(level, this.minecraft.gameRenderer, entity -> this.minecraft.gameRenderer.getMainCamera().getCameraEntityPartialTicks(this.minecraft.getDeltaTracker()));
+        TrackedWaypoint.PitchDirection pitchDirection = waypoint.pitchDirectionToCamera(level, this.minecraft.gameRenderer, entity -> this.minecraft.gameRenderer.mainCamera().getCameraEntityPartialTicks(this.minecraft.getDeltaTracker()));
         if (pitchDirection != TrackedWaypoint.PitchDirection.NONE) {
             int arrowY;
             Identifier arrowSprite;

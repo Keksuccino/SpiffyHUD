@@ -113,7 +113,7 @@ public class SpiffyOverlayScreen extends Screen {
     public void extractRenderState(@NotNull GuiGraphicsExtractor $$0, int $$1, int $$2, float $$3) {
 
         //Don't render widgets when not in the editor
-        if (!(Minecraft.getInstance().screen instanceof LayoutEditorScreen)) return;
+        if (!(Minecraft.getInstance().gui.screen() instanceof LayoutEditorScreen)) return;
 
         this.children().forEach(guiEventListener -> {
             if (guiEventListener instanceof Renderable renderable) {
@@ -427,7 +427,7 @@ public class SpiffyOverlayScreen extends Screen {
         @Override
         protected void extractWidgetRenderState(@NotNull GuiGraphicsExtractor $$0, int $$1, int $$2, float $$3) {
             //Don't render widgets when not in the editor
-            if (!(Minecraft.getInstance().screen instanceof LayoutEditorScreen)) return;
+            if (!(Minecraft.getInstance().gui.screen() instanceof LayoutEditorScreen)) return;
             super.extractWidgetRenderState($$0, $$1, $$2, $$3);
         }
 

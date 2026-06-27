@@ -32,7 +32,7 @@ public class MarkerCommandSuggestionsPacketCodec extends PacketCodec<MarkerComma
             return;
         }
         try {
-            Screen current = Minecraft.getInstance().screen;
+            Screen current = Minecraft.getInstance().gui.screen();
             if (current instanceof ChatScreen && current != lastScreen) {
                 MarkerCommandSuggestionsPacket packet = new MarkerCommandSuggestionsPacket();
                 packet.groupSuggestions = getMarkerGroups();

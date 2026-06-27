@@ -109,9 +109,9 @@ public class VanillaLikeScoreboardElement extends AbstractElement {
         PlayerTeam playerTeam = scoreboard.getPlayersTeam(this.minecraft.player.getScoreboardName());
         
         if (playerTeam != null) {
-            DisplaySlot displaySlot = DisplaySlot.teamColorToSlot(playerTeam.getColor());
-            if (displaySlot != null) {
-                objective = scoreboard.getDisplayObjective(displaySlot);
+            Optional<TeamColor> teamColor = playerTeam.getColor();
+            if (teamColor.isPresent()) {
+                objective = scoreboard.getDisplayObjective(teamColor.get().displaySlot());
             }
         }
         

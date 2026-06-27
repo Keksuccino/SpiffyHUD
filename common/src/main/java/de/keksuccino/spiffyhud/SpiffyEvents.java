@@ -37,7 +37,7 @@ public class SpiffyEvents {
 
             this.spiffyButton = new ExtendedButton(-30, 40, 80, 40, Component.empty(), (button) -> {
 
-                Minecraft.getInstance().setScreen(new SpiffyOverlayScreen(true));
+                Minecraft.getInstance().gui.setScreen(new SpiffyOverlayScreen(true));
 
             }) {
 
@@ -46,7 +46,7 @@ public class SpiffyEvents {
 
                     var m = CustomizationOverlay.getCurrentMenuBarInstance();
                     if ((m == null) || !m.isUserNavigatingInMenuBar()) {
-                        TooltipHandler.INSTANCE.addTooltip(UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.edit_hud.desc")), () -> this.isHovered, false, true);
+                        TooltipHandler.INSTANCE.addRenderTickTooltip(UITooltip.of(LocalizationUtils.splitLocalizedLines("spiffyhud.edit_hud.desc")), () -> this.isHovered);
                     }
 
                     if (this.isHoveredOrFocused()) {

@@ -12,14 +12,15 @@ import de.keksuccino.spiffyhud.customization.SpiffyOverlayScreen;
 import de.keksuccino.spiffyhud.customization.VanillaHudElements;
 import de.keksuccino.spiffyhud.customization.elements.eraser.EraserElement;
 import de.keksuccino.spiffyhud.customization.elements.overlayremover.OverlayRemoverElement;
+import de.keksuccino.spiffyhud.mixin.mixins.common.client.IMixinGui;
 import de.keksuccino.spiffyhud.util.rendering.exclusion.ExclusionAreaUtil;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.Hud;
 import net.minecraft.client.gui.components.spectator.SpectatorGui;
-import net.minecraft.client.gui.contextualbar.ContextualBarRenderer;
+import net.minecraft.client.gui.contextualbar.ContextualBar;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
@@ -39,12 +40,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Gui.class)
+@Mixin(Hud.class)
 public class MixinGui {
-
-    @Shadow
-    private Component title;
-    @Shadow private Component subtitle;
 
     @Unique
     private static final Logger LOGGER_SPIFFY = LogManager.getLogger();
@@ -55,7 +52,11 @@ public class MixinGui {
     @Unique
     private int aggressionLevelAggressiveCount_Spiffy = 0;
 
+    @Shadow
+    private Component title;
+    @Shadow private Component subtitle;
     @Shadow @Final private static Identifier POWDER_SNOW_OUTLINE_LOCATION;
+
 
     /**
      * @reason Apply eraser exclusion areas before Vanilla rendering begins.
@@ -69,14 +70,14 @@ public class MixinGui {
         if (this.spiffyGui == null) this.spiffyGui = SpiffyGui.INSTANCE;
 
         Minecraft minecraft = Minecraft.getInstance();
-        Screen previousScreen = minecraft.screen;
+        Screen previousScreen = minecraft.gui.screen();
         SpiffyOverlayScreen overlayScreen = null;
         boolean swappedScreen = false;
 
         try {
             overlayScreen = this.spiffyGui.getOverlayScreen();
             if ((overlayScreen != null) && (previousScreen != overlayScreen)) {
-                minecraft.screen = overlayScreen;
+                ((IMixinGui) minecraft.gui).set_screen_Spiffy(overlayScreen);
                 swappedScreen = true;
             }
             ScreenCustomizationLayer layer = ScreenCustomizationLayerHandler.getLayerOfScreen((overlayScreen != null) ? overlayScreen : SpiffyUtils.DUMMY_SPIFFY_OVERLAY_SCREEN);
@@ -95,10 +96,10 @@ public class MixinGui {
                 }
             }
         } catch (Exception ex) {
-            LOGGER_SPIFFY.error("[SPIFFY HUD] Failed to apply Eraser element areas to Gui!", ex);
+            LOGGER_SPIFFY.error("[SPIFFY HUD] Failed to apply Eraser element areas to HUD!", ex);
         } finally {
             if (swappedScreen) {
-                minecraft.screen = previousScreen;
+                ((IMixinGui) minecraft.gui).set_screen_Spiffy(previousScreen);
             }
         }
 
@@ -114,7 +115,7 @@ public class MixinGui {
 
         if (this.spiffyGui == null) this.spiffyGui = SpiffyGui.INSTANCE;
 
-        if (!Minecraft.getInstance().options.hideGui) {
+        if (!Minecraft.getInstance().gui.hud.isHidden()) {
             graphics.pose().pushMatrix();
             this.spiffyGui.extractRenderState(graphics, -10000000, -10000000, deltaTracker.getGameTimeDeltaTicks());
             graphics.pose().popMatrix();
@@ -140,8 +141,8 @@ public class MixinGui {
         if (VanillaHudElements.isHidden(VanillaHudElements.HOTBAR_IDENTIFIER)) info.cancel();
     }
 
-    @WrapWithCondition(method = "extractHotbarAndDecorations", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;extractItemHotbar(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V"))
-    private boolean wrap_renderItemHotbar_in_renderHotbarAndDecorations_Spiffy(Gui instance, GuiGraphicsExtractor guiGraphics, DeltaTracker deltaTracker) {
+    @WrapWithCondition(method = "extractHotbarAndDecorations", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Hud;extractItemHotbar(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V"))
+    private boolean wrap_renderItemHotbar_in_renderHotbarAndDecorations_Spiffy(Hud instance, GuiGraphicsExtractor guiGraphics, DeltaTracker deltaTracker) {
         return !VanillaHudElements.isHidden(VanillaHudElements.HOTBAR_IDENTIFIER);
     }
 
@@ -150,23 +151,23 @@ public class MixinGui {
         return !VanillaHudElements.isHidden(VanillaHudElements.HOTBAR_IDENTIFIER);
     }
 
-    @WrapWithCondition(method = "extractHotbarAndDecorations", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/contextualbar/ContextualBarRenderer;extractExperienceLevel(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/gui/Font;I)V"))
+    @WrapWithCondition(method = "extractHotbarAndDecorations", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/contextualbar/ContextualBar;extractExperienceLevel(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/gui/Font;I)V"))
     private boolean wrap_renderExperienceLevel_in_renderHotbarAndDecorations_Spiffy(GuiGraphicsExtractor guiGraphics, Font font, int i) {
         return !VanillaHudElements.isHidden(VanillaHudElements.CONTEXTUAL_BAR_IDENTIFIER);
     }
 
-    @WrapWithCondition(method = "extractHotbarAndDecorations", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/contextualbar/ContextualBarRenderer;extractBackground(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V"))
-    private boolean wrap_renderBackground_in_renderHotbarAndDecorations_Spiffy(ContextualBarRenderer instance, GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
+    @WrapWithCondition(method = "extractHotbarAndDecorations", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/contextualbar/ContextualBar;extractBackground(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V"))
+    private boolean wrap_renderBackground_in_renderHotbarAndDecorations_Spiffy(ContextualBar instance, GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
         return !VanillaHudElements.isHidden(VanillaHudElements.CONTEXTUAL_BAR_IDENTIFIER);
     }
 
-    @WrapWithCondition(method = "extractHotbarAndDecorations", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/contextualbar/ContextualBarRenderer;extractRenderState(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V"))
-    private boolean wrap_ContextualBar_render_in_renderHotbarAndDecorations_Spiffy(ContextualBarRenderer instance, GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
+    @WrapWithCondition(method = "extractHotbarAndDecorations", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/contextualbar/ContextualBar;extractRenderState(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V"))
+    private boolean wrap_ContextualBar_render_in_renderHotbarAndDecorations_Spiffy(ContextualBar instance, GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
         return !VanillaHudElements.isHidden(VanillaHudElements.CONTEXTUAL_BAR_IDENTIFIER);
     }
 
-    @WrapWithCondition(method = "extractHotbarAndDecorations", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;extractSelectedItemName(Lnet/minecraft/client/gui/GuiGraphicsExtractor;)V"))
-    private boolean wrap_renderSelectedItemName_in_renderHotbarAndDecorations_Spiffy(Gui instance, GuiGraphicsExtractor guiGraphics) {
+    @WrapWithCondition(method = "extractHotbarAndDecorations", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Hud;extractSelectedItemName(Lnet/minecraft/client/gui/GuiGraphicsExtractor;)V"))
+    private boolean wrap_renderSelectedItemName_in_renderHotbarAndDecorations_Spiffy(Hud instance, GuiGraphicsExtractor guiGraphics) {
         return !VanillaHudElements.isHidden(VanillaHudElements.SELECTED_ITEM_NAME_IDENTIFIER);
     }
 
@@ -230,7 +231,7 @@ public class MixinGui {
     /**
      * @reason Hide the player armor bar when hidden by Spiffy HUD.
      */
-    @WrapWithCondition(method = "extractPlayerHealth", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;extractArmor(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/world/entity/player/Player;IIII)V"))
+    @WrapWithCondition(method = "extractPlayerHealth", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Hud;extractArmor(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/world/entity/player/Player;IIII)V"))
     private boolean wrap_renderArmor_in_renderPlayerHealth_Spiffy(GuiGraphicsExtractor l, Player k, int j, int p_332897_, int p_332999_, int p_330861_) {
         return !VanillaHudElements.isHidden(VanillaHudElements.ARMOR_BAR_IDENTIFIER);
     }
@@ -238,24 +239,24 @@ public class MixinGui {
     /**
      * @reason Hide the player food bar when hidden by Spiffy HUD.
      */
-    @WrapWithCondition(method = "extractPlayerHealth", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;extractFood(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/world/entity/player/Player;II)V"))
-    private boolean wrap_renderFood_in_renderPlayerHealth_Spiffy(Gui instance, GuiGraphicsExtractor resourcelocation1, Player resourcelocation2, int k, int resourcelocation) {
+    @WrapWithCondition(method = "extractPlayerHealth", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Hud;extractFood(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/world/entity/player/Player;II)V"))
+    private boolean wrap_renderFood_in_renderPlayerHealth_Spiffy(Hud instance, GuiGraphicsExtractor resourcelocation1, Player resourcelocation2, int k, int resourcelocation) {
         return !VanillaHudElements.isHidden(VanillaHudElements.FOOD_BAR_IDENTIFIER);
     }
 
     /**
      * @reason Hide the player health bar when hidden by Spiffy HUD.
      */
-    @WrapWithCondition(method = "extractPlayerHealth", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;extractHearts(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/world/entity/player/Player;IIIIFIIIZ)V"))
-    private boolean wrap_renderHearts_in_renderPlayerHealth_Spiffy(Gui instance, GuiGraphicsExtractor j2, Player flag3, int flag4, int i1, int j1, int k1, float l1, int i2, int flag1, int l, boolean b) {
+    @WrapWithCondition(method = "extractPlayerHealth", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Hud;extractHearts(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/world/entity/player/Player;IIIIFIIIZ)V"))
+    private boolean wrap_renderHearts_in_renderPlayerHealth_Spiffy(Hud instance, GuiGraphicsExtractor j2, Player flag3, int flag4, int i1, int j1, int k1, float l1, int i2, int flag1, int l, boolean b) {
         return !VanillaHudElements.isHidden(VanillaHudElements.PLAYER_HEALTH_BAR_IDENTIFIER);
     }
 
     /**
      * @reason Hide the player air bar when hidden by Spiffy HUD.
      */
-    @WrapWithCondition(method = "extractPlayerHealth", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;extractAirBubbles(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/world/entity/player/Player;III)V"))
-    private boolean wrap_renderAirBubbles_in_renderPlayerHealth_Spiffy(Gui instance, GuiGraphicsExtractor k1, Player j1, int k, int l, int i1) {
+    @WrapWithCondition(method = "extractPlayerHealth", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Hud;extractAirBubbles(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/world/entity/player/Player;III)V"))
+    private boolean wrap_renderAirBubbles_in_renderPlayerHealth_Spiffy(Hud instance, GuiGraphicsExtractor k1, Player j1, int k, int l, int i1) {
         return !VanillaHudElements.isHidden(VanillaHudElements.AIR_BAR_IDENTIFIER);
     }
 
@@ -335,21 +336,21 @@ public class MixinGui {
     }
 
     // Fabric/Vanilla: Skip contextual bar background when hidden
-    @WrapOperation(method = "extractHotbarAndDecorations", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/contextualbar/ContextualBarRenderer;extractBackground(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V"), require = 0)
-    private void wrap_renderBackground_Spiffy(ContextualBarRenderer instance, GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, Operation<Void> original) {
+    @WrapOperation(method = "extractHotbarAndDecorations", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/contextualbar/ContextualBar;extractBackground(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V"), require = 0)
+    private void wrap_renderBackground_Spiffy(ContextualBar instance, GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, Operation<Void> original) {
         if (this.isContextualBarHidden_Spiffy()) return;
         original.call(instance, graphics, deltaTracker);
     }
 
     // Fabric/Vanilla: Skip contextual bar foreground when hidden
-    @WrapOperation(method = "extractHotbarAndDecorations", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/contextualbar/ContextualBarRenderer;extractRenderState(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V"), require = 0)
-    private void wrap_renderContextualBar_Spiffy(ContextualBarRenderer renderer, GuiGraphicsExtractor graphics, DeltaTracker delta, Operation<Void> original) {
+    @WrapOperation(method = "extractHotbarAndDecorations", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/contextualbar/ContextualBar;extractRenderState(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V"), require = 0)
+    private void wrap_renderContextualBar_Spiffy(ContextualBar renderer, GuiGraphicsExtractor graphics, DeltaTracker delta, Operation<Void> original) {
         if (this.isContextualBarHidden_Spiffy()) return;
         original.call(renderer, graphics, delta);
     }
 
     // Fabric/Vanilla: Skip experience level number when hidden
-    @WrapOperation(method = "extractHotbarAndDecorations", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/contextualbar/ContextualBarRenderer;extractExperienceLevel(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/gui/Font;I)V"), require = 0)
+    @WrapOperation(method = "extractHotbarAndDecorations", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/contextualbar/ContextualBar;extractExperienceLevel(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/gui/Font;I)V"), require = 0)
     private void wrap_renderExperienceLevel_Spiffy(GuiGraphicsExtractor graphics, Font font, int level, Operation<Void> original) {
         if (this.isContextualBarHidden_Spiffy()) return;
         original.call(graphics, font, level);

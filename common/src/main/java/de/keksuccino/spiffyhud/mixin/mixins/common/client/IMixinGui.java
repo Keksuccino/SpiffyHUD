@@ -1,19 +1,17 @@
 package de.keksuccino.spiffyhud.mixin.mixins.common.client;
 
 import net.minecraft.client.gui.Gui;
-import net.minecraft.network.chat.Component;
+import net.minecraft.client.gui.screens.Screen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
+
+import javax.annotation.Nullable;
 
 @Mixin(Gui.class)
 public interface IMixinGui {
 
-    @Accessor("tickCount") int getTickCount_Spiffy();
+    @Accessor("screen") @Nullable Screen get_screen_Spiffy();
 
-    @Accessor("overlayMessageString") Component get_overlayMessageString_Spiffy();
-
-    @Accessor("overlayMessageTime") int get_overlayMessageTime_Spiffy();
-
-    @Accessor("toolHighlightTimer") int get_toolHighlightTimer_Spiffy();
+    @Accessor("screen") void set_screen_Spiffy(@Nullable Screen screen);
 
 }

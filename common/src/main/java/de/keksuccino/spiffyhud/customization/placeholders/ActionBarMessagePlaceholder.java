@@ -3,7 +3,7 @@ package de.keksuccino.spiffyhud.customization.placeholders;
 import de.keksuccino.fancymenu.customization.placeholder.DeserializedPlaceholderString;
 import de.keksuccino.fancymenu.customization.placeholder.Placeholder;
 import de.keksuccino.fancymenu.util.LocalizationUtils;
-import de.keksuccino.spiffyhud.mixin.mixins.common.client.IMixinGui;
+import de.keksuccino.spiffyhud.mixin.mixins.common.client.IMixinHud;
 import de.keksuccino.spiffyhud.util.ComponentUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
@@ -20,7 +20,7 @@ public class ActionBarMessagePlaceholder extends Placeholder {
 
     @Override
     public String getReplacementFor(DeserializedPlaceholderString dps) {
-        Component message = ((IMixinGui)Minecraft.getInstance().gui).get_overlayMessageString_Spiffy();
+        Component message = ((IMixinHud)Minecraft.getInstance().gui.hud).get_overlayMessageString_Spiffy();
         if (message != null) {
             return ComponentUtils.toJson(message);
         }

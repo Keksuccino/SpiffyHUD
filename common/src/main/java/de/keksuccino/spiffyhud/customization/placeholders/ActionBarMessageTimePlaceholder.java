@@ -3,7 +3,7 @@ package de.keksuccino.spiffyhud.customization.placeholders;
 import de.keksuccino.fancymenu.customization.placeholder.DeserializedPlaceholderString;
 import de.keksuccino.fancymenu.customization.placeholder.Placeholder;
 import de.keksuccino.fancymenu.util.LocalizationUtils;
-import de.keksuccino.spiffyhud.mixin.mixins.common.client.IMixinGui;
+import de.keksuccino.spiffyhud.mixin.mixins.common.client.IMixinHud;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
 import org.jetbrains.annotations.NotNull;
@@ -18,7 +18,7 @@ public class ActionBarMessageTimePlaceholder extends Placeholder {
 
     @Override
     public String getReplacementFor(DeserializedPlaceholderString dps) {
-        int time = ((IMixinGui)Minecraft.getInstance().gui).get_overlayMessageTime_Spiffy();
+        int time = ((IMixinHud)Minecraft.getInstance().gui.hud).get_overlayMessageTime_Spiffy();
         return "" + time;
     }
 

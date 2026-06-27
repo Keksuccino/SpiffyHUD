@@ -17,7 +17,7 @@ public class MixinEditorElementSettings {
      */
     @Inject(method = "isParallaxAllowed", at = @At("HEAD"), cancellable = true, remap = false)
     private void head_isParallaxAllowed_Spiffy(CallbackInfoReturnable<Boolean> info) {
-        if (Minecraft.getInstance().screen instanceof LayoutEditorScreen e) {
+        if (Minecraft.getInstance().gui.screen() instanceof LayoutEditorScreen e) {
             if (e.layoutTargetScreen instanceof SpiffyOverlayScreen) {
                 info.setReturnValue(false);
             }

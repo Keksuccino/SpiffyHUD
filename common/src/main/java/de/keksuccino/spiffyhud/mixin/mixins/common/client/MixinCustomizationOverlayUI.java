@@ -20,7 +20,7 @@ public class MixinCustomizationOverlayUI {
         if (bar.getEntry("screen") instanceof MenuBar.ContextMenuBarEntry screenTab) {
             ContextMenu contextMenu = screenTab.getContextMenu();
             if (contextMenu.getEntry("toggle_current_customization") instanceof ContextMenu.ValueCycleContextMenuEntry<?> toggleCustomizationEntry) {
-                toggleCustomizationEntry.addIsActiveSupplier((menu, entry) -> !(Minecraft.getInstance().screen instanceof SpiffyOverlayScreen));
+                toggleCustomizationEntry.addIsActiveSupplier((menu, entry) -> !(Minecraft.getInstance().gui.screen() instanceof SpiffyOverlayScreen));
             }
         }
     }

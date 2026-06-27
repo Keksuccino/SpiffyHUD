@@ -24,7 +24,7 @@ public class MixinScreenCustomization {
     //If HUD gets re-initialized, don't use normal re-init logic
     @Inject(method = "reInitCurrentScreen(ZZ)V", at = @At("HEAD"), remap = false, cancellable = true)
     private static void headReInitCurrentScreen_Spiffy(CallbackInfo info) {
-        if ((Minecraft.getInstance().screen instanceof SpiffyOverlayScreen s) && !s.showFancyMenuOverlay) {
+        if ((Minecraft.getInstance().gui.screen() instanceof SpiffyOverlayScreen s) && !s.showFancyMenuOverlay) {
             Shared.reInitHudLayouts = true;
             info.cancel();
         }

@@ -64,7 +64,7 @@ public class MixinLayoutEditorUI {
 
     @Unique
     private static boolean isSpiffyEditorOpen_Spiffy() {
-        if (Minecraft.getInstance().screen instanceof LayoutEditorScreen e) {
+        if (Minecraft.getInstance().gui.screen() instanceof LayoutEditorScreen e) {
             return e.layoutTargetScreen instanceof SpiffyOverlayScreen;
         }
         return false;
