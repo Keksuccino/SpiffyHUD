@@ -261,6 +261,7 @@ public class SpiffyOverlayScreen extends Screen {
             AIR_ELEMENT.posOffsetX = gx;
             AIR_ELEMENT.posOffsetY = gy;
             AIR_ELEMENT.spiffyAlignment = SpiffyAlignment.MID_RIGHT;
+            AIR_ELEMENT.isUsedAsDummy = true;
             AIR_ELEMENT.extractRenderState(graphics, mX, mY, partial);
         }).setWidgetIdentifierFancyMenu(VanillaHudElements.AIR_BAR_IDENTIFIER);
     }
@@ -377,7 +378,7 @@ public class SpiffyOverlayScreen extends Screen {
     }
 
     protected RendererWidget buildSubtitleWidget() {
-        Component subtitle = Component.literal("Subtitle");
+        Component subtitle = Component.translatable("spiffyhud.elements.dummy.subtitle");
         int subtitleWidth = font.width(subtitle);
         int totalWidth = subtitleWidth * 2;
         int totalHeight = font.lineHeight * 2;
@@ -388,7 +389,7 @@ public class SpiffyOverlayScreen extends Screen {
             graphics.pose().translate(this.width / 2, this.height / 2);
             graphics.pose().pushMatrix();
             graphics.pose().scale(2.0f, 2.0f);
-            graphics.text(Minecraft.getInstance().font, subtitle, -subtitleWidth / 2, 6, 0xFFFFFF);
+            graphics.text(Minecraft.getInstance().font, subtitle, -subtitleWidth / 2, 6, -1);
             graphics.pose().popMatrix();
             graphics.pose().popMatrix();
         }).setWidgetIdentifierFancyMenu(VanillaHudElements.SUBTITLE_IDENTIFIER);

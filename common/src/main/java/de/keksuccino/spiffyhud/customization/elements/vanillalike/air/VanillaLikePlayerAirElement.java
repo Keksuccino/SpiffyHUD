@@ -22,7 +22,7 @@ public class VanillaLikePlayerAirElement extends AbstractElement {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    // Updated sprite resources for 1.21.5
+    // Updated sprite resources for 26.2
     private static final Identifier AIR_SPRITE = Identifier.withDefaultNamespace("hud/air");
     private static final Identifier AIR_POPPING_SPRITE = Identifier.withDefaultNamespace("hud/air_bursting");
     private static final Identifier AIR_EMPTY_SPRITE = Identifier.withDefaultNamespace("hud/air_empty");
@@ -35,12 +35,15 @@ public class VanillaLikePlayerAirElement extends AbstractElement {
     private static final int TOTAL_BAR_WIDTH = 81;
     private static final int TOTAL_BAR_HEIGHT = 9;
     
-    // Constants from Minecraft's Gui class
+    // Constants from Minecraft's Hud class
     private static final int AIR_BUBBLE_POPPING_DURATION = 2;
     private static final int EMPTY_AIR_BUBBLE_DELAY_DURATION = 1;
+    private static final int EDITOR_PREVIEW_MAX_AIR = 300;
+    private static final int EDITOR_PREVIEW_AIR = EDITOR_PREVIEW_MAX_AIR / 2;
 
     private final Minecraft minecraft = Minecraft.getInstance();
     protected int tickCount;
+    public boolean isUsedAsDummy = false;
 
     // Variables to record the calculated air bar size and its drawing origin.
     private int barWidth = 100;
@@ -61,13 +64,13 @@ public class VanillaLikePlayerAirElement extends AbstractElement {
         // Update the tick counter.
         this.tickCount = SpiffyUtils.getGuiAccessor().getTickCount_Spiffy();
 
-        if (this.minecraft.player == null) return;
-        if (this.minecraft.level == null) return;
+        AirData airData = this.collectAirData();
+        if (airData == null) return;
 
         // First pass: perform a dry-run (without drawing) to update the bar's dimensions.
         this.shouldRenderBar = false;
         // We call renderPlayerAir with an offset of (0,0) because we only need to update barWidth and barHeight.
-        this.renderPlayerAir(graphics, 0, 0);
+        this.renderPlayerAir(graphics, 0, 0, airData);
 
         // Retrieve the element's absolute position and size.
         int elementAbsX = this.getAbsoluteX();
@@ -90,7 +93,7 @@ public class VanillaLikePlayerAirElement extends AbstractElement {
 
         // Now render the air bar at the calculated position
         this.shouldRenderBar = true;
-        this.renderPlayerAir(graphics, barAbsX, barAbsY);
+        this.renderPlayerAir(graphics, barAbsX, barAbsY, airData);
     }
 
     /**
@@ -100,25 +103,15 @@ public class VanillaLikePlayerAirElement extends AbstractElement {
      * @param offsetX  The absolute X coordinate where the air bar should start.
      * @param offsetY  The absolute Y coordinate where the air bar should start.
      */
-    private void renderPlayerAir(GuiGraphicsExtractor graphics, int offsetX, int offsetY) {
-        Player player = getCameraPlayer();
-        if (player == null) {
+    private void renderPlayerAir(GuiGraphicsExtractor graphics, int offsetX, int offsetY, @NotNull AirData airData) {
+        if (!airData.shouldRender()) {
             return;
         }
 
-        // Only render air bubbles if player is underwater or previously had reduced air
-        boolean isInWater = player.isEyeInFluid(FluidTags.WATER);
-        int maxAir = player.getMaxAirSupply();
-        int currentAir = Math.min(player.getAirSupply(), maxAir);
-        
-        if (!isInWater && currentAir >= maxAir) {
-            return;
-        }
-
-        // Using the same logic as in Minecraft's Gui class for 1.21.5
-        int currentAirBubble = getCurrentAirSupplyBubble(currentAir, maxAir, -2);
-        int lastAirBubble = getCurrentAirSupplyBubble(currentAir, maxAir, 0);
-        int emptyBubbleStart = 10 - getCurrentAirSupplyBubble(currentAir, maxAir, getEmptyBubbleDelayDuration(currentAir, isInWater));
+        // Using the same logic as Minecraft's Hud air renderer.
+        int currentAirBubble = getCurrentAirSupplyBubble(airData.currentAir(), airData.maxAir(), -2);
+        int lastAirBubble = getCurrentAirSupplyBubble(airData.currentAir(), airData.maxAir(), 0);
+        int emptyBubbleStart = AIR_BUBBLE_TOTAL - getCurrentAirSupplyBubble(airData.currentAir(), airData.maxAir(), getEmptyBubbleDelayDuration(airData.currentAir(), airData.isInWater()));
         boolean bubbleBursting = currentAirBubble != lastAirBubble;
 
         // Calculate the total width of the air bar (10 bubbles with spacing)
@@ -141,7 +134,7 @@ public class VanillaLikePlayerAirElement extends AbstractElement {
                 if (i <= currentAirBubble) {
                     // Full air bubble
                     bubbleSprite = AIR_SPRITE;
-                } else if (bubbleBursting && i == lastAirBubble && isInWater) {
+                } else if (bubbleBursting && i == lastAirBubble && airData.isInWater()) {
                     // Popping/bursting air bubble
                     bubbleSprite = AIR_POPPING_SPRITE;
                 } else if (i > AIR_BUBBLE_TOTAL - emptyBubbleStart) {
@@ -198,8 +191,40 @@ public class VanillaLikePlayerAirElement extends AbstractElement {
     }
 
     @Nullable
+    private AirData collectAirData() {
+        if (this.isUsedAsDummy || isEditor()) {
+            return new AirData(EDITOR_PREVIEW_AIR, EDITOR_PREVIEW_MAX_AIR, false);
+        }
+
+        if (this.minecraft.player == null) return null;
+        if (this.minecraft.level == null) return null;
+
+        Player player = getCameraPlayer();
+        if (player == null) {
+            return null;
+        }
+
+        int maxAir = Math.max(1, player.getMaxAirSupply());
+        int currentAir = Mth.clamp(player.getAirSupply(), 0, maxAir);
+        boolean isInWater = player.isEyeInFluid(FluidTags.WATER);
+        return new AirData(currentAir, maxAir, isInWater);
+    }
+
+    @Nullable
     private Player getCameraPlayer() {
         return (Minecraft.getInstance().getCameraEntity() instanceof Player p) ? p : null;
+    }
+
+    private record AirData(int currentAir, int maxAir, boolean isInWater) {
+
+        private AirData {
+            maxAir = Math.max(1, maxAir);
+            currentAir = Mth.clamp(currentAir, 0, maxAir);
+        }
+
+        private boolean shouldRender() {
+            return this.isInWater || this.currentAir < this.maxAir;
+        }
     }
 
     @Override
