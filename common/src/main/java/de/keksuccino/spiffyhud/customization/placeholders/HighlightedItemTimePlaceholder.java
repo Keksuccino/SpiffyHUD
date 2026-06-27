@@ -21,7 +21,7 @@ public class HighlightedItemTimePlaceholder extends Placeholder {
     public String getReplacementFor(DeserializedPlaceholderString dps) {
         int time = ((IMixinGui)Minecraft.getInstance().gui).get_toolHighlightTimer_Spiffy();
         if ((Minecraft.getInstance().player) != null && (Minecraft.getInstance().player.isSpectator())) {
-            if (((IMixinSpectatorGui)Minecraft.getInstance().gui.getSpectatorGui()).invoke_getHotbarAlpha_Spiffy() > 0) {
+            if (((IMixinSpectatorGui)Minecraft.getInstance().gui.hud.getSpectatorGui()).invoke_getHotbarAlpha_Spiffy() > 0) {
                 time = (int) (40.0 * Minecraft.getInstance().options.notificationDisplayTime().get());
             } else {
                 time = 0;

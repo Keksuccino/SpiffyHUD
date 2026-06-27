@@ -78,7 +78,7 @@ public class SpiffyHud {
 
 			//Don't show FancyMenu's customization overlay in the HUD
 			CustomizationOverlay.registerOverlayVisibilityController(screen -> {
-				if (Minecraft.getInstance().screen instanceof SpiffyOverlayScreen s) return s.showFancyMenuOverlay;
+				if (Minecraft.getInstance().gui.screen() instanceof SpiffyOverlayScreen s) return s.showFancyMenuOverlay;
 				return true;
 			});
 

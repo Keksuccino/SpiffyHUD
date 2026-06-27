@@ -33,7 +33,7 @@ public class SlotItemDisplayNamePlaceholder extends Placeholder {
             int slotInt = Integer.parseInt(slot);
             ItemStack stack = Minecraft.getInstance().player.getInventory().getItem(slotInt);
             if (Minecraft.getInstance().player.isSpectator() && (slotInt >= 0) && (slotInt <= 8) && !ignoreSpectator) { // If slot is a hotbar slot and player is Spectator, return Spectator GUI slot names
-                IMixinSpectatorGui accessor = (IMixinSpectatorGui) Minecraft.getInstance().gui.getSpectatorGui();
+                IMixinSpectatorGui accessor = (IMixinSpectatorGui) Minecraft.getInstance().gui.hud.getSpectatorGui();
                 SpectatorMenu menu = accessor.get_menu_Spiffy();
                 if (menu != null) {
                     SpectatorMenuItem spectatorMenuItem = menu.getSelectedItem();

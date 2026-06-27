@@ -34,7 +34,7 @@ public class PlayerNbtHelperEditorElement extends AbstractEditorElement<PlayerNb
         super.init();
 
         this.rightClickMenu.addClickableEntry("nbt_paths_screen", Component.translatable("spiffyhud.elements.player_nbt_helper.paths"), (contextMenu, clickableContextMenuEntry) -> {
-            Minecraft.getInstance().setScreen(new PlayerNbtPathHelpScreen(this.editor));
+            Minecraft.getInstance().gui.setScreen(new PlayerNbtPathHelpScreen(this.editor));
         });
 
     }
