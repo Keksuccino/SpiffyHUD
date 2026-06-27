@@ -413,5 +413,6 @@
   "spiffyhud.requirements.is_player_using_item": "Is Player Using Item §z[Spiffy]§r",
   "spiffyhud.requirements.is_player_using_item.desc": "Returns true when the player is using an item.\nUsing an item means, for example, eating food, drinking a potion, drawing a bow, etc.",
   "spiffyhud.elements.contextualbar.always_show_locator": "Always Show Locator Bar: %s",
-  "spiffyhud.elements.contextualbar.always_show_experience": "Always Show Experience Bar: %s"
+  "spiffyhud.elements.contextualbar.always_show_experience": "Always Show Experience Bar: %s",
+  "spiffyhud.elements.vanillalike.player_experience.desc": "Displays Minecraft's contextual HUD bar slot.\n\nThis slot can show the XP bar, jump meter, or locator bar. The XP bar is the default when the current game mode uses experience. The jump meter appears while riding a jumpable vehicle, especially while charging a jump or while jump cooldown is active. The locator bar appears when locator waypoints are available; with both locator waypoints and a jumpable vehicle, active jump information takes priority, while recently changed XP can temporarily take priority over locator information.\n\nIn the editor, the dummy preview cycles through XP, jump, and locator every 5 seconds."
 }

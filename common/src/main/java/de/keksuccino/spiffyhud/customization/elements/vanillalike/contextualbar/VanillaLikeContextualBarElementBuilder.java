@@ -4,6 +4,7 @@ import de.keksuccino.fancymenu.customization.element.AbstractElement;
 import de.keksuccino.fancymenu.customization.element.ElementBuilder;
 import de.keksuccino.fancymenu.customization.element.SerializedElement;
 import de.keksuccino.fancymenu.customization.layout.editor.LayoutEditorScreen;
+import de.keksuccino.fancymenu.util.LocalizationUtils;
 import de.keksuccino.spiffyhud.customization.SpiffyOverlayScreen;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
@@ -67,7 +68,7 @@ public class VanillaLikeContextualBarElementBuilder extends ElementBuilder<Vanil
 
     @Override
     public @Nullable Component[] getDescription(@Nullable AbstractElement element) {
-        return null;
+        return LocalizationUtils.splitLocalizedLines("spiffyhud.elements.vanillalike.player_experience.desc");
     }
 
     @Override
