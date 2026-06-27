@@ -177,7 +177,7 @@ public class VanillaLikeHotbarElement extends AbstractElement {
 
         if (stack.getCount() != 1) {
             String countText = String.valueOf(stack.getCount());
-            graphics.text(font, countText, slotX + 19 - 2 - font.width(countText), slotY + 6 + 3, 0xFFFFFF, true);
+            graphics.text(font, countText, slotX + 19 - 2 - font.width(countText), slotY + 6 + 3, 0xFFFFFFFF, true);
         }
 
         if (stack.isBarVisible()) {

@@ -44,6 +44,8 @@ public class SpiffyOverlayScreen extends Screen {
     private static final Identifier CROSSHAIR_ATTACK_INDICATOR_PROGRESS_SPRITE = Identifier.withDefaultNamespace("hud/crosshair_attack_indicator_progress");
     private static final Identifier HOTBAR_ATTACK_INDICATOR_BACKGROUND_SPRITE = Identifier.withDefaultNamespace("hud/hotbar_attack_indicator_background");
     private static final Identifier HOTBAR_ATTACK_INDICATOR_PROGRESS_SPRITE = Identifier.withDefaultNamespace("hud/hotbar_attack_indicator_progress");
+    private static final int EDITOR_TEXT_DUMMY_Y_OFFSET = 25;
+    private static final int EDITOR_TITLE_DUMMY_Y_OFFSET = 10;
 
     private static final VanillaLikeHotbarElement HOTBAR_ELEMENT = Elements.VANILLA_LIKE_HOTBAR.buildDefaultInstance();
     private static final VanillaLikeContextualBarElement CONTEXTUAL_BAR_ELEMENT = Elements.VANILLA_LIKE_CONTEXTUAL_BAR.buildDefaultInstance();
@@ -160,12 +162,11 @@ public class SpiffyOverlayScreen extends Screen {
         MutableComponent mutableComponent = Component.empty().append(Component.translatable("spiffyhud.elements.dummy.selected_item_name")).withStyle(ChatFormatting.LIGHT_PURPLE);
         int textWidth = font.width(mutableComponent);
         int textX = (this.width - textWidth) / 2;
-        int textY = (this.height - 59) - 18; // -18 is a custom offset to move the text above the bars that got moved up because of the Jump Meter
+        int textY = this.height - 59 - EDITOR_TEXT_DUMMY_Y_OFFSET;
 
-        return new SpiffyRendererWidget(textX, textY, textWidth, font.lineHeight,
+        return new SpiffyRendererWidget(textX - 2, textY - 2, textWidth + 4, font.lineHeight + 4,
                 (graphics, mouseX, mouseY, partial, x, y, width, height, widget) -> {
-                    graphics.fill(textX - 2, textY - 2, textX + textWidth + 2, textY + font.lineHeight + 2, Minecraft.getInstance().options.getBackgroundColor(0));
-                    graphics.text(font, mutableComponent, textX, textY, -1);
+                    graphics.textWithBackdrop(font, mutableComponent, textX, textY, textWidth, -1);
                 }
         ).setWidgetIdentifierFancyMenu(VanillaHudElements.SELECTED_ITEM_NAME_IDENTIFIER);
 
@@ -293,17 +294,20 @@ public class SpiffyOverlayScreen extends Screen {
     }
 
     protected RendererWidget buildOverlayMessageWidget() {
-        Component message = Component.literal("Overlay Message");
+        Component message = Component.translatable("spiffyhud.elements.dummy.overlay_message");
         int messageWidth = font.width(message);
         int textX = (this.width / 2) - (messageWidth / 2);
-        int textY = ((this.height - 68) - 4) - 18;
+        int textY = this.height - 68 - EDITOR_TEXT_DUMMY_Y_OFFSET;
         ObjectHolder<Float> animatedTickHolder = ObjectHolder.of(0.0f);
-        return new SpiffyRendererWidget(textX - 2, textY - 2, messageWidth + 4, font.lineHeight + 4, (graphics, mX, mY, partial, gx, gy, gwidth, gheight, widget) -> {
+        return new SpiffyRendererWidget(textX - 2, textY - 6, messageWidth + 4, font.lineHeight + 4, (graphics, mX, mY, partial, gx, gy, gwidth, gheight, widget) -> {
             // Update the animated tick value by incrementing it
             animatedTickHolder.set(animatedTickHolder.get() + 0.005f);
             // Use the animated tick value to create a color cycle
-            int animatedTextColor = Mth.hsvToRgb(Mth.clamp(animatedTickHolder.get() % 1.0f, 0.0f, 1.0f), 0.7f, 0.6f) | 0xFF000000;
-            graphics.text(Minecraft.getInstance().font, message, textX, textY, animatedTextColor);
+            int animatedTextColor = Mth.hsvToArgb(Mth.clamp(animatedTickHolder.get() % 1.0f, 0.0f, 1.0f), 0.7f, 0.6f, 255);
+            graphics.pose().pushMatrix();
+            graphics.pose().translate(this.width / 2, textY);
+            graphics.textWithBackdrop(font, message, -messageWidth / 2, -4, messageWidth, animatedTextColor);
+            graphics.pose().popMatrix();
         }).setWidgetIdentifierFancyMenu(VanillaHudElements.OVERLAY_MESSAGE_IDENTIFIER);
     }
 
@@ -357,19 +361,20 @@ public class SpiffyOverlayScreen extends Screen {
 
         Component title = Component.translatable("spiffyhud.elements.dummy.title");
         int titleWidth = font.width(title);
-        int totalWidth = titleWidth * 4;
-        int totalHeight = font.lineHeight * 4;
+        int totalWidth = (titleWidth + 4) * 4;
+        int totalHeight = (font.lineHeight + 4) * 4;
+        int titleCenterY = (this.height / 2) - EDITOR_TITLE_DUMMY_Y_OFFSET;
         int textX = (this.width / 2) - (totalWidth / 2);
-        int textY = (this.height / 2) - (12 * 4);
+        int textY = titleCenterY + ((-10 - 2) * 4);
 
         return new SpiffyRendererWidget(textX, textY, totalWidth, totalHeight,
                 (graphics, mouseX, mouseY, partial, x, y, width, height, widget) -> {
                     graphics.pose().pushMatrix();
-                    graphics.pose().translate((float)this.width / 2, (float)this.height / 2);
+                    graphics.pose().translate((float)this.width / 2, titleCenterY);
                     //Render title
                     graphics.pose().pushMatrix();
                     graphics.pose().scale(4.0f, 4.0f);
-                    graphics.text(font, title, -titleWidth / 2, -12, -1);
+                    graphics.textWithBackdrop(font, title, -titleWidth / 2, -10, titleWidth, -1);
                     graphics.pose().popMatrix();
                     graphics.pose().popMatrix();
                 }
@@ -380,16 +385,16 @@ public class SpiffyOverlayScreen extends Screen {
     protected RendererWidget buildSubtitleWidget() {
         Component subtitle = Component.translatable("spiffyhud.elements.dummy.subtitle");
         int subtitleWidth = font.width(subtitle);
-        int totalWidth = subtitleWidth * 2;
-        int totalHeight = font.lineHeight * 2;
+        int totalWidth = (subtitleWidth + 4) * 2;
+        int totalHeight = (font.lineHeight + 4) * 2;
         int textX = (this.width / 2) - (totalWidth / 2);
-        int textY = (this.height / 2) + (6 * 2);
+        int textY = (this.height / 2) + ((5 - 2) * 2);
         return new SpiffyRendererWidget(textX, textY, totalWidth, totalHeight, (graphics, mX, mY, partial, gx, gy, gwidth, gheight, widget) -> {
             graphics.pose().pushMatrix();
             graphics.pose().translate(this.width / 2, this.height / 2);
             graphics.pose().pushMatrix();
             graphics.pose().scale(2.0f, 2.0f);
-            graphics.text(Minecraft.getInstance().font, subtitle, -subtitleWidth / 2, 6, -1);
+            graphics.textWithBackdrop(font, subtitle, -subtitleWidth / 2, 5, subtitleWidth, -1);
             graphics.pose().popMatrix();
             graphics.pose().popMatrix();
         }).setWidgetIdentifierFancyMenu(VanillaHudElements.SUBTITLE_IDENTIFIER);

@@ -217,7 +217,7 @@
   "spiffyhud.elements.dummy.crosshair": "Crosshair",
   "spiffyhud.elements.dummy.display.cant_move_vanilla_elements": "You can't move Vanilla HUD elements!\nDelete the Vanilla element and add a Vanilla-like custom one instead!",
   "spiffyhud.elements.dummy.effects": "Effects",
-  "spiffyhud.elements.dummy.experience_bar": "Experience Bar",
+  "spiffyhud.elements.dummy.experience_bar": "Contextual Bar",
   "spiffyhud.elements.dummy.food_bar": "Food Bar",
   "spiffyhud.elements.dummy.health_bar": "Health Bar",
   "spiffyhud.elements.dummy.hotbar": "Hotbar",
@@ -373,7 +373,7 @@
   "spiffyhud.elements.vanillalike.mount_health": "§z[HUD]§r Vanilla-Like Mount Health Bar",
   "spiffyhud.elements.vanillalike.player_air": "§z[HUD]§r Vanilla-Like Player Air Bar",
   "spiffyhud.elements.vanillalike.player_armor": "§z[HUD]§r Vanilla-Like Player Armor Bar",
-  "spiffyhud.elements.vanillalike.player_experience": "§z[HUD]§r Vanilla-Like Player Experience Bar",
+  "spiffyhud.elements.vanillalike.player_experience": "§z[HUD]§r Vanilla-Like Contextual Bar",
   "spiffyhud.elements.vanillalike.player_food": "§z[HUD]§r Vanilla-Like Player Food Bar",
   "spiffyhud.elements.vanillalike.player_health": "§z[HUD]§r Vanilla-Like Player Health Bar",
   "spiffyhud.elements.vanillalike.scoreboard": "§z[HUD]§r Vanilla-Like Scoreboard Sidebar",
@@ -411,5 +411,7 @@
   "spiffyhud.requirements.is_player_in_structure.desc": "Checks if the player is currently in a specific structure type.\n\n§xSpiffy needs to be installed on the server for this to work!",
   "spiffyhud.requirements.is_player_in_structure.key": "Structure key to check for:",
   "spiffyhud.requirements.is_player_using_item": "Is Player Using Item §z[Spiffy]§r",
-  "spiffyhud.requirements.is_player_using_item.desc": "Returns true when the player is using an item.\nUsing an item means, for example, eating food, drinking a potion, drawing a bow, etc."
+  "spiffyhud.requirements.is_player_using_item.desc": "Returns true when the player is using an item.\nUsing an item means, for example, eating food, drinking a potion, drawing a bow, etc.",
+  "spiffyhud.elements.contextualbar.always_show_locator": "Always Show Locator Bar: %s",
+  "spiffyhud.elements.contextualbar.always_show_experience": "Always Show Experience Bar: %s"
 }
