@@ -1,5 +1,0 @@
-CHANGELOG | SPIFFYHUD v3.X.X
-
-- 
-
-%changelog:end%
