@@ -1,10 +1,10 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-- This workspace is giving you access to multiple "Konkrete" branches/workspaces, which is a Minecraft Java mod. It uses the MultiLoader layout with shared logic under `common` and loader-specific wrappers under `fabric`, and `forge` or `neoforge` depending on the Minecraft version.
+- This workspace is giving you access to multiple "SpiffyHUD" branches/workspaces, which is a Minecraft Java mod. It uses the MultiLoader layout with shared logic under `common` and loader-specific wrappers under `fabric`, and `forge` or `neoforge` depending on the Minecraft version.
 - Place shared Java sources in `common/src/main/java` and assets such as menu JSON, translations, or textures in `common/src/main/resources` so they ship with every loader build.
 - Loader-only hooks belong inside each module's `src/main/java` tree; keep local run directories like `run_client` and `run_server` for iterative testing but never depend on them for assets.
-- Konkrete's Gradle projects have an unconventional handling of the `version` variable. In Konkrete's Gradle projects, this variable is always `1.0.0`, which is intentional and should NEVER be changed.
+- SpiffyHUD's Gradle projects have an unconventional handling of the `version` variable. In SpiffyHUD's Gradle projects, this variable is always `1.0.0`, which is intentional and should NEVER be changed.
   - The actual mod version is instead defined in `mod_version`.
   - It is also intentional that some stuff in the project uses the `version` variable.
 
@@ -13,14 +13,14 @@
 
 ## Sub-Workspaces
 - This primary workspace here is the so-called "agent root", but it only exists as an access point to all sub-workspaces/secondary workspaces you also have access to.
-- This workspace gives you access to the actual Konkrete source workspaces for multiple branches/Minecraft versions.
-- The folder name of these should always be something like `konkrete-0.0.0`, with the `0.0.0` replaced with the Minecraft version the workspace is targeting.
+- This workspace gives you access to the actual SpiffyHUD source workspaces for multiple branches/Minecraft versions.
+- The folder name of these should always be something like `spfifyhud-0.0.0`, with the `0.0.0` replaced with the Minecraft version the workspace is targeting.
 - You should avoid writing permanent data to this "root" workspace here. Temporary working data is okay, but clear it up at the end, since your actual work targets will always be the sub-workspaces, where you should actually make changes to/write to.
 
 ## Coding Style & Naming Conventions
 - Target the correct Java version for each sub-workspace with 4-space indentation and UTF-8 encoding (WITHOUT BOM), matching the Gradle toolchain configuration.
-- Follow existing packages under `de.keksuccino.konkrete`, mirroring existing sub-packages to keep cross-loader boundaries clear.
-- Name resources with the `konkrete` prefix (e.g., `konkrete.mixins.json`, `konkrete.accesswidener`) so Gradle and the loaders resolve them consistently.
+- Follow existing packages under `de.keksuccino.spfifyhud`, mirroring existing sub-packages to keep cross-loader boundaries clear.
+- Name resources with the `spfifyhud` prefix (e.g., `spfifyhud.mixins.json`, `spfifyhud.accesswidener`) so Gradle and the loaders resolve them consistently.
 - Prefer explicit nullability annotations from `jsr305`.
 - Code should be made reusable/shareable whenever possible. Avoid copy-pasting nearly identical code to multiple places when you could make it a shared method/field/etc. instead.
 - The whole project (code, classes, packages, etc.) should always be well-structured and organized, with great focus on easy maintainability. The project should be easy to understand and maintain for new devs later.
@@ -32,14 +32,14 @@
 - The code base between all sub-workspaces should always look as similar/identical as possible, to easily find a specific piece of logic in multiple sub-workspaces.
 
 ## Mixin Structurization
-- Place shared mixins under `common/src/main/java/de/keksuccino/konkrete/mixin/mixins/common/<side>` and mirror the existing folder depth when adding new targets.
+- Place shared mixins under `common/src/main/java/de/keksuccino/spfifyhud/mixin/mixins/common/<side>` and mirror the existing folder depth when adding new targets.
 - Declare `@Mixin` classes (and accessor interfaces) with imports grouped at the top, list `@Unique` members before any `@Shadow` declarations, and extend or implement the vanilla type when necessary; supply a suppressed dummy constructor when subclasses require it.
-- Suffix every unique field or helper with `_Konkrete`. Static finals use all caps with `_KONKRETE`, and injected method names follow the `before/after/on/wrap/cancel_<VanillaMethod>_Konkrete` pattern. Accessor/invoker methods also end in `_Konkrete`.
+- Suffix every unique field or helper with `_Spiffy`. Static finals use all caps with `_SPIFFY`, and injected method names follow the `before/after/on/wrap/cancel_<VanillaMethod>_Spiffy` pattern. Accessor/invoker methods also end in `_Spiffy`.
 - Cluster related injections together (for example, all `setScreen` hooks in `MixinGui`) and keep helper wrappers private unless a wider contract is required.
 - Use short `//` comments for quick reminders and `/** @reason ... */` blocks ahead of injections that change vanilla behavior, matching the authoring tone in existing files.
-- Konkrete has access to Mixin Extras.
+- SpiffyHUD has access to Mixin Extras.
 - Prefer using features from Mixin Extras instead of using normal Mixin redirects or overrides.
-- When leveraging Mixin Extras (`WrapOperation`, `WrapWithCondition`, etc.), name helpers after the intent (`wrap_..._Konkrete`, `cancel_..._Konkrete`) and call the provided `Operation` when returning to vanilla flow.
+- When leveraging Mixin Extras (`WrapOperation`, `WrapWithCondition`, etc.), name helpers after the intent (`wrap_..._Spiffy`, `cancel_..._Spiffy`) and call the provided `Operation` when returning to vanilla flow.
 - When crating normal mixin classes, call them `Mixin<OriginalClassName>`, so for the `Minecraft` class that would be `MixinMinecraft`.
 - When creating Mixin accessor interfaces, name them `AccessorMixin<OriginalClassName>`, so for the `Minecraft` class that would be `AccessorMixinMinecraft`.
 - Keep Mixin classes lightweight.
@@ -68,9 +68,9 @@
 - When you need to add compat code for a mod, place these classes in dedicated and well-organized "compat" packages.
 
 ## Minecraft Sources
-- You have access to full sources of Minecraft, and even some libraries used by Minecraft and Konkrete, in `/Volumes/STUFF/CODING/WORKSPACES/Java/Minecraft Mods/.MINECRAFT_SOURCES`.
+- You have access to full sources of Minecraft, and even some libraries used by Minecraft and SpiffyHUD, in `/Volumes/STUFF/CODING/WORKSPACES/Java/Minecraft Mods/.MINECRAFT_SOURCES`.
 - There are always sources for each relevant loader for a Minecraft version, like this: `/Volumes/STUFF/CODING/WORKSPACES/Java/Minecraft Mods/.MINECRAFT_SOURCES/<minecraft_version>/minecraft/<loader_name>/`, with `<minecraft_version>` replaced with the target MC version (e.g. `26.2`, `1.21.11`, and so on), and `<loader_name>` replaced with either `fabric`, `forge`, or `neoforge`.
-- Sources for some libraries used by Minecraft and Konkrete are in `/Volumes/STUFF/CODING/WORKSPACES/Java/Minecraft Mods/.MINECRAFT_SOURCES/<minecraft_version>/libraries/`.
+- Sources for some libraries used by Minecraft and SpiffyHUD are in `/Volumes/STUFF/CODING/WORKSPACES/Java/Minecraft Mods/.MINECRAFT_SOURCES/<minecraft_version>/libraries/`.
 - Sources for Sodium, Sodium Extra, and Iris are in `/Volumes/STUFF/CODING/WORKSPACES/Java/Minecraft Mods/.MINECRAFT_SOURCES/<minecraft_version>/libraries/`.
 - Use the Minecraft sources for research when working with Minecraft-related code.
 - Always prefer the sources provided in the `/<minecraft_version>/libraries/` folder instead of trying to unpack source JARs yourself. Only do that when the provided sources don't contain what you need.
