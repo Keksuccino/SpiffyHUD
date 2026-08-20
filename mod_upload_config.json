@@ -1,0 +1,30 @@
+{
+  "config_version": 1,
+  "projects": {
+    "spiffyhud": {
+      "changelog_url": "https://github.com/Keksuccino/SpiffyHUD/blob/main/changelog.txt",
+      "curseforge_project_id": "483885",
+      "dependencies": {
+        "fabric": [
+          "fabric-api",
+          "konkrete",
+          "melody",
+          "fancymenu"
+        ],
+        "neoforge": [
+          "konkrete",
+          "melody",
+          "fancymenu"
+        ]
+      },
+      "mandatory_environments": [
+        "client"
+      ],
+      "modrinth_project_id": "wtOPHICQ",
+      "supported_environments": [
+        "client",
+        "server"
+      ]
+    }
+  }
+}
