@@ -1,7 +1,7 @@
 {
   "required": true,
   "package": "de.keksuccino.spiffyhud.mixin.mixins.fabric",
-  "compatibilityLevel": "JAVA_17",
+  "compatibilityLevel": "JAVA_${java_version}",
   "mixins": [
   ],
   "client": [
