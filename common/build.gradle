@@ -26,7 +26,7 @@ dependencies {
     compileOnly "net.fabricmc:sponge-mixin:0.17.3+mixin.0.8.7"
     compileOnly "maven.modrinth:melody:${melody_version}-${minecraft_version}-fabric"
     compileOnly "maven.modrinth:konkrete:${konkrete_version}-${minecraft_version}-fabric"
-    compileOnly "maven.modrinth:fancymenu:${fancymenu_version}-${fancymenu_minecraft_version}-fabric"
+    compileOnly "maven.modrinth:fancymenu:${fancymenu_version}-${minecraft_version}-fabric"
     compileOnly "net.objecthunter:exp4j:0.4.8"
 }
 

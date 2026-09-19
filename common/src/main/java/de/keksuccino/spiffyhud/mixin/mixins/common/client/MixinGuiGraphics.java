@@ -1,7 +1,7 @@
 package de.keksuccino.spiffyhud.mixin.mixins.common.client;
 
-import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import de.keksuccino.spiffyhud.util.rendering.ExtendedGuiGraphics;
 import de.keksuccino.spiffyhud.util.rendering.exclusion.ExclusionAreaStack;
 import de.keksuccino.spiffyhud.util.rendering.exclusion.IGuiGraphicsExclusionArea;
@@ -114,14 +114,14 @@ public abstract class MixinGuiGraphics implements IGuiGraphicsExclusionArea, Ext
         }
     }
 
-    @Inject(method = "fill(Lcom/mojang/blaze3d/pipeline/RenderPipeline;IIIII)V", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "fill(Lcom/mojang/renderpearl/api/pipeline/RenderPipeline;IIIII)V", at = @At("HEAD"), cancellable = true)
     private void spiffyHud$checkFillExclusion(RenderPipeline pipeline, int minX, int minY, int maxX, int maxY, int color, CallbackInfo ci) {
         if (spiffyHud$shouldSkipRect(minX, minY, maxX, maxY)) {
             ci.cancel();
         }
     }
 
-    @Inject(method = "fill(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/client/gui/render/TextureSetup;IIII)V", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "fill(Lcom/mojang/renderpearl/api/pipeline/RenderPipeline;Lnet/minecraft/client/gui/render/TextureSetup;IIII)V", at = @At("HEAD"), cancellable = true)
     private void spiffyHud$checkFillExclusion(RenderPipeline pipeline, TextureSetup textureSetup, int minX, int minY, int maxX, int maxY, CallbackInfo ci) {
         if (spiffyHud$shouldSkipRect(minX, minY, maxX, maxY)) {
             ci.cancel();
@@ -156,9 +156,8 @@ public abstract class MixinGuiGraphics implements IGuiGraphicsExclusionArea, Ext
     
     // ===== BLIT & SPRITE METHODS =====
 
-    @Inject(method = "innerBlit(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIIIFFFFI)V", at = @At("HEAD"), cancellable = true)
-    private void spiffyHud$checkInnerBlit(RenderPipeline pipeline, Identifier atlasLocation, int x0, int x1, int y0, int y1,
-                                          float minU, float maxU, float minV, float maxV, int color, CallbackInfo ci) {
+    @Inject(method = "innerBlit(Lcom/mojang/renderpearl/api/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIIIFFFFI)V", at = @At("HEAD"), cancellable = true)
+    private void spiffyHud$checkInnerBlit(RenderPipeline pipeline, Identifier atlasLocation, int x0, int x1, int y0, int y1, float minU, float maxU, float minV, float maxV, int color, CallbackInfo ci) {
         if (this.spiffyHud$shouldSkipRect(x0, y0, x1, y1)) {
             ci.cancel();
         }

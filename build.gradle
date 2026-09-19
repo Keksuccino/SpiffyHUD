@@ -134,7 +134,6 @@ subprojects {
                 "konkrete_version": konkrete_version,
                 "melody_version": melody_version,
                 "fancymenu_version": fancymenu_version,
-                "fancymenu_minecraft_version": fancymenu_minecraft_version,
                 "java_version": java_version,
                 "fabric_version": fabric_version,
                 "fabric_short_version": fabric_short_version,

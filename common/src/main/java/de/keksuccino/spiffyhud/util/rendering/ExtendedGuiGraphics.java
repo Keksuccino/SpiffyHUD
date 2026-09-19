@@ -1,6 +1,6 @@
 package de.keksuccino.spiffyhud.util.rendering;
 
-import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import net.minecraft.resources.Identifier;
 
 public interface ExtendedGuiGraphics {

@@ -18,6 +18,11 @@ repositories {
 
 dependencies {
 
+    testImplementation platform("org.junit:junit-bom:5.10.2")
+    testImplementation "org.junit.jupiter:junit-jupiter"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+    testImplementation "org.ow2.asm:asm-tree:9.10.1"
+
     minecraft "com.mojang:minecraft:${minecraft_version}"
     implementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
     implementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
@@ -25,11 +30,7 @@ dependencies {
     include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:${mixin_extras_version}")))
     implementation "maven.modrinth:melody:${melody_version}-${minecraft_version}-fabric"
     implementation "maven.modrinth:konkrete:${konkrete_version}-${minecraft_version}-fabric"
-    compileOnly "maven.modrinth:fancymenu:${fancymenu_version}-${fancymenu_minecraft_version}-fabric"
-    // Only load FancyMenu when a build for this Minecraft version is selected.
-    if (fancymenu_minecraft_version == minecraft_version) {
-        runtimeOnly "maven.modrinth:fancymenu:${fancymenu_version}-${fancymenu_minecraft_version}-fabric"
-    }
+    implementation "maven.modrinth:fancymenu:${fancymenu_version}-${minecraft_version}-fabric"
     runtimeOnly "maven.modrinth:modmenu:21.0.0-beta.1"
     implementation "net.objecthunter:exp4j:0.4.8"
     implementation project(":common")
@@ -69,8 +70,7 @@ tasks.withType(Javadoc).configureEach {
     source(project(":common").sourceSets.main.allJava)
 }
 tasks.withType(Test).configureEach {
-    // Allow builds when there are test sources but no matching tests.
-    failOnNoDiscoveredTests = false
+    useJUnitPlatform()
 }
 tasks.named("sourcesJar", Jar) {
     from(project(":common").sourceSets.main.allSource)

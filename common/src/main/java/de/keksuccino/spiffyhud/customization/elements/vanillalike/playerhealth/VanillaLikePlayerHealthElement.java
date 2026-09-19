@@ -153,10 +153,11 @@ public class VanillaLikePlayerHealthElement extends AbstractElement {
         boolean heartBlink = (this.healthBlinkTime > (long)this.tickCount) && (((this.healthBlinkTime - (long)this.tickCount) / 3L) % 2L == 1L);
         long currentTime = Util.getMillis();
 
-        if (currentHealthCeil < this.lastHealth && player.invulnerableTime > 0) {
+        // Heart blinking follows the damage cooldown, not the separate invulnerability timer in 26.3.
+        if (currentHealthCeil < this.lastHealth && player.damageCooldownTime > 0) {
             this.lastHealthTime = currentTime;
             this.healthBlinkTime = this.tickCount + 20;
-        } else if (currentHealthCeil > this.lastHealth && player.invulnerableTime > 0) {
+        } else if (currentHealthCeil > this.lastHealth && player.damageCooldownTime > 0) {
             this.lastHealthTime = currentTime;
             this.healthBlinkTime = this.tickCount + 10;
         }
