@@ -1,9 +1,9 @@
-## Getting started
+# Getting started
 
 Since Spiffy is an addon for FancyMenu, there's not much to say in here, because everything works exactly like in FancyMenu!<br>
 To learn how to use SpiffyHUD, please check out [FancyMenu's documentation](https://docs.fancymenu.net)!
 
-## How to Access Spiffy's Customization Screen
+# How to Access Spiffy's Customization Screen
 
 To customize the HUD, just click on the big button in the top-left corner, right below FancyMenu's menu bar, in the **Pause screen**! The button's icon looks like a chestplate with a mouse cursor.
 
