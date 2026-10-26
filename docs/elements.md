@@ -1,4 +1,4 @@
-# Elements
+# Spiffy's Elements
 
 SpiffyHUD adds many new elements to FancyMenu, specifically made to be used in the HUD.
 
