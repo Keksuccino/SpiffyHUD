@@ -1,4 +1,4 @@
-## Customizing Mod Elements
+# Customizing Mod Elements
 
 Moving or deleting HUD elements from other mods is usually not possible, but if you're on Forge/NeoForge, there's a useful mod that makes it possible to move, rotate and scale some mod HUD elements to make them better work with Spiffy.
 
