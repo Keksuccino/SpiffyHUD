@@ -20,6 +20,10 @@ CHANGELOG | SPIFFYHUD v3.1.4
 CHANGELOG | SPIFFYHUD v3.1.3
 
 - Ported the mod to Minecraft 26.2
+- Added a description to the "Vanilla-Like Contextual Bar" element
+- The editor preview of the "Vanilla-Like Contextual Bar" element now cycles through the XP bar, jump meter and locator bar every 5 seconds
+- Renamed the "Vanilla-Like Player Experience Bar" element to "Vanilla-Like Contextual Bar", since it shows Minecraft's contextual HUD bar (XP bar, jump meter or locator bar)
+- Fixed missing labels for the "Always Show Locator Bar" and "Always Show Experience Bar" options of the "Vanilla-Like Contextual Bar" element
 
 %changelog:metadata:start%
 "version":"3.1.3";
