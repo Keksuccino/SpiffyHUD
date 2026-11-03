@@ -261,9 +261,9 @@ CHANGELOG | SPIFFYHUD v1.5.0
 %changelog:metadata:start%
 "version":"1.5.0";
 "update_title":"";
-"update_release_date_timestamp":"1642726769";
+"update_release_date_timestamp":"1642726649";
 "update_release_date_string_ddmmyyyy":"21-01-2022";
-"update_supported_mod_loaders":"forge";
+"update_supported_mod_loaders":"forge,fabric";
 "update_supported_minecraft_versions":"1.16.2,1.16.3,1.16.4,1.16.5,1.18,1.18.1,1.18.2";
 %changelog:metadata:end%
 %changelog:end%
@@ -282,10 +282,29 @@ CHANGELOG | SPIFFYHUD v1.4.4
 %changelog:metadata:start%
 "version":"1.4.4";
 "update_title":"";
-"update_release_date_timestamp":"1642531864";
+"update_release_date_timestamp":"1642531712";
 "update_release_date_string_ddmmyyyy":"18-01-2022";
-"update_supported_mod_loaders":"forge";
+"update_supported_mod_loaders":"forge,fabric";
 "update_supported_minecraft_versions":"1.16.2,1.16.3,1.16.4,1.16.5,1.18,1.18.1";
+%changelog:metadata:end%
+%changelog:end%
+
+
+
+
+CHANGELOG | SPIFFYHUD v1.4.3-1
+
+- This update is only for Fabric
+
+- Fixed F3 debug HUD not working
+
+%changelog:metadata:start%
+"version":"1.4.3-1";
+"update_title":"";
+"update_release_date_timestamp":"1642272674";
+"update_release_date_string_ddmmyyyy":"15-01-2022";
+"update_supported_mod_loaders":"fabric";
+"update_supported_minecraft_versions":"1.18,1.18.1";
 %changelog:metadata:end%
 %changelog:end%
 
@@ -296,6 +315,7 @@ CHANGELOG | SPIFFYHUD v1.4.3
 
 - Changed license!
 - Mod rebranded to "Spiffy HUD"
+- Spiffy HUD is now also available for Fabric (MC 1.18 only, was only Forge before)
 - Lifted minimum required Konkrete version to v1.3.3
 - Added support for MC 1.18
 - Fixed FPS drops in customized HUDs when many mods are installed (caused by placeholder text value)
@@ -308,7 +328,7 @@ CHANGELOG | SPIFFYHUD v1.4.3
 "update_title":"";
 "update_release_date_timestamp":"1641693907";
 "update_release_date_string_ddmmyyyy":"09-01-2022";
-"update_supported_mod_loaders":"forge";
+"update_supported_mod_loaders":"forge,fabric";
 "update_supported_minecraft_versions":"1.16.2,1.16.3,1.16.4,1.16.5,1.18,1.18.1";
 %changelog:metadata:end%
 %changelog:end%
