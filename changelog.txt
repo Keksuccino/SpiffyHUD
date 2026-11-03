@@ -1,10 +1,54 @@
+CHANGELOG | SPIFFYHUD v3.1.4
+
+- Ported the mod to Minecraft 26.3
+- Minimum required FancyMenu version is now v3.9.13
+- Minimum required Konkrete version is now v1.11.1
+
+%changelog:metadata:start%
+"version":"3.1.4";
+"update_title":"";
+"update_release_date_timestamp":"1789848023";
+"update_release_date_string_ddmmyyyy":"19-09-2026";
+"update_supported_mod_loaders":"fabric,neoforge";
+"update_supported_minecraft_versions":"26.3";
+%changelog:metadata:end%
+%changelog:end%
+
+
+
 
 CHANGELOG | SPIFFYHUD v3.1.3
 
 - Ported the mod to Minecraft 26.2
 
+%changelog:metadata:start%
+"version":"3.1.3";
+"update_title":"";
+"update_release_date_timestamp":"1782540571";
+"update_release_date_string_ddmmyyyy":"27-06-2026";
+"update_supported_mod_loaders":"fabric,neoforge";
+"update_supported_minecraft_versions":"26.2";
+%changelog:metadata:end%
 %changelog:end%
 
+
+
+
+CHANGELOG | SPIFFYHUD v3.1.2
+
+- Minimum required FancyMenu version is now v3.9.0
+- Added compatibility for FancyMenu v3.9.0
+- The value editors of the marker actions (Add/Edit/Remove Marker) and the "Is Player In Structure" requirement now open as PiP windows, like the rest of FancyMenu's editors
+
+%changelog:metadata:start%
+"version":"3.1.2";
+"update_title":"";
+"update_release_date_timestamp":"1777820372";
+"update_release_date_string_ddmmyyyy":"03-05-2026";
+"update_supported_mod_loaders":"forge,fabric,neoforge";
+"update_supported_minecraft_versions":"1.19.2,1.20.1,1.21.1,1.21.11,26.1.1,26.1.2";
+%changelog:metadata:end%
+%changelog:end%
 
 
 
@@ -13,8 +57,15 @@ CHANGELOG | SPIFFYHUD v3.1.1
 
 - Fixed crash on game launch in Fabric 1.20.1 and 1.19.2
 
+%changelog:metadata:start%
+"version":"3.1.1";
+"update_title":"";
+"update_release_date_timestamp":"1764215131";
+"update_release_date_string_ddmmyyyy":"27-11-2025";
+"update_supported_mod_loaders":"fabric,neoforge";
+"update_supported_minecraft_versions":"1.19.2,1.20.1,1.21.11,26.1.1,26.1.2";
+%changelog:metadata:end%
 %changelog:end%
-
 
 
 
@@ -72,6 +123,14 @@ CHANGELOG | SPIFFYHUD v3.1.0
 - Fixed Vanilla Experience Bar still visible in HUD after deleting in editor in MC 1.21.8+ (#50)
 - Fixed Spyglass overlay gets rendered after Spiffy elements in Minecraft 1.20.1 and below (#52)
 
+%changelog:metadata:start%
+"version":"3.1.0";
+"update_title":"";
+"update_release_date_timestamp":"1763795758";
+"update_release_date_string_ddmmyyyy":"22-11-2025";
+"update_supported_mod_loaders":"forge,fabric,neoforge";
+"update_supported_minecraft_versions":"1.19.2,1.20.1,1.21.1,1.21.10";
+%changelog:metadata:end%
 %changelog:end%
 
 
@@ -86,6 +145,14 @@ CHANGELOG | SPIFFYHUD v3.0.2
   - Added option to the element to make the experience bar never vanish (so it's always visible instead of just when gaining exp points)
 - Items of the Slot element and Vanilla-Like Hotbar element do not have opacity support anymore (Mojang made it almost impossible to control that or I'm too dumb to make it work)
 
+%changelog:metadata:start%
+"version":"3.0.2";
+"update_title":"";
+"update_release_date_timestamp":"1750871362";
+"update_release_date_string_ddmmyyyy":"25-06-2025";
+"update_supported_mod_loaders":"forge,fabric,neoforge";
+"update_supported_minecraft_versions":"1.21.6,1.21.7,1.21.8";
+%changelog:metadata:end%
 %changelog:end%
 
 
@@ -95,6 +162,14 @@ CHANGELOG | SPIFFYHUD v3.0.1
 
 - Ported mod to MC 1.21.5
 
+%changelog:metadata:start%
+"version":"3.0.1";
+"update_title":"";
+"update_release_date_timestamp":"1746568045";
+"update_release_date_string_ddmmyyyy":"06-05-2025";
+"update_supported_mod_loaders":"forge,fabric,neoforge";
+"update_supported_minecraft_versions":"1.21.5";
+%changelog:metadata:end%
 %changelog:end%
 
 
@@ -161,4 +236,283 @@ KNOWN ISSUES:
 Forge 1.21.1 renders HUD textures with transparency as solid black when the Pause screen is open, which is a bug in Forge and I can't do anything about that.
 It's not caused by SpiffyHUD. I reported it to the Forge devs already, so for now we can just wait.
 
+%changelog:metadata:start%
+"version":"3.0.0";
+"update_title":"";
+"update_release_date_timestamp":"1745359892";
+"update_release_date_string_ddmmyyyy":"22-04-2025";
+"update_supported_mod_loaders":"forge,fabric,neoforge";
+"update_supported_minecraft_versions":"1.18.2,1.19.2,1.20.1,1.21.1";
+%changelog:metadata:end%
+%changelog:end%
+
+
+
+
+CHANGELOG | SPIFFYHUD v1.5.0
+
+- Added support for MC 1.18.2
+- Added "Is Fully Frozen" visibility requirement (MC 1.18+)
+- Added "Has Absorption Hearts" visibility requirement
+- Improved the Vanilla element API
+- Fixed item count label of scaled item stack elements getting rendered at the wrong position in MC 1.18
+- Fixed Debug HUD (F3) getting rendered behind custom elements on Fabric
+
+%changelog:metadata:start%
+"version":"1.5.0";
+"update_title":"";
+"update_release_date_timestamp":"1642726769";
+"update_release_date_string_ddmmyyyy":"21-01-2022";
+"update_supported_mod_loaders":"forge";
+"update_supported_minecraft_versions":"1.16.2,1.16.3,1.16.4,1.16.5,1.18,1.18.1,1.18.2";
+%changelog:metadata:end%
+%changelog:end%
+
+
+
+
+CHANGELOG | SPIFFYHUD v1.4.4
+
+- Reworked the API
+  - Port of the FancyMenu API for easier element creation, etc.
+  - Old API is still working, but deprecated now (will be removed in a future update)
+  - Docs for the new API will follow
+- Fixed scaling an item stack element causing scaling of random GUI parts in MC 1.18
+
+%changelog:metadata:start%
+"version":"1.4.4";
+"update_title":"";
+"update_release_date_timestamp":"1642531864";
+"update_release_date_string_ddmmyyyy":"18-01-2022";
+"update_supported_mod_loaders":"forge";
+"update_supported_minecraft_versions":"1.16.2,1.16.3,1.16.4,1.16.5,1.18,1.18.1";
+%changelog:metadata:end%
+%changelog:end%
+
+
+
+
+CHANGELOG | SPIFFYHUD v1.4.3
+
+- Changed license!
+- Mod rebranded to "Spiffy HUD"
+- Lifted minimum required Konkrete version to v1.3.3
+- Added support for MC 1.18
+- Fixed FPS drops in customized HUDs when many mods are installed (caused by placeholder text value)
+- Fixed Optifine not counting to existing mods in '%loadedmods%' and '%totalmods%' placeholder text values
+- Fixed scoreboard sidebar not being visible in the editor if no objective is registered to the sidebar slot
+- Fixed missing HUD elements in the editor if the player is not in survival or adventure mode
+
+%changelog:metadata:start%
+"version":"1.4.3";
+"update_title":"";
+"update_release_date_timestamp":"1641693907";
+"update_release_date_string_ddmmyyyy":"09-01-2022";
+"update_supported_mod_loaders":"forge";
+"update_supported_minecraft_versions":"1.16.2,1.16.3,1.16.4,1.16.5,1.18,1.18.1";
+%changelog:metadata:end%
+%changelog:end%
+
+
+
+
+CHANGELOG | SPIFFYHUD v1.4.2
+
+- Fixed layouts not being visible in some situations because of an error related to placeholder text values
+
+%changelog:metadata:start%
+"version":"1.4.2";
+"update_title":"";
+"update_release_date_timestamp":"1625701646";
+"update_release_date_string_ddmmyyyy":"07-07-2021";
+"update_supported_mod_loaders":"forge";
+"update_supported_minecraft_versions":"1.16.2,1.16.3,1.16.4,1.16.5";
+%changelog:metadata:end%
+%changelog:end%
+
+
+
+
+CHANGELOG | SPIFFYHUD v1.4.1
+
+- Fixed scales of Mirrored Player elements getting reset when saving the layout
+
+%changelog:metadata:start%
+"version":"1.4.1";
+"update_title":"";
+"update_release_date_timestamp":"1624982965";
+"update_release_date_string_ddmmyyyy":"29-06-2021";
+"update_supported_mod_loaders":"forge";
+"update_supported_minecraft_versions":"1.16.2,1.16.3,1.16.4,1.16.5";
+%changelog:metadata:end%
+%changelog:end%
+
+
+
+
+CHANGELOG | SPIFFYHUD v1.4.0
+
+- Added options to set custom orientations to the Mirrored Player element
+- Added option to set the max armor of the Custom Armor Bar element
+- Added visibility requirement "Is Raining"
+- Added visibility requirement "Is Thundering"
+- Added visibility requirement "Is Player Health Lower Than"
+- Added visibility requirement "Is Player Health Lower Than Percent"
+- Added visibility requirement "Is Player Food Lower Than"
+- Added visibility requirement "Is Player Food Lower Than Percent"
+- Added visibility requirement "Is Player Withered"
+- Added visibility requirement "Is Player Poisoned"
+- Added visibility requirement "Has Player Bad Stomach"
+- Added visibility requirement "Is Survival"
+- Added visibility requirement "Is Creative"
+- Added visibility requirement "Is Adventure"
+- Added visibility requirement "Is Spectator"
+- Added visibility requirement "Is World Time Hour"
+- Added visibility requirement "Is World Time Minute"
+- Added visibility requirement "Is Real Time Hour"
+- Added visibility requirement "Is Real Time Minute"
+- Added visibility requirement "Is Real Time Second"
+- Changed the minimum width and height of elements in the editor from 5x5 to 1x1
+- Fixed Custom Armor Bar element not showing the exact armor value
+- Fixed stretch actions not working for custom bar elements
+
+%changelog:metadata:start%
+"version":"1.4.0";
+"update_title":"";
+"update_release_date_timestamp":"1624921398";
+"update_release_date_string_ddmmyyyy":"28-06-2021";
+"update_supported_mod_loaders":"forge";
+"update_supported_minecraft_versions":"1.16.2,1.16.3,1.16.4,1.16.5";
+%changelog:metadata:end%
+%changelog:end%
+
+
+
+
+CHANGELOG | SPIFFYHUD v1.3.1
+
+- Fixed stretching elements not working
+
+%changelog:metadata:start%
+"version":"1.3.1";
+"update_title":"";
+"update_release_date_timestamp":"1624496454";
+"update_release_date_string_ddmmyyyy":"24-06-2021";
+"update_supported_mod_loaders":"forge";
+"update_supported_minecraft_versions":"1.16.2,1.16.3,1.16.4,1.16.5";
+%changelog:metadata:end%
+%changelog:end%
+
+
+
+
+CHANGELOG | SPIFFYHUD v1.3.0
+
+- Added Item Stack element to render an item in the HUD (can be set to display a specific inventory slot or an item by item name)
+- Added Mirrored Player element to add the player as little entity to the HUD (like in the inventory)
+- Added Visibility Requirements for custom elements to set requirements for an element to be visible (like if a specific hotbar slot is active, etc.)
+- Added Custom Mount Health Bar element (health of ridden entity)
+- Added Custom Mount Jump Bar element (jump power of ridden entity)
+- Fixed unique element ID getting copied when copy-pasting elements, instead of generating a new ID for the pasted element
+
+%changelog:metadata:start%
+"version":"1.3.0";
+"update_title":"";
+"update_release_date_timestamp":"1624406021";
+"update_release_date_string_ddmmyyyy":"22-06-2021";
+"update_supported_mod_loaders":"forge";
+"update_supported_minecraft_versions":"1.16.2,1.16.3,1.16.4,1.16.5";
+%changelog:metadata:end%
+%changelog:end%
+
+
+
+
+CHANGELOG | SPIFFYHUD v1.2.1
+
+- Fixed Forge HUD render events not working
+
+%changelog:metadata:start%
+"version":"1.2.1";
+"update_title":"";
+"update_release_date_timestamp":"1623970658";
+"update_release_date_string_ddmmyyyy":"17-06-2021";
+"update_supported_mod_loaders":"forge";
+"update_supported_minecraft_versions":"1.16.2,1.16.3,1.16.4,1.16.5";
+%changelog:metadata:end%
+%changelog:end%
+
+
+
+
+CHANGELOG | SPIFFYHUD v1.2.0
+
+- Added sidebar customizations
+- Added RGB (Rainbow) mode to text elements
+- Added placeholder text value "%cps%" to get the current CPS (Clicks Per Second)
+- Added placeholder text value "%bps%" to get the current BPS (Blocks Per Second)
+- Added placeholder text value "%tps%" to get the current TPS (Ticks Per Second)
+- Added Custom Health Bar element (fully customizable with textures, directions and changeable size)
+- Added Custom Food Bar element (fully customizable with textures, directions and changeable size)
+- Added Custom Air Bar element (fully customizable with textures, directions and changeable size)
+- Added Custom Armor Bar element (fully customizable with textures, directions and changeable size)
+- Renamed "Session-Specific Values" to "Placeholder Text Values", because it better fits the purpose of them
+- Fixed placeholder text value '%usedram%' not being correctly pasted to the text input field
+
+%changelog:metadata:start%
+"version":"1.2.0";
+"update_title":"";
+"update_release_date_timestamp":"1622912934";
+"update_release_date_string_ddmmyyyy":"05-06-2021";
+"update_supported_mod_loaders":"forge";
+"update_supported_minecraft_versions":"1.16.2,1.16.3,1.16.4,1.16.5";
+%changelog:metadata:end%
+%changelog:end%
+
+
+
+
+CHANGELOG | SPIFFYHUD v1.1.0
+
+- Added "Light Mode" to disable Vanilla HUD element customizations (will drastically improve mod compatibility)
+- Added dynamic text value "%biome%" to get the current biome
+- Added dynamic text value "%direction%" to get the player facing direction
+- Added dynamic text value "%fps%" to get the current FPS
+- Added dynamic text value "%percentram%" to get the currently used RAM as percent
+- Added dynamic text value "%usedram%" to get the currently used RAM in MB
+- Added dynamic text value "%maxram%" to get the max RAM in MB
+- Added dynamic text value "%targetblock%" to get the block the player is looking at
+- Added "Hide If Full" option to the player health and food bar to hide them when completely full
+- Added "Hide If Empty" option to the armor bar to hide it when completely empty
+- Added scaling option for player health, food, armor and air bars
+- You will now get back to the customization helper menu after closing the editor
+- Fixed slideshows not working
+
+%changelog:metadata:start%
+"version":"1.1.0";
+"update_title":"";
+"update_release_date_timestamp":"1622218331";
+"update_release_date_string_ddmmyyyy":"28-05-2021";
+"update_supported_mod_loaders":"forge";
+"update_supported_minecraft_versions":"1.16.2,1.16.3,1.16.4,1.16.5";
+%changelog:metadata:end%
+%changelog:end%
+
+
+
+
+CHANGELOG | SPIFFYHUD v1.0.0
+
+- Initial release
+- WARNING: This is the first (BETA) release of this mod, so you will most probably find a lot of bugs in it, so please don't use it in modpacks yet
+  - Just have fun with it and report any bugs and issues so I can fix them! :)
+
+%changelog:metadata:start%
+"version":"1.0.0";
+"update_title":"";
+"update_release_date_timestamp":"1621445203";
+"update_release_date_string_ddmmyyyy":"19-05-2021";
+"update_supported_mod_loaders":"forge";
+"update_supported_minecraft_versions":"1.16.2,1.16.3,1.16.4,1.16.5";
+%changelog:metadata:end%
 %changelog:end%
